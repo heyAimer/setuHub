@@ -48,3 +48,13 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+SetuHub — your bridge to help.
+
+Connecting people who care.” ✅ Simple, human, mission-driven
+
+“Help is closer than you think.” ✅ Emphasizes real-time accessibility
+
+“Bridging lives, one help at a time.” ✅ Emotional, symbolic
+
+“Your safety, our network.” ✅ Strong, action-oriented

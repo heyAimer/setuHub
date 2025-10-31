@@ -1,3 +1,4 @@
+
 {
   "expo": {
     "name": "setHub",
@@ -9,9 +10,23 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+       "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "setHub uses your location to show and share nearby help requests."
+      },
+      "config": {
+        "googleMapsApiKey":"googleMapsApiKey"
+      }
     },
     "android": {
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+
+      "config": {
+        "googleMaps": {
+          "apiKey": "googleMapsApiKey"
+        }
+      },
+      
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -21,11 +36,18 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
+
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission":"Allow SetuHub to use your location"
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
