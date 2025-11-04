@@ -6,9 +6,11 @@ const useLocation = () => {
   const[longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
   const [location, setLocation] = useState('');
-  
+  const [loading, setLoading] = useState(true);
+
   const getUserLocation = async () => {
     try {
+      setLoading(true); 
       
       let { status } = await Location.requestBackgroundPermissionsAsync();
       if (status !== "granted") {
@@ -34,12 +36,16 @@ const useLocation = () => {
         );
 
         setLocation(formatted);
-        // console.log("USER Location is: /n", JSON.stringify(fixedResponse, null, 2));
+        console.log("formated: ", location)
+        console.log("lat:", latitude)
+        console.log("long: ", longitude)
         
       }
     } catch (err) {
       console.log("Error fetching location data:", err);
       setErrMsg("Location Error!")
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,7 +53,7 @@ const useLocation = () => {
     getUserLocation();
   }, []);
 
-  return{latitude, longitude,location, errMsg}
+  return{latitude, longitude,location, errMsg, loading}
 
 }
 export default useLocation;
