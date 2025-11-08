@@ -50,7 +50,7 @@ const SignIn = () => {
 
                     <View style = {styles.fieldsContainer}>
                         <Formik
-                        initialValues={{ email: "", password: "" }}
+                        initialValues={{ email: "rudra@example.com", password: "123" }}
                         validationSchema={signInValidationSchema}
                         onSubmit={HandleSignIn}>
                             {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
