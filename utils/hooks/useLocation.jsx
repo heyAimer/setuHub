@@ -36,13 +36,9 @@ const useLocation = () => {
         );
 
         setLocation(formatted);
-        console.log("formated: ", location)
-        console.log("lat:", latitude)
-        console.log("long: ", longitude)
         
       }
     } catch (err) {
-      console.log("Error fetching location data:", err);
       setErrMsg("Location Error!")
     } finally {
       setLoading(false);

@@ -65,9 +65,7 @@ const CreateMomentsPost = () => {
             });
 
             setImage(prev => [...prev, res.data.secure_url]);
-            console.log("Cloudinary URL:", res.data.secure_url);
         } catch (err) {
-            console.log("Upload Error:", err);
             alert("Upload failed!");
         } finally {
             setUploading(false);
@@ -75,7 +73,6 @@ const CreateMomentsPost = () => {
     };
 
     const handlePost = async () => {
-        console.log("clicked post")
         const payload = {
             title:title,
             description: description,
@@ -95,7 +92,6 @@ const CreateMomentsPost = () => {
             );
             const text = await response.text();
             let data = JSON.parse(text);
-            console.log("moment data sent is: ", data.data);
             router.push("/Moments")
         } catch (err) {
             console.error("Post error: ", err);

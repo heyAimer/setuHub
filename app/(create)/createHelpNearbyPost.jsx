@@ -20,10 +20,8 @@ const CreateHelpNearbyPost = () => {
     const navigation = useNavigation();
     
     const sendHelpRequest = async () => {
-        console.log("Sending lat/long:", latitude, longitude);
 
         if (!latitude || !longitude) {
-            console.log("Location not ready");
             return;
         }
         
@@ -51,12 +49,9 @@ const CreateHelpNearbyPost = () => {
             try {
                 data = JSON.parse(text);
             } catch (err) {
-                console.log("backend returned non-json: ", text);
                  throw new Error(text);
             }
-            console.log("helper location data is : /n ", data);
         } catch (error) {
-            console.log("Error sending the request: ", error);
         }
     }
 

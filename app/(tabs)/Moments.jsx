@@ -51,11 +51,13 @@ const Moments = () => {
             });
             if (!response.ok) {
                 console.error("like/unlike failed", response.status);
+                fetchMoments();
             }
-            fetchMoments();
+            
 
         } catch (err) {
             console.error("Error liking the post: ", err);
+            fetchMoments();
         }
     }
     
@@ -80,9 +82,7 @@ const Moments = () => {
             setData(data.data || []);
             setError(null);
             
-            console.log('moments data is : ',JSON.stringify(data.data, null, 2))
         } catch (err) {
-            console.log("Error fetching data: ", err);
             setError(err.message);
         } finally {
             setLoadingPost(false)

@@ -1,45 +1,184 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
 import { Image } from 'expo-image';
-import { useNavigation } from 'expo-router';
+import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
+import { router, useNavigation } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
-import useLocation from '../../utils/hooks/useLocation';
-
+import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 
 const CreateHangoutAndEventsPost = () => {
+    const maxCharsInDesc = 280;
+    const maxCharsInTitle = 50;
+    const navigation = useNavigation();
+
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [titleHeight, setTitleHeight] = useState(40);
     const [descriptionHeight, setDescriptionHeight] = useState(40);
 
-    const [eventAt, setEventAt] = useState(new Date());
-    const [showPicker, setShowPicker] = useState(false);
-
+    //date time picker 
+    const [eventAt, setEventAt] = useState(null);
     const [showDate, setShowDate] = useState(false);
     const [showTime, setShowTime] = useState(false);
-
     
-    const { latitude, longitude } = useLocation();
+    //location picker
+    const [locationDetails, setLocationDetails] = useState(null);
+    const [region, setRegion] = useState(null);
+    const [marker, setMarker] = useState(null);
 
-    const maxCharsInDesc = 280;
-    const maxCharsInTitle = 50;
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
 
-    const navigation = useNavigation();
-    const handlePost = () => {
-        console.log("Posted: ", title);
-        setText(""); // clear input after posting
+    const [showMap, setShowMap] = useState(false);
+    const [loading, setLoading] = useState(false);
+    
+    const [image, setImage] = useState([]);
+    const [uploading, setUploading] = useState(false);
+
+    const pickImage = async () => {
+        if (image.length >= 4) {
+            Alert.alert("Limit Reached", "You can only upload up to 4 images.");
+            return;
+        }
+        
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ["images"],
+            quality: 0.8,
+        });
+
+        if (!result.canceled) uploadToCloudinary(result.assets[0].uri);
     };
 
-//     const payload = {
-//   title,
-//   description,
-//   latitude,
-//   longitude,
-//   eventAt: eventAt.toISOString()   // ✅ RFC3339 format
-// };
+    const takePhoto = async () => {
+        const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+        if (!cameraPermission.granted) return alert("Camera permission needed!");
+
+        const result = await ImagePicker.launchCameraAsync({
+            quality: 0.8,
+        });
+
+        if (!result.canceled) uploadToCloudinary(result.assets[0].uri);
+    };
+
+    const uploadToCloudinary = async (uri) => {
+        try {
+            setUploading(true);
+
+            const formData = new FormData();
+            formData.append("file", {
+            uri,
+            type: "image/jpeg",
+            name: "upload.jpg",
+            });
+            formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+            const res = await axios.post(CLOUDINARY_API, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            setImage(prev => [...prev, res.data.secure_url]);
+        } catch (err) {
+            alert("Upload failed!");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const openMap = async () => {
+        try {
+            //ask permission location
+            setLoading(true);
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== "granted") {
+                alert("Permission to access location was denied!");
+                return;
+            }
+
+            // get current user location to center map
+            const loc = await Location.getCurrentPositionAsync({});
+            setRegion({
+                latitude: loc.coords.latitude,
+                longitude: loc.coords.longitude,
+                latitudeDelta: 0.0015,
+                longitudeDelta: 0.0015,
+            })
+            setShowMap(true);
+            setLoading(false);
+        } catch (err) {
+            console.error("Error opening map:", err);
+            setLoading(false);
+        }
+
+    };
+
+    const handleSelectLocation = async(e) => {
+        const { latitude, longitude } = e.nativeEvent.coordinate;
+        setLatitude(latitude);
+        setLongitude(longitude);
+        setMarker({ latitude, longitude });
+
+        try {
+            const [address] = await Location.reverseGeocodeAsync({
+                latitude,
+                longitude
+            });
+            setLocationDetails([address]);
+        } catch (err) {
+            console.error("Error fetching address: ", err);
+        }
+
+    }
+
+    const handleConfirm = async() => { 
+        
+        if (!marker) {
+            alert("Please tap on the map to select the location of the event!");
+            return;
+        }
+        //api run send data to backend!
+
+        const payload = {
+            title: title,
+            description: description,
+            latitude: Number(latitude),
+            longitude: Number(longitude),
+            eventAt: eventAt.toISOString(),
+            location: locationDetails,
+            media: image
+        }
+
+        try {
+            const response = await fetch(`https://hackathon-connect-app-backend.onrender.com/request/create/impactevents`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-App-Secret": "smartboyakriti"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const text = await response.text();
+
+           
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                throw new Error(text);
+            }
+            setShowMap(false);
+            router.push("/ImpactEvents");
+            
+        } catch (err) {
+            console.error("Error hosting the event: ", err)
+        }
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -58,7 +197,7 @@ const CreateHangoutAndEventsPost = () => {
                 <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
                     <Image
                         source={img}
-                        style={styles.image}
+                        style={styles.pfp}
                     />
                     <View style={{ marginLeft:8}}>
                         <Text style={{fontWeight:500, fontSize:20}}>Hi Rudra</Text>
@@ -87,17 +226,51 @@ const CreateHangoutAndEventsPost = () => {
                         <Text style={{ color: '#ABABAC', marginTop:12 }}>{title.length}/{maxCharsInTitle}</Text>
                     </View>
 
+                    <Text style={styles.inputsHeading}>Description</Text>
+                    <View style={{flexDirection:'row',}}>
+                        <TextInput
+                            placeholder="Let people know how they can support you…"
+                            placeholderTextColor="#ABABAC"
+                            value={description}
+                            onChangeText={setDescription}
+                            multiline
+                            onContentSizeChange={(e) =>
+                            setDescriptionHeight(e.nativeEvent.contentSize.height)
+                            }
+                            style={[styles.input, {height:Math.max(150, descriptionHeight)}, { marginBottom: 20 }]}
+                            maxLength={maxCharsInDesc}
+                        />
+
+                        <Text style={{color:'#ABABAC', marginTop:12}}>{description.length}/{maxCharsInDesc}</Text>
+                    </View>
+                    
                     <Text style={styles.inputsHeading}>Event at</Text>
 
                     <TouchableOpacity onPress={() => setShowDate(true)}>
-                        <Text style={styles.input}>
-                            {eventAt.toLocaleString()}  {/* RFC3339 */}
+                        <Text
+                            // style={{
+                            // fontSize: 16,
+                            // marginTop: 8,
+                            // marginBottom: 10,
+                            // color: eventAt ? "#000":"#ABABAC"
+                            // }}
+
+                            style={[styles.input, { marginBottom: 20,marginTop:10, paddingBottom:10 },{color: eventAt ? "#000":"#ABABAC"}]}
+                            
+                        >
+                            {/* {eventAt.toLocaleString()}  RFC3339 */}
+                            {eventAt ? eventAt.toLocaleString([], {
+                                dateStyle: "medium",
+                                timeStyle:"short"
+                            })
+                                :
+                        "Select date & time "}
                         </Text>
                     </TouchableOpacity>
 
                     {showDate  && (
                         <DateTimePicker
-                            value={eventAt}
+                            value={eventAt || new Date()}
                             mode="date"
                             display="default"
                             onChange={(event, selectedDate) => {
@@ -117,41 +290,144 @@ const CreateHangoutAndEventsPost = () => {
 
                     {showTime && (
                         <DateTimePicker
-                            value={eventAt}
+                            value={eventAt || new Date()}
                             mode="time"
                             display="default"
+                            is24Hour={false} 
                             onChange={(event, selectedTime) => {
                             setShowTime(false);
-                            if (event.type === "set") {
+                            if (event.type === "set" && selectedTime) {
                                 const current = new Date(eventAt);
                                 current.setHours(selectedTime.getHours());
                                 current.setMinutes(selectedTime.getMinutes());
+                                current.setSeconds(0); 
                                 setEventAt(current);
                             }
                             }}
                         />
                     )}
-                    
-               
-                    <Text style={styles.inputsHeading}>Description</Text>
-                    <TextInput
-                        placeholder="Let people know how they can support you…"
-                        placeholderTextColor="#ABABAC"
-                        value={description}
-                        onChangeText={setDescription}
-                        multiline
-                         onContentSizeChange={(e) =>
-                        setDescriptionHeight(e.nativeEvent.contentSize.height)
+
+                    <View style={{ marginVertical: 20 }}>
+                        <Text style={styles.inputsHeading}>Add Image</Text>
+                        
+                        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
+                            {image.map((img, index) => (
+
+                                <View key={index} style={{ width: "48%", marginBottom: 20, position: "relative" }}> 
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            const newImages = image.filter((_, i) => i !== index);
+                                            setImage(newImages);
+                                        }}
+
+                                        style={{
+                                            position: "absolute",
+                                            top: 10,
+                                            right: 5,
+                                            backgroundColor: "#E0E0E0",
+                                            width: 22,
+                                            height: 22,
+                                            borderRadius: 12,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            zIndex: 999,
+                                            borderWidth: 1,
+                                            borderColor: "#E4080A",
+                                        }}
+                                    >
+                                        <Text style={{ color: "#E4080A", fontSize: 14,fontWeight:'bold' }}>×</Text>
+                                    </TouchableOpacity>
+                                    
+                                    <Image
+                                        key={index}
+                                        source={{ uri: img }}
+                                        style={{
+                                            width: "100%", height: 200, borderRadius: 8, marginTop: 4, marginBottom: 20,
+                                            borderWidth: 1,
+                                            borderColor: "#ccc",
+                                            borderRadius: 10}}
+                                    />
+                                </View>
+                            ))}
+                        </View>
+
+                        {image.length < 4 &&
+                            (<TouchableOpacity
+                            style={{
+                                height: 150,
+                                borderWidth: 1,
+                                borderColor: "#ccc",
+                                borderStyle: "dashed",
+                                borderRadius: 10,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginVertical:10
+                            }}
+
+                            onPress={() => {
+                                Alert.alert("Upload Image", "Choose an option", [
+                                { text: "Camera", onPress: takePhoto },
+                                { text: "Gallery", onPress: pickImage },
+                                { text: "Cancel", style: "cancel" },
+                                ]);
+                            }}
+                            
+                        >
+                            <Text style={{ color: "#ABABAC", fontSize: 16, }}>Tap to upload or take photo</Text>
+
+                            </TouchableOpacity>)
                         }
-                        style={[styles.input, {height:Math.max(150, descriptionHeight)}]}
-                        maxLength={maxCharsInDesc}
-                    />
+                        
+                        {uploading && <ActivityIndicator size="small" style={{ marginVertical: 10 }} />}
+                                            
+                    </View>
+                    
+                    <Text style={styles.inputsHeading}>Set Location</Text>
+                    {!showMap ?
+                        (
+                            loading ? (
 
+                                <View style={styles.loadingBtn}>
+                                    <ActivityIndicator size="large" color="#9ECAE8" />
+                                    <Text>Loading map...</Text>
+                                </View>
+                                
+                            ): (   
+                                <TouchableOpacity style={styles.openMapBtn} onPress={openMap}>
+                                    <Ionicons
+                                        name='location-outline'
+                                        size={22}
+                                        style={{ color: "#1976D2"}}
+                                    />
+                                    
+                                    <Text style={{color:"#1976D2", fontSize:16}}>Select Location on Map</Text>
+                        
+                                </TouchableOpacity>
+                            )
+
+                        ):(
+                            <View style={styles.mapContainer}>
+                                {region &&
+                                    (
+                                    <MapView
+                                        style={{ flex: 1 }}
+                                        region={region}
+                                        onPress={handleSelectLocation}
+                                        showsUserLocation={true}
+                                    >
+
+                                        {marker && <Marker coordinate={marker}/>}
+
+                                    </MapView>
+                                )}
+
+                            </View>
+                        )
+                    }
+                    
                     <View style={styles.bottomRow}>
-                        <Text style={{color:'#ABABAC'}}>{description.length}/{maxCharsInDesc}</Text>
-
                         <TouchableOpacity
-                        onPress={handlePost}
+                        onPress={handleConfirm}
                         disabled={description.trim().length === 0}
                         style={[
                             styles.postBtn,
@@ -160,7 +436,7 @@ const CreateHangoutAndEventsPost = () => {
                         >
                             <Text style={{
                                 color: "#FFFFFF",
-                            }}>Post</Text>
+                            }}>Host</Text>
                         </TouchableOpacity>
                     </View>
                     
@@ -201,7 +477,7 @@ const styles = StyleSheet.create({
         marginBottom: 60,
         paddingHorizontal:20
     },
-    image: {
+    pfp: {
         width: 60,
         height: 60,
         borderRadius: 100,
@@ -229,11 +505,42 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent: 'flex-end',
         alignItems:'center',
-        paddingVertical: 10,
-        gap:10,
+        paddingVertical: 20,
+        gap: 10,
+        borderTopWidth: 1,
+        borderTopColor: "#DCDCDD",
+        width:'100%'
     },
     charCount: {
         textAlign:'center'
+    },
+    openMapBtn: {
+        borderWidth: 1,
+        borderColor: "#1976D2",
+        padding: 10,
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent:'center',
+        marginTop: 10,
+        flexDirection: 'row',
+        gap:10,
+    },
+    loadingBtn: {
+        borderWidth: 1,
+        borderColor: "#9ECAE8",
+        padding: 10,
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent:'center',
+        marginTop: 10,
+        flexDirection: 'row',
+        gap:10,
+    },
+    mapContainer: {
+        flex: 1, height: 500, marginTop: 12,
+        borderWidth: 1,
+        borderColor: "#DCDCDD",
+        marginBottom:24
         
     },
     postBtn: {
