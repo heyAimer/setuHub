@@ -1,14 +1,31 @@
 import { Stack } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { requestUserPermission, setupbackgroundNotificationListener, setupForegroundNotificationListener } from '../utils/notifications';
+import messaging from '@react-native-firebase/messaging';
 
 export default function RootLayout() {
 
   useEffect(() => {
     requestUserPermission();
-    setupForegroundNotificationListener();
+    const unsubscribe = setupForegroundNotificationListener();
     setupbackgroundNotificationListener();
 
+    const unsubscribeOpened = messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log('App opened from background by notification:', remoteMessage);
+    });
+
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log('App opened from quit by notification:', remoteMessage);
+        }
+      });
+
+    return () => {
+      unsubscribe && unsubscribe();
+      unsubscribeOpened && unsubscribeOpened();
+    };
   }, []);
 
   return (

@@ -1,5 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { firebase } from '@react-native-firebase/app';
+import firebase from '@react-native-firebase/app';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBp-i_4qe1X8ee6RSuUiUAolFcM5mMAswY",
@@ -12,4 +12,4 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const app = firebase.app();
+export default firebase;

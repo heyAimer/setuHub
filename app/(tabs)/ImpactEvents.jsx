@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
@@ -18,6 +18,7 @@ const ImpactEvents = () => {
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
 
+    console.log("longlatare: ", latitude, longitude)
     const convertUTCtoIST = (utcDate) => {
         const date = new Date(utcDate);
 
@@ -71,7 +72,12 @@ const ImpactEvents = () => {
             fetchEvents()
         }, [latitude, longitude,loading])
     );
-    
+
+    if (errMsg) {
+        return (
+            <Text style={{fontSize:24, fontWeight:'bold', textAlign:'center'}}>{errMsg}</Text>
+        )
+    }
     return (
         <SafeAreaView style={styles.container}> 
             
@@ -200,8 +206,10 @@ const ImpactEvents = () => {
                             </View>)}
                             
                             <View style={styles.mapContainer}>
+                                <Text>map container hai ye bey</Text>
                                 <MapView
                                     style={styles.map}
+                                    provider={Platform.OS === 'android' ? 'google':null }
                                     initialRegion={{
                                         latitude:latitude,
                                         longitude: longitude,
@@ -240,12 +248,6 @@ const ImpactEvents = () => {
                     </View>
 
                 )}))}
-                
-                {/* <TouchableOpacity
-                    style={{ marginTop: 50, marginHorizontal: 20 }}
-                    onPress={sendHelpRequest}>
-                    <Text>send location</Text>
-                </TouchableOpacity> */}
             </ScrollView>
             
         </SafeAreaView>

@@ -89,7 +89,7 @@ const SignIn = () => {
                                         <MaterialIcons name="lock" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
 
                                     <TextInput
-                                        style={styles.inputField}
+                                        style={[styles.inputField, { fontFamily: undefined, color: '#000'  }]}
                                         secureTextEntry
                                         placeholder="Enter your password"
                                         onChangeText={handleChange("password")}
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 4,
         backgroundColor: "#FEFEFE",
-        color:'black'
+        color:'#000'
 
     },
     fieldsContainer: {
