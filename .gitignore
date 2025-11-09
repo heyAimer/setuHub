@@ -38,6 +38,9 @@ yarn-error.*
 
 app-example
 
-# generated native folders
-/ios
-/android
+#build outputs 
+build/
+
+# firebase config
+android/app/google-services.json
+ios/GoogleService-Info.plist
