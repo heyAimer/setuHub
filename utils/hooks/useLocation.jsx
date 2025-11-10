@@ -8,7 +8,6 @@ const useLocation = () => {
   const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(true);
 
-  console.log(latitude, longitude)
   const getUserLocation = async () => {
     try {
       setLoading(true); 

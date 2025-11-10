@@ -18,7 +18,6 @@ const ImpactEvents = () => {
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
 
-    console.log("longlatare: ", latitude, longitude)
     const convertUTCtoIST = (utcDate) => {
         const date = new Date(utcDate);
 

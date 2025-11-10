@@ -23,7 +23,6 @@ export async function getFcmToken() {
             return;
         }
         const token = await messaging().getToken();
-        console.log('FCM token is: ', token);
         return token;
     } catch (err) {
         console.error('Error getting FCM token: ', err);
