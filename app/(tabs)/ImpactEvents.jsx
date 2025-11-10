@@ -75,7 +75,7 @@ const ImpactEvents = () => {
 
     if (errMsg) {
         return (
-            <Text style={{fontSize:24, fontWeight:'bold', textAlign:'center'}}>{errMsg}</Text>
+            <Text style={{fontSize:24, fontWeight:'bold', textAlign:'center', marginTop:'50%'}}>{errMsg}</Text>
         )
     }
     return (
@@ -206,7 +206,6 @@ const ImpactEvents = () => {
                             </View>)}
                             
                             <View style={styles.mapContainer}>
-                                <Text>map container hai ye bey</Text>
                                 <MapView
                                     style={styles.map}
                                     provider={Platform.OS === 'android' ? 'google':null }

@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Formik } from 'formik';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { signInValidationSchema } from "../../utils/authSchema";
+import { getFcmToken } from "../../utils/notifications";
 
 const SignIn = () => {
      const HandleSignIn = async(values, { resetForm }) => {
@@ -23,8 +24,32 @@ const SignIn = () => {
             );
 
             if (response.ok) {
+                const data = await response.json();
+                console.log(data);
                 alert(`Login Successful`);
                 resetForm();
+
+                const fcmToken = await getFcmToken();
+
+                if (fcmToken) {
+                    const tokenResponse = await fetch(
+                        "https://hackathon-connect-app-backend.onrender.com/set/token",
+                        {
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-App-Secret": "smartboyakriti",
+                            },
+                            body: JSON.stringify({
+                                firebaseToken: fcmToken
+                            })
+                        }
+                    );
+                    if (tokenResponse.ok) {
+                        const data = await tokenResponse.json();
+                        alert('Fcm token sent to backend', data);
+                    }
+                }
 
                 router.push("/Moments");
                 
