@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { Image } from 'expo-image';
 import { router } from "expo-router";
+import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -90,7 +91,35 @@ const HelpNearby = () => {
 
                 </View>
 
-                {helpers.map((info) => (
+                {loading || loadingPost ? (
+                    <View style={{ marginTop: '30%', alignItems: 'center' }}>
+                        <LottieView
+                            source={require('../../assets/images/loading.json')}
+                            autoPlay
+                            loop
+                            style={styles.animation}
+                        />
+                        <Text style={{ marginTop: 10, fontSize: 18 }}>Loading Posts...</Text>
+                    </View>
+                
+                ) : error ? (
+                    <View style={{ marginTop: '50%', alignItems: 'center' }}>
+                        <Text style={{ marginTop: 10,fontSize: 18 }}>Error: {error.message}</Text>
+                    </View>
+            
+                ) : helpers.length === 0 ? (
+                    <View style={{ marginTop: '30%', alignItems: 'center' }}>
+                        <LottieView
+                        source={require('../../assets/images/nothing-available.json')}
+                        autoPlay
+                        loop
+                        style={styles.animation}
+                        />
+                        <Text style={{ marginTop: 10, fontSize: 18 }}>No posts available.</Text>
+                    </View>
+            
+                ):
+                (helpers.map((info) => (
 
                     <View key={info.postUuid} style={styles.postContainer}>
 
@@ -140,8 +169,7 @@ const HelpNearby = () => {
                     </View>
 
                 ))
-                }
-                
+                )}
             </ScrollView>
             
         </SafeAreaView>
@@ -233,5 +261,9 @@ const styles = StyleSheet.create({
     map: {
         flex: 1,
         height:500
+    },
+    animation: {
+        width: 300,
+        height: 300,
     },
 })

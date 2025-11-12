@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
+import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -121,118 +122,151 @@ const Moments = () => {
 
                 </View>
                 
-                {data.map((info) => {
-                    const images = info?.media?.slice(0, 4) || [];
+                {loadingPost ? (
+                    <View style={{ marginTop: '30%', alignItems: 'center' }}>
+                        <LottieView
+                            source={require('../../assets/images/loading.json')}
+                            autoPlay
+                            loop
+                            style={styles.animation}
+                        />
+                        <Text style={{ marginTop: 10, fontSize: 18 }}>Loading Posts...</Text>
+                    </View>
+                
+                ) : error ? (
+                    <View style={{ marginTop: '50%', alignItems: 'center' }}>
+                        <Text style={{ marginTop: 10, fontSize: 18 }}>Error: {error}</Text>
+                    </View>
+            
+                ) : data.length === 0 ? (
+                    <View style={{ marginTop: '30%', alignItems: 'center' }}>
+                        <LottieView
+                            source={require('../../assets/images/nothing-available.json')}
+                            autoPlay
+                            loop
+                            style={styles.animation}
+                        />
+                        <Text style={{ marginTop: 10, fontSize: 18 }}>No posts available.</Text>
+                    </View>
+            
+                ) : (
+                    data.map((info) => {
+                        const images = info?.media?.slice(0, 4) || [];
 
-                    return (
-                        <View style={styles.postContainer} key={info.postUuid}>
+                        return (
+                            <View style={styles.postContainer} key={info.postUuid}>
                             
 
-                            <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
-                                <Image
-                                    source={img}
-                                    style={styles.pfp}
-                                />
-                                <View style={{ marginLeft:8}}>
-                                    <Text style={{ fontWeight: 500, fontSize: 18 }}>{info.name}</Text>
-                                    <Text style={{ fontSize: 14, color: '#5F6368' }}> {convertUTCtoIST(info.createdAt)}</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                                    <Image
+                                        source={img}
+                                        style={styles.pfp}
+                                    />
+                                    <View style={{ marginLeft: 8 }}>
+                                        <Text style={{ fontWeight: 500, fontSize: 18 }}>{info.name}</Text>
+                                        <Text style={{ fontSize: 14, color: '#5F6368' }}> {convertUTCtoIST(info.createdAt)}</Text>
+                                    </View>
                                 </View>
-                            </View>
                             
-                            <View>
-                                <Text style={{fontSize:16, fontWeight:800, marginBottom:4}}>
-                                    {info.title}
-                                </Text>
-                                <Text style={{fontSize:16, color:"#323232"}}>
-                                    {info.description}
-                                </Text>
+                                <View>
+                                    <Text style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>
+                                        {info.title}
+                                    </Text>
+                                    <Text style={{ fontSize: 16, color: "#323232" }}>
+                                        {info.description}
+                                    </Text>
                                 
-                                <View style={styles.postImgContent}>
+                                    <View style={styles.postImgContent}>
                                 
-                                    {/* 1 Image */}
-                                    {images.length === 1 && (
-                                        <Image
-                                        source={{ uri: images[0] }}
-                                        style={{ width: "100%", height: 250, borderRadius: 8,borderWidth: 1, borderColor: "#ccc", }}
-                                        />
-                                    )}
-
-                                    {/* 2 Images */}
-                                    {images.length === 2 && (
-                                        <View style={{ flexDirection: "row", gap: 8 }}>
-                                        {images.map((img, i) => (
+                                        {/* 1 Image */}
+                                        {images.length === 1 && (
                                             <Image
-                                            key={i}
-                                            source={{ uri: img }}
-                                            style={{ width: "48%", height: 200, borderRadius: 8,borderWidth: 1,
-                                            borderColor: "#ccc" }}
+                                                source={{ uri: images[0] }}
+                                                style={{ width: "100%", height: 250, borderRadius: 8, borderWidth: 1, borderColor: "#ccc", }}
                                             />
-                                        ))}
-                                        </View>
-                                    )}
+                                        )}
 
-                                    {/* 3 Images */}
-                                    {images.length === 3 && (
-                                        <View style={{ flexDirection: "row", gap: 8 }}>
-                                        <Image source={{ uri: images[0] }} style={{ width: "60%", height: 250, borderRadius: 8,borderWidth: 1,
-                                        borderColor: "#ccc", }} />
+                                        {/* 2 Images */}
+                                        {images.length === 2 && (
+                                            <View style={{ flexDirection: "row", gap: 8 }}>
+                                                {images.map((img, i) => (
+                                                    <Image
+                                                        key={i}
+                                                        source={{ uri: img }}
+                                                        style={{
+                                                            width: "48%", height: 200, borderRadius: 8, borderWidth: 1,
+                                                            borderColor: "#ccc"
+                                                        }}
+                                                    />
+                                                ))}
+                                            </View>
+                                        )}
 
-                                        <View style={{ flex: 1, gap: 8 }}>
-                                            <Image source={{ uri: images[1] }} style={{ height: 120, borderRadius: 8,borderWidth: 1,
-                                            borderColor: "#ccc", }} />
-                                            <Image source={{ uri: images[2] }} style={{ height: 120, borderRadius: 8,borderWidth: 1,
-                                            borderColor: "#ccc", }} />
-                                        </View>
-                                        </View>
-                                    )}
+                                        {/* 3 Images */}
+                                        {images.length === 3 && (
+                                            <View style={{ flexDirection: "row", gap: 8 }}>
+                                                <Image source={{ uri: images[0] }} style={{
+                                                    width: "60%", height: 250, borderRadius: 8, borderWidth: 1,
+                                                    borderColor: "#ccc",
+                                                }} />
 
-                                    {/* 4 Images */}
-                                    {images.length === 4 && (
-                                        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                                        {images.map((img, i) => (
-                                            <Image
-                                            key={i}
-                                            source={{ uri: img }}
-                                            style={{
-                                                width: "48%",
-                                                height: 160,
-                                                borderRadius: 8,
-                                                borderWidth: 1,
-                                                borderColor: "#ccc"}}
-                                            />
-                                        ))}
-                                        </View>
-                                    )}
+                                                <View style={{ flex: 1, gap: 8 }}>
+                                                    <Image source={{ uri: images[1] }} style={{
+                                                        height: 120, borderRadius: 8, borderWidth: 1,
+                                                        borderColor: "#ccc",
+                                                    }} />
+                                                    <Image source={{ uri: images[2] }} style={{
+                                                        height: 120, borderRadius: 8, borderWidth: 1,
+                                                        borderColor: "#ccc",
+                                                    }} />
+                                                </View>
+                                            </View>
+                                        )}
+
+                                        {/* 4 Images */}
+                                        {images.length === 4 && (
+                                            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                                                {images.map((img, i) => (
+                                                    <Image
+                                                        key={i}
+                                                        source={{ uri: img }}
+                                                        style={{
+                                                            width: "48%",
+                                                            height: 160,
+                                                            borderRadius: 8,
+                                                            borderWidth: 1,
+                                                            borderColor: "#ccc"
+                                                        }}
+                                                    />
+                                                ))}
+                                            </View>
+                                        )}
                                 
                                     
+                                    </View>
+                                    {/* resolved already */}
                                 </View>
-                                {/* resolved already */}
-                            </View>
                             
-                            <View style={{
-                                flexDirection: "row",
-                                gap:40,
-                                marginTop: 20,
-                                paddingHorizontal: 4,
-                                justifyContent:'flex-end'
-                            }}>
+                                <View style={{
+                                    flexDirection: "row",
+                                    gap: 40,
+                                    marginTop: 20,
+                                    paddingHorizontal: 4,
+                                    justifyContent: 'flex-end'
+                                }}>
                                
-                                <TouchableOpacity
-                                    onPress={() => handleLike(info.postUuid, info.interested)}
-                                    style={{ flexDirection: "row", alignItems: "center", gap:6 }}>
-                                    <Ionicons name="heart-outline" size={24} color="#ccc" />
-                                    {info.interestedCount > 0 && <Text style={{ color: "#B0B0B0" }}>{info.interestedCount }</Text>}
-                                </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={() => handleLike(info.postUuid, info.interested)}
+                                        style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                                        <Ionicons name="heart-outline" size={24} color="#ccc" />
+                                        {info.interestedCount > 0 && <Text style={{ color: "#B0B0B0" }}>{info.interestedCount}</Text>}
+                                    </TouchableOpacity>
                             
+                                </View>
                             </View>
-                        </View>
-                )})}
-
-                {/* <TouchableOpacity
-                    style={{ marginTop: 50, marginHorizontal: 20 }}
-                    onPress={sendHelpRequest}>
-                    <Text>send location</Text>
-                </TouchableOpacity> */}
+                        )
+                    }))
+                }
             </ScrollView>
             
         </SafeAreaView>
@@ -324,5 +358,9 @@ const styles = StyleSheet.create({
     image: {
         flex: 1,
         height:400
+    },
+    animation: {
+        width: 300,
+        height: 300,
     },
 })

@@ -7,7 +7,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import useLocation from '../../utils/hooks/useLocation';
-
+import LottieView from "lottie-react-native";
 //Hangouts & Events
 
 const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/retrieve/impactevents';
@@ -101,17 +101,28 @@ const ImpactEvents = () => {
                 </View>
 
                 {loading || loadingPost ? (
-                    <View style={{ marginTop: '50%', alignItems: 'center' }}>
-                        <ActivityIndicator size="large" color="#007bff" />
-                        <Text style={{ marginTop: 10 }}>Loading events...</Text>
+                    <View style={{ marginTop: '30%', alignItems: 'center' }}>
+                        <LottieView
+                            source={require('../../assets/images/loading.json')}
+                            autoPlay
+                            loop
+                            style={styles.animation}
+                        />
+                        <Text style={{ marginTop: 10,fontSize: 18 }}>Loading events...</Text>
                     </View>
                 ): error? (
                     <View style={{ marginTop: '50%', alignItems: 'center' }}>
-                        <Text style={{ marginTop: 10 }}>Error: {error}</Text>
+                        <Text style={{ marginTop: 10 }}>Error: {error.message}</Text>
                     </View>
                 ): data.length === 0? (
-                    <View style={{ marginTop: '50%', alignItems: 'center' }}>
-                        <Text style={{ marginTop: 10 }}>No impact events nearby.</Text>
+                    <View style={{ marginTop: '30%', alignItems: 'center' }}>
+                        <LottieView
+                            source={require('../../assets/images/nothing-available.json')}
+                            autoPlay
+                            loop
+                            style={styles.animation}
+                        />
+                        <Text style={{ marginTop: 10,fontSize: 18 }}>No events nearby.</Text>
                     </View>
                 ) : (data.map((info) => {
                     
@@ -346,5 +357,9 @@ const styles = StyleSheet.create({
     map: {
         flex: 1,
         height:500
+    },
+        animation: {
+        width: 300,
+        height: 300,
     },
 })

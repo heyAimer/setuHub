@@ -2,14 +2,13 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { Image } from 'expo-image';
 import { router, useNavigation } from "expo-router";
+import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import useLocation from '../../utils/hooks/useLocation';
-import { ActivityIndicator } from "react-native";
-import LottieView from "lottie-react-native";
 
 const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/retrieve/bloodemergency';
 
