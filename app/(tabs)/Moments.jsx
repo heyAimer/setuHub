@@ -122,7 +122,7 @@ const Moments = () => {
                 </View>
                 
                 {data.map((info) => {
-                    const images = info.media.slice(0, 4) || [];
+                    const images = info?.media?.slice(0, 4) || [];
 
                     return (
                         <View style={styles.postContainer} key={info.postUuid}>
