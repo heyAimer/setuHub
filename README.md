@@ -58,3 +58,12 @@ Connecting people who care.” ✅ Simple, human, mission-driven
 “Bridging lives, one help at a time.” ✅ Emotional, symbolic
 
 “Your safety, our network.” ✅ Strong, action-oriented
+
+##### uninstall app
+    adb uninstall <your.package.name>
+##### npx expo run:android
+   this rebuild dev or install prod apk
+##### To install prod apk
+   cd android
+   gradlew clean(clean old builds)
+   gradlew assembleRelease

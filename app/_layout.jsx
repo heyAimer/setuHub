@@ -4,6 +4,28 @@ import { requestUserPermission, setupbackgroundNotificationListener, setupForegr
 import messaging from '@react-native-firebase/messaging';
 import { Provider as PaperProvider, MD3LightTheme as DefaultTheme } from "react-native-paper";
 
+// 🚀 Define deep links here (EXPO ROUTER WAY)
+export const unstable_settings = {
+  linking: {
+    prefixes: ["setuhub://", "https://setuhub.io"],
+
+    config: {
+      screens: {
+        "(tabs)": {
+          screens: {
+            HelpNearby: "help",
+            ImpactEvents: "events",
+            Moments: "moments",
+            UrgentHelp: "urgent",
+            Profile: "profile"
+          }
+        }
+      }
+    }
+  }
+};
+
+
 export default function RootLayout() {
 
   useEffect(() => {

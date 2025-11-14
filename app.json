@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "setHub",
-    "slug": "setHub",
+    "name": "setuHub",
+    "slug": "setuHub",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "sethub",
+    "scheme": "setuhub",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "setHub uses your location to show and share nearby help requests."
+        "NSLocationWhenInUseUsageDescription": "setuHub uses your location to show and share nearby help requests."
       },
       "config": {
         "googleMapsApiKey": "googleMapsApiKey"
