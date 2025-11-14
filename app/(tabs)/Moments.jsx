@@ -4,13 +4,13 @@ import { router, useFocusEffect } from 'expo-router';
 import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 
 const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/retrieve/moments?latitude=30.34&longitude=78.40';
 
 const Moments = () => {
-
+    const insets = useSafeAreaInsets();
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
@@ -84,7 +84,10 @@ const Moments = () => {
             setError(null);
             
         } catch (err) {
-            setError(err.message);
+            const jsonPart = err.message.split(": ")[1];  
+            const parsed = JSON.parse(jsonPart);
+            const msg = parsed.message; 
+            setError(msg);
         } finally {
             setLoadingPost(false)
         }
@@ -98,7 +101,7 @@ const Moments = () => {
     )
     
     return (
-        <SafeAreaView style={styles.container}> 
+        <View style={[styles.container , {paddingTop: insets.top}]}> 
             
             <Text style={styles.heading}>Moments</Text>
             
@@ -135,7 +138,7 @@ const Moments = () => {
                 
                 ) : error ? (
                     <View style={{ marginTop: '50%', alignItems: 'center' }}>
-                        <Text style={{ marginTop: 10, fontSize: 18 }}>Error: {error}</Text>
+                            <Text style={{ marginTop: 10, fontSize: 18 }}>{error}</Text>
                     </View>
             
                 ) : data.length === 0 ? (
@@ -269,7 +272,7 @@ const Moments = () => {
                 }
             </ScrollView>
             
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -278,8 +281,7 @@ export default Moments
 const styles = StyleSheet.create({
     container: {
         flex:1,
-        backgroundColor: "#F8FAFC",
-        paddingTop:10
+        backgroundColor: "#F8FAFC"
     },
     heading: {
         fontSize: 24,
@@ -288,7 +290,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         width: '100%',
         textAlign:'center',
-        paddingBottom: 10,
+        paddingVertical: 15,
         color: "#1E1E1E",
         marginBottom:20,
     },
@@ -302,7 +304,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#EDF4FF',
-        paddingVertical: 20,
+        paddingVertical: 15,
         paddingHorizontal: 15,
         borderRadius: 6,
         borderWidth: 1,

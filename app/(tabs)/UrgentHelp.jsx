@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const list = [
     {
@@ -21,8 +21,9 @@ const list = [
     }
 ]
 const UrgentHelp = () => {
+    const insets = useSafeAreaInsets();
     return (
-        <SafeAreaView style={styles.container}> 
+        <View style={[styles.container , {paddingTop: insets.top}]}> 
             <Text style={styles.heading}>Help Now</Text>      
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
@@ -64,7 +65,7 @@ const UrgentHelp = () => {
                     </View>))
                 }
             </ScrollView>
-        </SafeAreaView>
+        </View>
   )
 }
 
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         width: '100%',
         textAlign:'center',
-        paddingBottom: 10,
+        paddingVertical: 15,
         color: "#1E1E1E",
         marginBottom:20,
     },

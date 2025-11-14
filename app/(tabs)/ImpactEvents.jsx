@@ -1,18 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from "expo-router";
+import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import useLocation from '../../utils/hooks/useLocation';
-import LottieView from "lottie-react-native";
 //Hangouts & Events
 
 const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/retrieve/impactevents';
 
 const ImpactEvents = () => {
+    const insets = useSafeAreaInsets();
     const { latitude, longitude, errMsg, location, loading } = useLocation();
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
@@ -34,6 +35,7 @@ const ImpactEvents = () => {
     };
 
     const fetchEvents = async () => {
+        if (loadingPost) return;
         if (loading) return;
         if (latitude == null || longitude == null) return;
 
@@ -56,20 +58,21 @@ const ImpactEvents = () => {
 
             const data = await response.json();
             setData(data.data || []);
-            setError(null);
 
         } catch (err) {
-            setError(err.message);
+            const jsonPart = err.message.split(": ")[1];  
+            const parsed = JSON.parse(jsonPart);
+            const msg = parsed.message; 
+            setError(msg);
         } finally {
             setLoadingPost(false)
         }
     }
     
     useFocusEffect(
-        
         useCallback(() => {
             fetchEvents()
-        }, [latitude, longitude,loading])
+        }, [latitude, longitude])
     );
 
     if (errMsg) {
@@ -78,7 +81,7 @@ const ImpactEvents = () => {
         )
     }
     return (
-        <SafeAreaView style={styles.container}> 
+        <View style={[styles.container , {paddingTop: insets.top}]}> 
             
             <Text style={styles.heading}>Hangouts & Events</Text>
 
@@ -112,7 +115,7 @@ const ImpactEvents = () => {
                     </View>
                 ): error? (
                     <View style={{ marginTop: '50%', alignItems: 'center' }}>
-                        <Text style={{ marginTop: 10 }}>Error: {error.message}</Text>
+                        <Text style={{ marginTop: 10 }}>{error}</Text>
                     </View>
                 ): data.length === 0? (
                     <View style={{ marginTop: '30%', alignItems: 'center' }}>
@@ -259,7 +262,7 @@ const ImpactEvents = () => {
                 )}))}
             </ScrollView>
             
-        </SafeAreaView>
+        </View>
     )
 
 }
@@ -269,8 +272,7 @@ export default ImpactEvents
 const styles = StyleSheet.create({
     container: {
         flex:1,
-        backgroundColor: "#F8FAFC",
-        paddingTop:10
+        backgroundColor: "#F8FAFC"
     },
     heading: {
         fontSize: 24,
@@ -279,7 +281,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         width: '100%',
         textAlign:'center',
-        paddingBottom: 10,
+        paddingVertical: 15,
         color: "#1E1E1E",
         marginBottom:20,
     },

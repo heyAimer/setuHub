@@ -2,17 +2,18 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { Image } from 'expo-image';
 import { router, useNavigation } from "expo-router";
+import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import useLocation from '../../utils/hooks/useLocation';
-import LottieView from "lottie-react-native";
 
 const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/retrieve/missingpeople';
 
 const PeopleMissing = () => {
+    const insets = useSafeAreaInsets();
     const navigation = useNavigation();
     const { latitude, longitude, errMsg, location, loading } = useLocation();
 
@@ -24,7 +25,7 @@ const PeopleMissing = () => {
         useCallback(() => {
             let cancelled = false;
             const fetchHelpNearby = async () => {
-                
+                if (loadingPost) return;
                 if (loading) return;
                 if (errMsg) {
                     setError('Location error: ' + errMsg)
@@ -65,11 +66,11 @@ const PeopleMissing = () => {
             return () => {
                 cancelled = true
             }
-        }, [latitude, longitude, errMsg, location, loading])
+        }, [latitude, longitude])
     );
 
     return (
-        <SafeAreaView style={styles.container}> 
+        <View style={[styles.container , {paddingTop: insets.top}]}> 
             <View style={styles.topBar}>
 
                 <MaterialIcons
@@ -265,7 +266,7 @@ const PeopleMissing = () => {
                 
             </ScrollView>
             
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -275,13 +276,12 @@ const styles = StyleSheet.create({
     container: {
         flex:1,
         backgroundColor: "#F8FAFC",
-        paddingTop:10
     },
     topBar: {
         borderBottomColor: '#E0E0E0',
         borderBottomWidth: 1,
         width: '100%',
-        paddingBottom: 10,
+        paddingVertical: 15,
         color: "#1E1E1E",
         marginBottom: 20,
         flexDirection: 'row',

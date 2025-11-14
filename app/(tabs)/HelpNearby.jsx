@@ -6,13 +6,14 @@ import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import useLocation from '../../utils/hooks/useLocation';
 
 const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/retrieve/helpnearby';
 
 const HelpNearby = () => {
+    const insets = useSafeAreaInsets();
     const { latitude, longitude, errMsg, location, loading } = useLocation();
 
     const [loadingPost, setLoadingPost] = useState(false);
@@ -23,7 +24,7 @@ const HelpNearby = () => {
         useCallback(() => {
             let cancelled = false;
             const fetchHelpNearby = async () => {
-                
+                if (loadingPost) return;
                 if (loading) return;
                 if (errMsg) {
                     setError('Location error: ' + errMsg)
@@ -55,7 +56,10 @@ const HelpNearby = () => {
                     }
                     
                 } catch (err) {
-                    if (!cancelled) setError(err.message)
+                    const jsonPart = err.message.split(": ")[1];  
+                    const parsed = JSON.parse(jsonPart);
+                    const msg = parsed.message; 
+                    if (!cancelled) setError(msg);
                 } finally {
                     if (!cancelled) setLoadingPost(false)
                 }
@@ -65,11 +69,11 @@ const HelpNearby = () => {
             return () => {
                 cancelled = true
             }
-        }, [latitude, longitude, errMsg, location, loading])
+        }, [latitude, longitude])
     );
 
     return (
-        <SafeAreaView style={styles.container}> 
+        <View style={[styles.container , {paddingTop: insets.top}]}> 
             
             <Text style={styles.heading}>Nearby Support</Text>
 
@@ -103,8 +107,14 @@ const HelpNearby = () => {
                     </View>
                 
                 ) : error ? (
-                    <View style={{ marginTop: '50%', alignItems: 'center' }}>
-                        <Text style={{ marginTop: 10,fontSize: 18 }}>Error: {error.message}</Text>
+                        <View style={{ marginTop: '30%', alignItems: 'center' }}>
+                        <LottieView
+                            source={require('../../assets/images/profilePic3.json')}
+                            autoPlay
+                            loop
+                            style={styles.animation}
+                        />
+                        <Text style={{ marginTop: 10,fontSize: 18, fontWeight:800 }}>{error}</Text>
                     </View>
             
                 ) : helpers.length === 0 ? (
@@ -172,7 +182,7 @@ const HelpNearby = () => {
                 )}
             </ScrollView>
             
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -182,7 +192,6 @@ const styles = StyleSheet.create({
     container: {
         flex:1,
         backgroundColor: "#F8FAFC",
-        paddingTop:10
     },
     heading: {
         fontSize: 24,
@@ -191,7 +200,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         width: '100%',
         textAlign:'center',
-        paddingBottom: 10,
+        paddingVertical: 15,
         color: "#1E1E1E",
         marginBottom:20,
     },
@@ -205,7 +214,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#EDF4FF',
-        paddingVertical: 20,
+        paddingVertical: 15,
         paddingHorizontal: 15,
         borderRadius: 6,
         borderWidth: 1,

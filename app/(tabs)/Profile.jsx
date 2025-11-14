@@ -6,7 +6,7 @@ import { router, useFocusEffect } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 
 const ENDPOINT = `https://hackathon-connect-app-backend.onrender.com/profile`;
@@ -20,7 +20,7 @@ const bars = [
   { id: "dateOfBirth", label: "Date of Birth", icon: "cake", editable: false },
 ];
 const Profile = () => {
-
+    const insets = useSafeAreaInsets();
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
@@ -139,7 +139,7 @@ const Profile = () => {
     )
 
     return (
-        <SafeAreaView style={styles.container}> 
+        <View style={[styles.container , {paddingTop: insets.top}]}> 
             {data && (<View  style={{ flex: 1 }}>
                 <View style={{alignItems:'center',borderBottomColor: '#E0E0E0',borderBottomWidth: 1,paddingVertical:40}}>
                     <View style={styles.imageWrapper}>
@@ -208,7 +208,7 @@ const Profile = () => {
                     
                 </ScrollView>
             </View>)}
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         width: '100%',
         textAlign:'center',
-        paddingBottom: 10,
+        paddingVertical: 15,
         color: "#1E1E1E",
         marginBottom:20,
     },

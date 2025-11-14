@@ -5,7 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import { router, useNavigation } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 import useLocation from '../../utils/hooks/useLocation';
@@ -13,7 +13,7 @@ import useLocation from '../../utils/hooks/useLocation';
 const ENDPOINT = `https://hackathon-connect-app-backend.onrender.com/request/create/missingpeople`;
 
 const CreateBloodEmergencyPost = () => {
-
+    const insets = useSafeAreaInsets();
     const age = Array.from({ length: 120 }, (_, i) => (i + 1).toString());
     
     const gender = ['Male', 'Female', 'Others'];
@@ -147,7 +147,7 @@ const CreateBloodEmergencyPost = () => {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={[styles.container , {paddingTop: insets.top}]}>
             <View style={styles.topBar}>
                 <MaterialIcons
                     name="arrow-back-ios"
@@ -386,7 +386,7 @@ const CreateBloodEmergencyPost = () => {
                 </View>
 
             </ScrollView>
-        </SafeAreaView>
+        </View>
         
     )
     
@@ -398,13 +398,12 @@ const styles = StyleSheet.create({
     container: {
         flex:1,
         backgroundColor: "#F8FAFC",
-        paddingTop:10
     },
     topBar: {
         borderBottomColor: '#E0E0E0',
         borderBottomWidth: 1,
         width: '100%',
-        paddingBottom: 10,
+        paddingVertical: 15,
         color: "#1E1E1E",
         marginBottom: 20,
         flexDirection: 'row',

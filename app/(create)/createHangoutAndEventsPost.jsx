@@ -8,11 +8,12 @@ import { router, useNavigation } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 
 const CreateHangoutAndEventsPost = () => {
+    const insets = useSafeAreaInsets();
     const maxCharsInDesc = 280;
     const maxCharsInTitle = 50;
     const navigation = useNavigation();
@@ -181,7 +182,7 @@ const CreateHangoutAndEventsPost = () => {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={[styles.container , {paddingTop: insets.top}]}>
             <View style={styles.topBar}>
                 <MaterialIcons
                     name="arrow-back-ios"
@@ -443,7 +444,7 @@ const CreateHangoutAndEventsPost = () => {
                 </View>
 
             </ScrollView>
-        </SafeAreaView>
+        </View>
         
     )
     
@@ -455,13 +456,12 @@ const styles = StyleSheet.create({
       container: {
         flex:1,
         backgroundColor: "#F8FAFC",
-        paddingTop:10
     },
     topBar: {
         borderBottomColor: '#E0E0E0',
         borderBottomWidth: 1,
         width: '100%',
-        paddingBottom: 10,
+        paddingVertical: 15,
         color: "#1E1E1E",
         marginBottom: 20,
         flexDirection: 'row',
