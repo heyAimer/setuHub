@@ -8,6 +8,9 @@
     "scheme": "setuhub",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "extra":{
+      "environment":"dev" // prod
+    },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {

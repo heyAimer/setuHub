@@ -1,20 +1,24 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import Constants from "expo-constants";
 import { router } from 'expo-router';
 import { Formik } from 'formik';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { signInValidationSchema } from "../../utils/authSchema";
+import { BASE_URL } from "../../utils/constants/api";
 import { getFcmToken } from "../../utils/notifications";
 
+const APP_ENV = Constants.expoConfig?.extra?.environment;
 const SignIn = () => {
      const HandleSignIn = async(values, { resetForm }) => {
          console.log("signin clicked")
         try {
-            const response = await fetch("https://hackathon-connect-app-backend.onrender.com/login",
+            const response = await fetch(`${BASE_URL}/login`,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "X-App-Secret": "smartboyakriti"
+                        "X-App-Secret": "smartboyakriti",
+                        "X-App-Environment":APP_ENV
                     },
                     body: JSON.stringify({
                         email: values.email,

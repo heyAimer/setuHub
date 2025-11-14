@@ -1,13 +1,13 @@
+import messaging from '@react-native-firebase/messaging';
 import { Stack } from "expo-router";
 import { useEffect } from "react";
+import { MD3LightTheme as DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 import { requestUserPermission, setupbackgroundNotificationListener, setupForegroundNotificationListener } from '../utils/notifications';
-import messaging from '@react-native-firebase/messaging';
-import { Provider as PaperProvider, MD3LightTheme as DefaultTheme } from "react-native-paper";
 
 // 🚀 Define deep links here (EXPO ROUTER WAY)
 export const unstable_settings = {
   linking: {
-    prefixes: ["setuhub://", "https://setuhub.io"],
+    prefixes: ["setuhub://", "https://setuhub.io"], // dev build, prod(universal link)
 
     config: {
       screens: {
@@ -69,3 +69,12 @@ export default function RootLayout() {
     </PaperProvider>
   );
 }
+
+
+// const screenLinks = {
+//   HelpNearby: "setuhub://help",
+//   ImpactEvents: "setuhub://events",
+//   Moments: "setuhub://moments",
+//   UrgentHelp: "setuhub://urgent",
+//   Profile: "setuhub://profile"
+// };
