@@ -140,7 +140,7 @@ const Profile = () => {
 
     return (
         <SafeAreaView style={styles.container}> 
-            {data && <View>
+            {data && (<View  style={{ flex: 1 }}>
                 <View style={{alignItems:'center',borderBottomColor: '#E0E0E0',borderBottomWidth: 1,paddingVertical:40}}>
                     <View style={styles.imageWrapper}>
                         {uploading ? (
@@ -207,7 +207,7 @@ const Profile = () => {
                     </TouchableOpacity>
                     
                 </ScrollView>
-            </View>}
+            </View>)}
         </SafeAreaView>
     )
 }
