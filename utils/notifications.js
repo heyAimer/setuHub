@@ -4,6 +4,7 @@ import * as Notifications from 'expo-notifications';
 import { Alert, Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect } from 'react';
+import { router } from 'expo-router';
 
 // ────── PERMISSION & TOKEN ──────
 export async function requestUserPermission() {
@@ -51,7 +52,8 @@ export function setupForegroundNotificationListener() {
 export function setupBackgroundNotificationListener() {
   return messaging().setBackgroundMessageHandler(async (remoteMessage) => {
     console.log("📩 BACKGROUND FCM RECEIVED:", JSON.stringify(remoteMessage, null, 2));
-    const { title, body, data } = remoteMessage.notification || {};
+    const { title, body } = remoteMessage.notification || {};
+    const data = remoteMessage.data || {tab:'helpnearby'}
     await Notifications.scheduleNotificationAsync({
       content: {
         title,
@@ -71,7 +73,7 @@ export function useNotificationTapHandler() {
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
       const tab = response.notification.request.content.data?.tab || 'help';
       const screen = mapTabName(tab);
-      navigation.navigate('(tabs)', { screen });
+      router.push(`/(tabs)/${screen}`)
     });
 
     return () => subscription.remove();
