@@ -18,7 +18,6 @@ const ImpactEvents = () => {
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
     const [hasLoaded, setHasLoaded] = useState(false);
-
     const convertUTCtoIST = (utcDate) => {
         const date = new Date(utcDate);
 

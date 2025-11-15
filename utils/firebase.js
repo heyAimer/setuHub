@@ -1,5 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { getApp, initializeApp } from '@react-native-firebase/app';
+import { firebase } from '@react-native-firebase/app';
 console.log('Firebase module loading…');
 const firebaseConfig = {
   apiKey: "AIzaSyBp-i_4qe1X8ee6RSuUiUAolFcM5mMAswY",
@@ -12,20 +12,5 @@ const firebaseConfig = {
   measurementId: "G-ELKWZKC2R3"
 };
 
-// Initialize Firebase
-let app;
-try {
-  app = initializeApp(firebaseConfig);
-} catch (e) {
-  const err = e && typeof e === 'object' ? e : { message: String(e) };
 
-  if (err.message?.includes('already exists') || err.code === 'app/duplicate-app') {
-    app = getApp();
-    console.log('firebase already exist ')
-  } else {
-    console.error('Firebase initialization error:', err);
-    throw err;
-  }
-}
-
-export default app;
+export const app = firebase.app();

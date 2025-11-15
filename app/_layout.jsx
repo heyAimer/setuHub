@@ -2,14 +2,9 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { MD3LightTheme as DefaultTheme, Provider as PaperProvider } from "react-native-paper";
-
-//initialize firebase firest
-import '../utils/firebase';
-
 //import notification utils 
-import { requestUserPermission, setupbackgroundNotificationListener, setupForegroundNotificationListener } from '../utils/notifications';
-
-import messaging from '@react-native-firebase/messaging';
+import { requestUserPermission, setupBackgroundNotificationListener, setupForegroundNotificationListener,useNotificationTapHandler, } from '../utils/notifications';
+import * as Notifications from 'expo-notifications';
 import { StatusBar } from "react-native";
 
 // 🚀 Define deep links here (EXPO ROUTER WAY)
@@ -33,32 +28,25 @@ export const linking  = {
   }
 };
 
-
 export default function RootLayout() {
 
-  useEffect(() => {
-    requestUserPermission();
-    
-    const unsubscribe = setupForegroundNotificationListener();
-    setupbackgroundNotificationListener();
+  useNotificationTapHandler();
 
-    const unsubscribeOpened = messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('App opened from background by notification:', remoteMessage);
+  useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      }),
     });
 
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          if(remoteMessage) console.log('App opened from quit by notification:', remoteMessage);
-        }
-      });
+    requestUserPermission();
+    setupForegroundNotificationListener();
+    setupBackgroundNotificationListener();
 
-    return () => {
-      unsubscribe?.();
-      unsubscribeOpened?.()
-    };
   }, []);
+
 
   const theme = {
     ...DefaultTheme,

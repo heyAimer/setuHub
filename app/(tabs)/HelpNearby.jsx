@@ -14,7 +14,6 @@ import useLocation from '../../utils/hooks/useLocation';
 const HelpNearby = () => {
     const insets = useSafeAreaInsets();
     const { latitude, longitude, errMsg, location, loading } = useLocation();
-
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
     const [helpers, setHelpers] = useState([]);

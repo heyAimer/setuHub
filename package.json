@@ -1,5 +1,5 @@
 {
-  "name": "setuHub",
+  "name": "setuhub",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -24,6 +24,7 @@
     "axios": "^1.13.1",
     "dotenv": "^17.2.3",
     "expo": "54.0.23",
+    "expo-build-properties": "~1.0.9",
     "expo-constants": "~18.0.10",
     "expo-dev-client": "~6.0.17",
     "expo-device": "~8.0.9",
