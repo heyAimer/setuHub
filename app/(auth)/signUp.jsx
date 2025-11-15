@@ -2,14 +2,17 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import { Formik } from 'formik';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { signUpValidationSchema } from "../../utils/authSchema";
+import { BASE_URL } from '../../utils/constants/api';
 
 const SignUp = () => {
-    
+    const insets = useSafeAreaInsets();
+
     const HandleSignUp = async (values, { resetForm }) => {
 
         try {
-            const response = await fetch("https://hackathon-connect-app-backend.onrender.com/signup",
+            const response = await fetch(`${BASE_URL}/signup`,
                 {
                     method: "POST",
                     headers: {
@@ -54,16 +57,24 @@ const SignUp = () => {
     }
     
     return (
-        <View style={styles.view}>
-            <ScrollView contentContainerStyle={{ height: "100%" }}>
-                <TouchableOpacity
-                style={{ marginTop: 50, marginHorizontal: 20 }}
+        <View style={[styles.container, { paddingTop: insets.top }]}> 
+            <TouchableOpacity
+                style={{paddingHorizontal:16, paddingTop:14}}
                 onPress={() => router.push("/")}>
-                    <Text>back</Text>
-                </TouchableOpacity>
-                
-                <View style={styles.container}>
+                    <MaterialIcons
+                    name="arrow-back-ios"
+                    size={22} color="black"
+                    onPress={() => navigation.goBack()}
+                />
+            </TouchableOpacity>
+            <ScrollView contentContainerStyle={{ height: "100%" }}>
+                <View style={styles.container2}>
 
+                    <View>
+                        <Text style={[styles.heading, {fontSize:32}]}>Create an Account</Text>
+                        <Text style={[styles.heading, {fontSize:24, marginTop:6, color:'#494949'}]}>Become a Lifeline✨</Text>
+                    </View>
+                   
                     <View style = {styles.fieldsContainer}>
                         <Formik
                         initialValues={{username:"", email: "", password: "",confirmPassword: "" }}
@@ -81,8 +92,8 @@ const SignUp = () => {
                                         
                                             style={styles.inputField}
                                             placeholder="Enter your username"
-                                            placeholderTextColor="
-                                            #828181"
+                                            placeholderTextColor=
+                                            "#828181"
                                             
                                             keyboardType="default"
                                             onChangeText={handleChange("username")}
@@ -126,7 +137,9 @@ const SignUp = () => {
                                         <MaterialIcons name="lock" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
 
                                     <TextInput
-                                        style={styles.inputField}
+                                        style={[styles.inputField, { fontFamily: undefined, color: '#000' }]}
+                                        placeholderTextColor=
+                                        "#828181"
                                         secureTextEntry
                                         placeholder="Enter your password"
                                         onChangeText={handleChange("password")}
@@ -146,7 +159,9 @@ const SignUp = () => {
 
                                         <TextInput
                                         
-                                            style={styles.inputField}
+                                            style={[styles.inputField, { fontFamily: undefined, color: '#000' }]}
+                                            placeholderTextColor=
+                                            "#828181"
                                             secureTextEntry
                                             placeholder="Re-enter your password"
                                             onChangeText={handleChange("confirmPassword")}
@@ -161,7 +176,7 @@ const SignUp = () => {
                                     <Text style={styles.signUpText}>Verify email</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
-                                    style={{"flexDirection": "row", gap: 6, "marginTop": 14, "justifyContent": "center"}}
+                                    style={{"flexDirection": "row", gap: 6, "marginTop": 20, "justifyContent": "center"}}
                                     onPress={() => router.push("/signIn")}>
                                         <Text>Already a User?</Text>
                                         <Text style={styles.signInText}>Sign In</Text>
@@ -185,15 +200,19 @@ export default SignUp;
 
 const styles = StyleSheet.create({
 
-    view: {
-        backgroundColor: "#F8FAFC",   
-        flex:1,
-    },
     container: {
         flex:1,
-        justifyContent: "center",
-        alignItems: 'center',
-        marginHorizontal:20,
+        backgroundColor: "#F8FAFC",
+    },
+    container2: {
+        justifyContent: 'center',
+        flex: 1,
+        marginHorizontal: 20,
+        gap:100
+    },
+    heading: {
+        fontWeight: "bold",
+        textAlign: "center",
     },
     inputFieldContainer: {
         flexDirection: 'row',
@@ -203,7 +222,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 4,
         backgroundColor: "#FEFEFE",
-
+        marginBottom:10,
+        color:'#000'
     },
     fieldsContainer: {
         width:'100%'

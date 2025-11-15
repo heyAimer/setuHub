@@ -3,9 +3,9 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { MD3LightTheme as DefaultTheme, Provider as PaperProvider } from "react-native-paper";
 //import notification utils 
-import { requestUserPermission, setupBackgroundNotificationListener, setupForegroundNotificationListener,useNotificationTapHandler, } from '../utils/notifications';
 import * as Notifications from 'expo-notifications';
 import { StatusBar } from "react-native";
+import { requestUserPermission, setupBackgroundNotificationListener, setupForegroundNotificationListener, useNotificationTapHandler, } from '../utils/notifications';
 
 // 🚀 Define deep links here (EXPO ROUTER WAY)
 export const linking  = {
@@ -16,10 +16,10 @@ export const linking  = {
     screens: {
       "(tabs)": {
         screens: {
-          HelpNearby: "help",
-          ImpactEvents: "events",
+          HelpNearby: "helpnearby",
+          ImpactEvents: "impactevents",
           Moments: "moments",
-          UrgentHelp: "urgent",
+          UrgentHelp: "urgenthelp",
           Profile: "profile",
           index: "", 
         }

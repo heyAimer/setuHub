@@ -112,16 +112,11 @@ export default function index() {
               <Text style={styles.signUpText}>Sign Up</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => router.push("/Moments")}>
-              <Text style={styles.guestUserText}>Guest User</Text>
-            </TouchableOpacity>
+            <Text style={{textAlign:'center', marginTop:14,marginBottom:4, fontWeight:600, fontSize:16}}>Already a User?</Text>
 
             <TouchableOpacity
-              style={{"flexDirection": "row", gap: 6, "marginTop": 8, "justifyContent": "center"}}
               onPress={() => router.push("/signIn")}>
-              <Text>Already a User?</Text>
-              <Text style={styles.signInText}>Sign In</Text>
+              <Text style={styles.guestUserText}>Sign In</Text>
             </TouchableOpacity>
 
           </View>

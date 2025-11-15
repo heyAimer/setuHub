@@ -5,9 +5,11 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 import { signInValidationSchema } from "../../utils/authSchema";
 import { BASE_URL } from "../../utils/constants/api";
 import { getFcmToken } from "../../utils/notifications";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SignIn = () => {
-     const HandleSignIn = async(values, { resetForm }) => {
+    const insets = useSafeAreaInsets();
+    const HandleSignIn = async(values, { resetForm }) => {
          console.log("signin clicked")
         try {
             const response = await fetch(`${BASE_URL}/login`,
@@ -66,15 +68,24 @@ const SignIn = () => {
     }
 
     return (
-        <View style={styles.view}>
-            <ScrollView contentContainerStyle={{ height: "100%" }}>
-                <TouchableOpacity
-                style={{ marginTop: 50, marginHorizontal: 20 }}
+        <View style={[styles.container, { paddingTop: insets.top }]}> 
+            <TouchableOpacity
+                style={{paddingHorizontal:16, paddingTop:14}}
                 onPress={() => router.push("/")}>
-                    <Text>back</Text>
-                </TouchableOpacity>
+                    <MaterialIcons
+                    name="arrow-back-ios"
+                    size={22} color="black"
+                    onPress={() => navigation.goBack()}
+                />
+            </TouchableOpacity>
+            <ScrollView contentContainerStyle={{ height: "100%" }}>
                 
-                <View style={styles.container}>
+                <View style={styles.container2}>
+
+                    <View>
+                        <Text style={[styles.heading, {fontSize:32}]}>Welcome Back</Text>
+                        <Text style={[styles.heading, {fontSize:24, marginTop:6, color:'#494949'}]}>Your Community Awaits You✨</Text>
+                    </View>
 
                     <View style = {styles.fieldsContainer}>
                         <Formik
@@ -160,15 +171,19 @@ export default SignIn;
 
 const styles = StyleSheet.create({
 
-    view: {
-        backgroundColor: "#F8FAFC",   
-        flex:1,
-    },
     container: {
         flex:1,
-        justifyContent: "center",
-        alignItems: 'center',
-        marginHorizontal:20,
+        backgroundColor: "#F8FAFC",
+    },
+    container2: {
+        justifyContent: 'center',
+        flex: 1,
+        marginHorizontal: 20,
+        gap:100
+    },
+        heading: {
+        fontWeight: "bold",
+        textAlign: "center",
     },
     inputFieldContainer: {
         flexDirection: 'row',
@@ -178,7 +193,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 4,
         backgroundColor: "#FEFEFE",
-        color:'#000'
+        color: '#000',
+        marginBottom:8
 
     },
     fieldsContainer: {
