@@ -5,12 +5,11 @@ import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
+import { BASE_URL } from "../../utils/constants/api";
 import useLocation from '../../utils/hooks/useLocation';
 //Hangouts & Events
-
-const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/retrieve/impactevents';
 
 const ImpactEvents = () => {
     const insets = useSafeAreaInsets();
@@ -18,6 +17,7 @@ const ImpactEvents = () => {
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
+    const [hasLoaded, setHasLoaded] = useState(false);
 
     const convertUTCtoIST = (utcDate) => {
         const date = new Date(utcDate);
@@ -34,45 +34,67 @@ const ImpactEvents = () => {
         return formatter.format(date);
     };
 
-    const fetchEvents = async () => {
-        if (loadingPost) return;
-        if (loading) return;
-        if (latitude == null || longitude == null) return;
-
-        setLoadingPost(true);
-        setError(null);
-
-        try {
-            const url = `${ENDPOINT}?latitude=${latitude}&longitude=${longitude}`;
-
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    "X-App-Secret": "smartboyakriti"
-                }
-            });
-            if (!response.ok) {
-                const text = await response.text();
-                throw new Error(`Server ${response.status}: ${text || response.status}`)
-            }
-
-            const data = await response.json();
-            setData(data.data || []);
-
-        } catch (err) {
-            const jsonPart = err.message.split(": ")[1];  
-            const parsed = JSON.parse(jsonPart);
-            const msg = parsed.message; 
-            setError(msg);
-        } finally {
-            setLoadingPost(false)
-        }
-    }
     
     useFocusEffect(
-        useCallback(() => {
-            fetchEvents()
-        }, [latitude, longitude])
+    useCallback(() => {
+        let isCurrent = true;
+
+        // Reset UI when location changes
+        setData([]);
+        setError(null);
+        setLoadingPost(false);
+        setHasLoaded(false);
+        
+        const fetchEvents = async () => {
+        if (loadingPost || loading || latitude == null || longitude == null) return;
+
+        setLoadingPost(true);
+
+        try {
+            const url = `${BASE_URL}/request/retrieve/impactevents?latitude=${latitude}&longitude=${longitude}`;
+            const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                "X-App-Secret": "smartboyakriti",
+                "X-App-Environment": "dev"
+            }
+            });
+
+            if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`Server ${response.status}: ${text || 'Unknown'}`);
+            }
+
+            const json = await response.json();
+
+            if (isCurrent) {
+            setData(Array.isArray(json) ? json : (json.data || []));
+            setHasLoaded(true);
+            }
+        } catch (err) {
+            let msg = 'Failed to load events';
+            try {
+            const jsonPart = err.message.split(": ")[1];
+            const parsed = JSON.parse(jsonPart);
+            msg = parsed.message || msg;
+            } catch {
+            msg = err.message;
+            }
+           if (isCurrent) {
+                setError(msg);
+                setHasLoaded(true); // ← Still mark as loaded (error case)
+            }
+        } finally {
+            if (isCurrent) setLoadingPost(false);
+        }
+        };
+
+        fetchEvents();
+
+        return () => {
+        isCurrent = false;
+        };
+    }, [latitude, longitude, loading])
     );
 
     if (errMsg) {
@@ -113,11 +135,13 @@ const ImpactEvents = () => {
                         />
                         <Text style={{ marginTop: 10,fontSize: 18 }}>Loading events...</Text>
                     </View>
-                ): error? (
+                ): error || errMsg ? (
                     <View style={{ marginTop: '50%', alignItems: 'center' }}>
-                        <Text style={{ marginTop: 10 }}>{error}</Text>
+                        <Text style={{ marginTop: 10 }}>{error || errMsg}</Text>
                     </View>
-                ): data.length === 0? (
+                ):!hasLoaded ? (
+                    <View /> // prevent flash
+                ) :data.length === 0? (
                     <View style={{ marginTop: '30%', alignItems: 'center' }}>
                         <LottieView
                             source={require('../../assets/images/nothing-available.json')}

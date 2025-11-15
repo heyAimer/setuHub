@@ -3,11 +3,10 @@ import { Image } from 'expo-image';
 import { router, useNavigation } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
+import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import useLocation from '../../utils/hooks/useLocation';
-
-const ENDPOINT = `https://hackathon-connect-app-backend.onrender.com/request/create/bloodemergency`;
 
 const CreateBloodEmergencyPost = () => {
     const insets = useSafeAreaInsets();
@@ -52,26 +51,11 @@ const CreateBloodEmergencyPost = () => {
         };
         
         try {
-
-            const response = await fetch(ENDPOINT, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-App-Secret": "smartboyakriti"
-                },
-                body: JSON.stringify(payload),
-            });
-
-            const text = await response.text();
-
-            let data;
-            try {
-                data = JSON.parse(text);
-                router.push('/bloodEmergency')
-            } catch (err) {
-                 throw new Error(text);
-            }
+            const data = await apiPost("/request/create/bloodemergency", payload);
+            router.push('/bloodEmergency');
+            return data;
         } catch (error) {
+            console.log("Error in creating  request:", err);
         }
     }
 

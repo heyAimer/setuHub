@@ -1,11 +1,19 @@
-import messaging from '@react-native-firebase/messaging';
+
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { MD3LightTheme as DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+
+//initialize firebase firest
+import '../utils/firebase';
+
+//import notification utils 
 import { requestUserPermission, setupbackgroundNotificationListener, setupForegroundNotificationListener } from '../utils/notifications';
 
+import messaging from '@react-native-firebase/messaging';
+import { StatusBar } from "react-native";
+
 // 🚀 Define deep links here (EXPO ROUTER WAY)
-export const unstable_settings = {
+export const linking  = {
   linking: {
     prefixes: ["setuhub://", "https://setuhub.io"], // dev build, prod(universal link)
 
@@ -17,7 +25,8 @@ export const unstable_settings = {
             ImpactEvents: "events",
             Moments: "moments",
             UrgentHelp: "urgent",
-            Profile: "profile"
+            Profile: "profile",
+            index: "", 
           }
         }
       }
@@ -30,6 +39,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     requestUserPermission();
+    
     const unsubscribe = setupForegroundNotificationListener();
     setupbackgroundNotificationListener();
 
@@ -62,6 +72,7 @@ export default function RootLayout() {
 
   return (
     <PaperProvider theme={theme}>
+      <StatusBar barStyle={"dark-content"} backgroundColor={"#F8FAFC"}/>
       <Stack screenOptions={{headerShown: false}}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(tabs)" />

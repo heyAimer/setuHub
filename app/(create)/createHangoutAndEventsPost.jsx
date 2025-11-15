@@ -8,9 +8,10 @@ import { router, useNavigation } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
+import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 
 const CreateHangoutAndEventsPost = () => {
     const insets = useSafeAreaInsets();
@@ -155,29 +156,11 @@ const CreateHangoutAndEventsPost = () => {
         }
 
         try {
-            const response = await fetch(`https://hackathon-connect-app-backend.onrender.com/request/create/impactevents`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-App-Secret": "smartboyakriti"
-                },
-                body: JSON.stringify(payload)
-            });
-
-            const text = await response.text();
-
-           
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                throw new Error(text);
-            }
-            setShowMap(false);
-            router.push("/ImpactEvents");
-            
-        } catch (err) {
-            console.error("Error hosting the event: ", err)
+            const data = await apiPost("/request/create/impactevents", payload);
+            router.push('/ImpactEvents');
+            return data;
+        } catch (error) {
+            console.log("Error in creating  request:", error);
         }
     }
 

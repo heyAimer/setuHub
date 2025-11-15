@@ -64,6 +64,9 @@ Connecting people who care.” ✅ Simple, human, mission-driven
 ##### npx expo run:android
    this rebuild dev or install prod apk
 ##### To install prod apk
-   cd android
-   gradlew clean(clean old builds)
-   gradlew assembleRelease
+   * npx expo prebuild
+   * cd android
+   * gradlew assembleDebug(developement)
+   * gradlew assembleRelease(windows)(production)
+
+   * Extra : gradlew clean(to clean old builds)

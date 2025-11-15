@@ -1,5 +1,4 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import Constants from "expo-constants";
 import { router } from 'expo-router';
 import { Formik } from 'formik';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -7,7 +6,6 @@ import { signInValidationSchema } from "../../utils/authSchema";
 import { BASE_URL } from "../../utils/constants/api";
 import { getFcmToken } from "../../utils/notifications";
 
-const APP_ENV = Constants.expoConfig?.extra?.environment;
 const SignIn = () => {
      const HandleSignIn = async(values, { resetForm }) => {
          console.log("signin clicked")
@@ -18,7 +16,7 @@ const SignIn = () => {
                     headers: {
                         "Content-Type": "application/json",
                         "X-App-Secret": "smartboyakriti",
-                        "X-App-Environment":APP_ENV
+                        "X-App-Environment":"dev"
                     },
                     body: JSON.stringify({
                         email: values.email,
@@ -43,6 +41,7 @@ const SignIn = () => {
                             headers: {
                                 "Content-Type": "application/json",
                                 "X-App-Secret": "smartboyakriti",
+                                "X-App-Environment":"dev"
                             },
                             body: JSON.stringify({
                                 firebaseToken: fcmToken

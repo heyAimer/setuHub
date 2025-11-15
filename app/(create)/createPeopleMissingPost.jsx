@@ -5,12 +5,11 @@ import * as ImagePicker from "expo-image-picker";
 import { router, useNavigation } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
+import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import useLocation from '../../utils/hooks/useLocation';
-
-const ENDPOINT = `https://hackathon-connect-app-backend.onrender.com/request/create/missingpeople`;
 
 const CreateBloodEmergencyPost = () => {
     const insets = useSafeAreaInsets();
@@ -123,26 +122,11 @@ const CreateBloodEmergencyPost = () => {
         };
         
         try {
-
-            const response = await fetch(ENDPOINT, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-App-Secret": "smartboyakriti"
-                },
-                body: JSON.stringify(payload),
-            });
-
-            const text = await response.text();
-
-            let data;
-            try {
-                data = JSON.parse(text);
-                router.push('/peopleMissing')
-            } catch (err) {
-                 throw new Error(text);
-            }
+            const data = await apiPost("/request/create/missingpeople", payload);
+            router.push('/peopleMissing');
+            return data;
         } catch (error) {
+            console.log("Error in creating missing people request:", err);
         }
     }
 

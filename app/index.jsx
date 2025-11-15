@@ -1,11 +1,59 @@
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
-import { ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { BASE_URL } from '../utils/constants/api';
+import { deepLinkToRoute } from "../utils/deepLinks";
 export default function index() {
+
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);
+
+  useEffect(() => {
+    console.log('useeffect me hai');
+    const routeUser = async () => {
+      try {
+        const res = await fetch(`${BASE_URL}/pagerouter`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-App-Secret": "smartboyakriti",
+              "X-App-Environment": "dev"
+            },
+            redirect: "manual",
+          });
+        const url = res.headers.get("location");  // setuhub://moments
+        const screen = url.split("://")[1];  //"moments"
+        const finalRoute = deepLinkToRoute[screen];
+
+        if (finalRoute && finalRoute !== "/") {
+          setRedirecting(true);
+          router.replace(finalRoute);
+        }
+      } catch (err) {
+        console.log("Error in catch: " ,err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    routeUser();
+  }, []);
+
+  if (redirecting) return null;
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.safeAreaView, {justifyContent:'center', alignItems:'center'}]}>
+        <ActivityIndicator size="large" />
+        <Text style={styles.heading}>SetuHub</Text>
+
+      </SafeAreaView>
+    )
+  }
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <StatusBar barStyle={"dark-content"} backgroundColor={"#F5F7FA"}/>

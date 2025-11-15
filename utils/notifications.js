@@ -1,6 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
 import { Alert } from 'react-native';
-import { app } from './firebaseConfig';
 
 //  Ask user for permission and get token
 export async function requestUserPermission() {
@@ -18,10 +17,6 @@ export async function requestUserPermission() {
 
 export async function getFcmToken() {
     try {
-        if (!app) {
-            console.error('firebase app is not initialized!');
-            return;
-        }
         const token = await messaging().getToken();
         return token;
     } catch (err) {

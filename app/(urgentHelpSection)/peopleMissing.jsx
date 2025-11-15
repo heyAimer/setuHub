@@ -8,9 +8,8 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
+import { BASE_URL } from "../../utils/constants/api";
 import useLocation from '../../utils/hooks/useLocation';
-
-const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/retrieve/missingpeople';
 
 const PeopleMissing = () => {
     const insets = useSafeAreaInsets();
@@ -37,12 +36,13 @@ const PeopleMissing = () => {
 
              
                 try {
-                    const url = `${ENDPOINT}?latitude=${latitude}&longitude=${longitude}`;
+                    const url = `${BASE_URL}/request/retrieve/missingpeople?latitude=${latitude}&longitude=${longitude}`;
 
                     const response = await fetch(url, {
                         method: 'GET',
                         headers: {
-                            "X-App-Secret": "smartboyakriti"
+                            "X-App-Secret": "smartboyakriti",
+                            "X-App-Environment": "dev"
                         }
                     });
                     if (!response.ok) {
@@ -51,7 +51,6 @@ const PeopleMissing = () => {
                     }
 
                     const json = await response.json();
-
                     if (!cancelled) {
                         setHelpers(Array.isArray(json) ? json : (json.data ?? json.results ?? []));
                     }
@@ -66,7 +65,7 @@ const PeopleMissing = () => {
             return () => {
                 cancelled = true
             }
-        }, [latitude, longitude])
+        }, [latitude, longitude, loading])
     );
 
     return (

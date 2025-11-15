@@ -8,9 +8,8 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
+import { BASE_URL } from "../../utils/constants/api";
 import useLocation from '../../utils/hooks/useLocation';
-
-const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/retrieve/helpnearby';
 
 const HelpNearby = () => {
     const insets = useSafeAreaInsets();
@@ -22,7 +21,11 @@ const HelpNearby = () => {
 
     useFocusEffect(
         useCallback(() => {
-            let cancelled = false;
+            let cancelled = true;
+            setHelpers([]);
+            setError(null);
+            setLoadingPost(false);
+
             const fetchHelpNearby = async () => {
                 if (loadingPost) return;
                 if (loading) return;
@@ -31,17 +34,15 @@ const HelpNearby = () => {
                 }
                 if (latitude == null || longitude == null) return;
 
-                setLoadingPost(true);
-                setError(null);
-
-             
+                if (cancelled) setLoadingPost(true);
                 try {
-                    const url = `${ENDPOINT}?latitude=${latitude}&longitude=${longitude}`;
+                    const url = `${BASE_URL}/request/retrieve/helpnearby?latitude=${latitude}&longitude=${longitude}`;
 
                     const response = await fetch(url, {
                         method: 'GET',
                         headers: {
-                            "X-App-Secret": "smartboyakriti"
+                            "X-App-Secret": "smartboyakriti",
+                            "X-App-Environment":"dev"
                         }
                     });
                     if (!response.ok) {
@@ -50,26 +51,26 @@ const HelpNearby = () => {
                     }
 
                     const json = await response.json();
-
-                    if (!cancelled) {
+                    if (cancelled) {
                         setHelpers(Array.isArray(json) ? json : (json.data ?? json.results ?? []));
+                        setError(null)
                     }
                     
                 } catch (err) {
                     const jsonPart = err.message.split(": ")[1];  
                     const parsed = JSON.parse(jsonPart);
                     const msg = parsed.message; 
-                    if (!cancelled) setError(msg);
+                    if (cancelled) setError(msg)
                 } finally {
-                    if (!cancelled) setLoadingPost(false)
+                    if (cancelled) setLoadingPost(false)
                 }
             }
             fetchHelpNearby();
 
             return () => {
-                cancelled = true
+                cancelled = false
             }
-        }, [latitude, longitude])
+        }, [latitude, longitude,loading])
     );
 
     return (

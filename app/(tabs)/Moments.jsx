@@ -4,16 +4,17 @@ import { router, useFocusEffect } from 'expo-router';
 import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
-
-const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/retrieve/moments?latitude=30.34&longitude=78.40';
+import { BASE_URL } from "../../utils/constants/api";
+import useLocation from "../../utils/hooks/useLocation";
 
 const Moments = () => {
     const insets = useSafeAreaInsets();
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
+    const { latitude, longitude, errMsg, location, loading } = useLocation();
 
     const convertUTCtoIST = (utcDate) => {
         const date = new Date(utcDate);
@@ -47,7 +48,8 @@ const Moments = () => {
             const response = await fetch(url, {
                 method: 'PATCH',
                 headers: {
-                    "X-App-Secret": "smartboyakriti"
+                    "X-App-Secret": "smartboyakriti",
+                    "X-App-Environment":"dev"
                 }
             });
             if (!response.ok) {
@@ -64,13 +66,21 @@ const Moments = () => {
     
     const fetchMoments = async () => {
         
+        if (loadingPost) return;
+        if (errMsg) {
+            setError('Location error: ' + errMsg)
+        }
+        if (latitude == null || longitude == null) return;
+
+        setLoadingPost(true);
+        setError(null);
+        
         try {
-            setLoadingPost(true);
-            
-            const response = await fetch(ENDPOINT, {
+            const response = await fetch(`${BASE_URL}/request/retrieve/moments?latitude=${latitude}&longitude=${longitude}`, {
                 method: 'GET',
                 headers: {
-                    "X-App-Secret": "smartboyakriti"
+                    "X-App-Secret": "smartboyakriti",
+                    "X-App-Environment":"dev"
                 }
             });
 

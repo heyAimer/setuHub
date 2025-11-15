@@ -1,9 +1,10 @@
 // Import the functions you need from the SDKs you need
-import { firebase } from '@react-native-firebase/app';
+import { getApp, initializeApp } from '@react-native-firebase/app';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBp-i_4qe1X8ee6RSuUiUAolFcM5mMAswY",
   authDomain: "setuhub-fb547.firebaseapp.com",
+  databaseURL: "https://setuhub-fb547-default-rtdb.firebaseio.com",
   projectId: "setuhub-fb547",
   storageBucket: "setuhub-fb547.firebasestorage.app",
   messagingSenderId: "916653760633",
@@ -12,4 +13,16 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const app = firebase.app();
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+} catch (error) {
+  if (err && error.code === 'app/duplicate-app') {
+    app = getApp();
+  } else {
+    console.error('Firebase initialization error:', error);
+    throw error;
+  }
+}
+
+export default app;

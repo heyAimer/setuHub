@@ -6,7 +6,7 @@ import { router, useFocusEffect } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 
 const ENDPOINT = `https://hackathon-connect-app-backend.onrender.com/profile`;
@@ -112,7 +112,8 @@ const Profile = () => {
             const response = await fetch(ENDPOINT, {
                 method: 'GET',
                 headers: {
-                    "X-App-Secret": "smartboyakriti"
+                    "X-App-Secret": "smartboyakriti",
+                     "X-App-Environment":"dev"
                 }
             });
 
