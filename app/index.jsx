@@ -14,7 +14,6 @@ export default function index() {
   const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    console.log('useeffect me hai');
     const routeUser = async () => {
       try {
         const res = await fetch(`${BASE_URL}/pagerouter`,

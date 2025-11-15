@@ -14,20 +14,19 @@ import { StatusBar } from "react-native";
 
 // 🚀 Define deep links here (EXPO ROUTER WAY)
 export const linking  = {
-  linking: {
-    prefixes: ["setuhub://", "https://setuhub.io"], // dev build, prod(universal link)
 
-    config: {
-      screens: {
-        "(tabs)": {
-          screens: {
-            HelpNearby: "help",
-            ImpactEvents: "events",
-            Moments: "moments",
-            UrgentHelp: "urgent",
-            Profile: "profile",
-            index: "", 
-          }
+  prefixes: ["setuhub://", "https://setuhub.io"], // dev build, prod(universal link)
+
+  config: {
+    screens: {
+      "(tabs)": {
+        screens: {
+          HelpNearby: "help",
+          ImpactEvents: "events",
+          Moments: "moments",
+          UrgentHelp: "urgent",
+          Profile: "profile",
+          index: "", 
         }
       }
     }

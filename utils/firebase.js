@@ -17,7 +17,7 @@ let app;
 try {
   app = initializeApp(firebaseConfig);
 } catch (error) {
-  if (err && error.code === 'app/duplicate-app') {
+  if (error && error.code === 'app/duplicate-app') {
     app = getApp();
   } else {
     console.error('Firebase initialization error:', error);
