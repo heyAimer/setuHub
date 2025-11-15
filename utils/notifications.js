@@ -11,7 +11,24 @@ export async function requestUserPermission() {
         console.log('Notificaton permission granted!');
         await getFcmToken();
     } else {
-        Alert.alert('Permission denied.', 'Notificatons are disabled');
+        console.log('Permission denied or not requested');
+        Alert.alert(
+        'Enable Notifications',
+        'Please allow notifications in Settings to receive urgent help alerts.',
+        [
+            { text: 'Cancel', style: 'cancel' },
+            { 
+            text: 'Open Settings', 
+            onPress: () => {
+                if (Platform.OS === 'android') {
+                Linking.openSettings();
+                } else {
+                Linking.openURL('app-settings:');
+                }
+            }
+            }
+        ]
+        );
     }
 }
 
