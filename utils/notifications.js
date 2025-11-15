@@ -1,5 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
-import { Alert } from 'react-native';
+import { Alert,Linking, Platform } from 'react-native';
 
 //  Ask user for permission and get token
 export async function requestUserPermission() {
@@ -19,13 +19,7 @@ export async function requestUserPermission() {
             { text: 'Cancel', style: 'cancel' },
             { 
             text: 'Open Settings', 
-            onPress: () => {
-                if (Platform.OS === 'android') {
-                Linking.openSettings();
-                } else {
-                Linking.openURL('app-settings:');
-                }
-            }
+            onPress: () => Linking.openSettings()
             }
         ]
         );
@@ -35,9 +29,11 @@ export async function requestUserPermission() {
 export async function getFcmToken() {
     try {
         const token = await messaging().getToken();
+        console.log('FCM token:', token);
         return token;
     } catch (err) {
         console.error('Error getting FCM token: ', err);
+        return null;
     }
 }
 
@@ -45,7 +41,8 @@ export async function getFcmToken() {
 export function setupForegroundNotificationListener() {
     messaging().onMessage(async remoteMessage => {
         console.log('New foreground message : ', remoteMessage);
-        Alert.alert(remoteMessage.notification.title, remoteMessage.notification.body);
+        Alert.alert
+            (remoteMessage.notification?.title ?? 'Notification', remoteMessage.notification?.body ?? '');
     });
 };
 

@@ -50,13 +50,13 @@ export default function RootLayout() {
       .getInitialNotification()
       .then(remoteMessage => {
         if (remoteMessage) {
-          console.log('App opened from quit by notification:', remoteMessage);
+          if(remoteMessage) console.log('App opened from quit by notification:', remoteMessage);
         }
       });
 
     return () => {
-      unsubscribe && unsubscribe();
-      unsubscribeOpened && unsubscribeOpened();
+      unsubscribe?.();
+      unsubscribeOpened?.()
     };
   }, []);
 
