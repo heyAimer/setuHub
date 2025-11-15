@@ -74,7 +74,8 @@ const Profile = () => {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-App-Secret": "smartboyakriti"
+                    "X-App-Secret": "smartboyakriti",
+                     "X-App-Environment":"dev"
                 },
                 body: JSON.stringify(payload)
             });
@@ -92,7 +93,8 @@ const Profile = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-App-Secret": "smartboyakriti"
+                    "X-App-Secret": "smartboyakriti",
+                     "X-App-Environment":"dev"
                 },
             });
 
