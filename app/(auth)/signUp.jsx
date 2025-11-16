@@ -3,10 +3,9 @@ import { router } from 'expo-router';
 import { Formik } from 'formik';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import { signUpValidationSchema } from "../../utils/authSchema";
 import { BASE_URL } from '../../utils/constants/api';
-import { getFcmToken } from "../../utils/notifications";
-import Toast from "react-native-toast-message";
 
 const SignUp = () => {
     const insets = useSafeAreaInsets();
@@ -20,7 +19,7 @@ const SignUp = () => {
                     headers: {
                         "Content-Type": "application/json",
                         "X-App-Secret": "smartboyakriti",
-                        "X-App-Environment":"dev"
+                        "X-App-Environment":"prod"
                     },
                     body: JSON.stringify({
                         uuid: values.username,

@@ -42,7 +42,7 @@ const BloodEmergency = () => {
                         method: 'GET',
                         headers: {
                             "X-App-Secret": "smartboyakriti",
-                            "X-App-Environment":"dev"
+                            "X-App-Environment":"prod"
                         }
                     });
                     if (!response.ok) {

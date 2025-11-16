@@ -79,7 +79,7 @@ const Profile = () => {
                 headers: {
                     "Content-Type": "application/json",
                     "X-App-Secret": "smartboyakriti",
-                     "X-App-Environment":"dev"
+                     "X-App-Environment":"prod"
                 },
                 body: JSON.stringify(payload)
             });
@@ -98,7 +98,7 @@ const Profile = () => {
                 headers: {
                     "Content-Type": "application/json",
                     "X-App-Secret": "smartboyakriti",
-                     "X-App-Environment":"dev"
+                     "X-App-Environment":"prod"
                 },
             });
 
@@ -124,7 +124,7 @@ const Profile = () => {
                 method: 'GET',
                 headers: {
                     "X-App-Secret": "smartboyakriti",
-                     "X-App-Environment":"dev"
+                     "X-App-Environment":"prod"
                 }
             });
 

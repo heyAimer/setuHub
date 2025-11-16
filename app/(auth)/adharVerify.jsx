@@ -19,7 +19,7 @@ const AdharVerify = () => {
                     headers: {
                         "Content-Type": "application/json",
                         "X-App-Secret": "smartboyakriti",
-                        "X-App-Environment": "dev"
+                        "X-App-Environment": "prod"
                     },
                     body: JSON.stringify({
                         aadhar: values.adhar,
@@ -51,7 +51,7 @@ const AdharVerify = () => {
                             headers: {
                                 "Content-Type": "application/json",
                                 "X-App-Secret": "smartboyakriti",
-                                "X-App-Environment":"dev"
+                                "X-App-Environment":"prod"
                             },
                             body: JSON.stringify({
                                 firebaseToken: fcmToken

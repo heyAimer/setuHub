@@ -22,7 +22,7 @@ export default function index() {
             headers: {
               "Content-Type": "application/json",
               "X-App-Secret": "smartboyakriti",
-              "X-App-Environment": "dev"
+              "X-App-Environment": "prod"
             },
             redirect: "manual",
           });
