@@ -17,8 +17,7 @@ const SignIn = () => {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "X-App-Secret": "smartboyakriti",
-                        "X-App-Environment":"prod"
+                        "X-App-Secret": "smartboyakriti"
                     },
                     body: JSON.stringify({
                         email: values.email,
@@ -47,7 +46,6 @@ const SignIn = () => {
                             headers: {
                                 "Content-Type": "application/json",
                                 "X-App-Secret": "smartboyakriti",
-                                "X-App-Environment":"prod"
                             },
                             body: JSON.stringify({
                                 firebaseToken: fcmToken

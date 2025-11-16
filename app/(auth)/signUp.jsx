@@ -19,7 +19,6 @@ const SignUp = () => {
                     headers: {
                         "Content-Type": "application/json",
                         "X-App-Secret": "smartboyakriti",
-                        "X-App-Environment":"prod"
                     },
                     body: JSON.stringify({
                         uuid: values.username,

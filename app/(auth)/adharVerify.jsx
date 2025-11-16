@@ -10,6 +10,8 @@ import { getFcmToken } from "../../utils/notifications";
 
 const AdharVerify = () => {
     const insets = useSafeAreaInsets();
+    const APP_ENV = __DEV__ ? "dev" : "prod";
+
     const HandleSignIn = async(values, { resetForm }) => {
         console.log(values.age);
         try {
@@ -19,7 +21,6 @@ const AdharVerify = () => {
                     headers: {
                         "Content-Type": "application/json",
                         "X-App-Secret": "smartboyakriti",
-                        "X-App-Environment": "prod"
                     },
                     body: JSON.stringify({
                         aadhar: values.adhar,
@@ -51,7 +52,6 @@ const AdharVerify = () => {
                             headers: {
                                 "Content-Type": "application/json",
                                 "X-App-Secret": "smartboyakriti",
-                                "X-App-Environment":"prod"
                             },
                             body: JSON.stringify({
                                 firebaseToken: fcmToken
@@ -191,7 +191,7 @@ const AdharVerify = () => {
 
                                     {touched.address && errors.address && <Text style={styles.error}>{errors.address}</Text>}
                                     
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>Your Age</Text>
+                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>D.O.B</Text>
                                     
                                 
                                     <View style={styles.inputFieldContainer}>
@@ -199,7 +199,7 @@ const AdharVerify = () => {
 
                                     <TextInput
                                         style={styles.inputField}
-                                        placeholder="Enter your age"
+                                        placeholder="Enter your date of birth"
                                         onChangeText={handleChange("age")}
                                         value={values.age}
                                         onBlur={handleBlur("age")}

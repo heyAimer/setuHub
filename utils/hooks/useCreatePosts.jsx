@@ -8,7 +8,6 @@ export async function apiPost(endpoint, payload) {
             headers: {
                 "Content-Type": "application/json",
                 "X-App-Secret": "smartboyakriti",
-                "X-App-Environment":"prod"
             },
             body: JSON.stringify(payload),
         });

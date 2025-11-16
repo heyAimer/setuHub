@@ -26,8 +26,7 @@ const OtpVerify = () => {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "X-App-Secret": "smartboyakriti",
-                        "X-App-Environment": "dev"
+                        "X-App-Secret": "smartboyakriti"
                     },
                     body: JSON.stringify({
                         otp: otp

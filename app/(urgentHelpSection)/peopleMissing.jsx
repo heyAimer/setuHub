@@ -41,8 +41,7 @@ const PeopleMissing = () => {
                     const response = await fetch(url, {
                         method: 'GET',
                         headers: {
-                            "X-App-Secret": "smartboyakriti",
-                            "X-App-Environment": "dev"
+                            "X-App-Secret": "smartboyakriti"
                         }
                     });
                     if (!response.ok) {

@@ -40,8 +40,7 @@ const HelpNearby = () => {
                     const response = await fetch(url, {
                         method: 'GET',
                         headers: {
-                            "X-App-Secret": "smartboyakriti",
-                            "X-App-Environment":"prod"
+                            "X-App-Secret": "smartboyakriti"
                         }
                     });
                     if (!response.ok) {

@@ -31,7 +31,6 @@ export function useFetchOnFocus(endpoint, latitude, longitude, loading, errMsg) 
                 method: 'GET',
                 headers: {
                 'X-App-Secret': 'smartboyakriti',
-                'X-App-Environment': 'dev',
                 },
             });
 

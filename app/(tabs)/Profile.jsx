@@ -78,8 +78,7 @@ const Profile = () => {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-App-Secret": "smartboyakriti",
-                     "X-App-Environment":"prod"
+                    "X-App-Secret": "smartboyakriti"
                 },
                 body: JSON.stringify(payload)
             });
@@ -97,8 +96,7 @@ const Profile = () => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-App-Secret": "smartboyakriti",
-                     "X-App-Environment":"prod"
+                    "X-App-Secret": "smartboyakriti"
                 },
             });
 
@@ -123,8 +121,7 @@ const Profile = () => {
             const response = await fetch(ENDPOINT, {
                 method: 'GET',
                 headers: {
-                    "X-App-Secret": "smartboyakriti",
-                     "X-App-Environment":"prod"
+                    "X-App-Secret": "smartboyakriti"
                 }
             });
 

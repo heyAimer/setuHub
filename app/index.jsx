@@ -13,6 +13,8 @@ export default function index() {
   const [loading, setLoading] = useState(true);
   const [redirecting, setRedirecting] = useState(false);
 
+  const APP_ENV = __DEV__ ? "dev" : "prod";
+
   useEffect(() => {
     const routeUser = async () => {
       try {
@@ -21,8 +23,7 @@ export default function index() {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              "X-App-Secret": "smartboyakriti",
-              "X-App-Environment": "prod"
+              "X-App-Secret": "smartboyakriti"
             },
             redirect: "manual",
           });

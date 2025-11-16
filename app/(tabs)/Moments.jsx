@@ -48,8 +48,7 @@ const Moments = () => {
             const response = await fetch(url, {
                 method: 'PATCH',
                 headers: {
-                    "X-App-Secret": "smartboyakriti",
-                    "X-App-Environment":"prod"
+                    "X-App-Secret": "smartboyakriti"
                 }
             });
             if (!response.ok) {
@@ -79,8 +78,7 @@ const Moments = () => {
             const response = await fetch(`${BASE_URL}/request/retrieve/moments?latitude=${latitude}&longitude=${longitude}`, {
                 method: 'GET',
                 headers: {
-                    "X-App-Secret": "smartboyakriti",
-                    "X-App-Environment":"prod"
+                    "X-App-Secret": "smartboyakriti"
                 }
             });
 
@@ -113,15 +111,16 @@ const Moments = () => {
             longitude: Number(longitude)
         };
         try {
-            await fetch(`${BASE_URL}/coordinates`, {
+            const response = await fetch(`${BASE_URL}/coordinates`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
-                    "X-App-Secret": "smartboyakriti",
-                    "X-App-Environment":"prod"
+                    "X-App-Secret": "smartboyakriti"
                 },
                 body: JSON.stringify(payload),
             });
+            const text = await response.text();
+            return JSON.parse(text);
         } catch (err) {
             console.error("API POST Error:", error?.message);
             throw error;
