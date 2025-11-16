@@ -197,12 +197,14 @@ const Moments = () => {
                                         source={info.profilePhotoUrl}
                                         style={styles.pfp}
                                     />) : (
-                                        <LottieView
-                                            source={require('../../assets/images/profilePic1.json')}
-                                            autoPlay
-                                            loop
-                                            style={styles.animation}
-                                        /> 
+                                        <View style={styles.pfpWrapper}>
+                                              <LottieView
+                                                source={require('../../assets/images/profilePic1.json')}
+                                                autoPlay
+                                                loop
+                                                style={{ width: '100%', height: '100%' }}
+                                            />   
+                                        </View>
                                     )}
                                     <View style={{ marginLeft: 8 }}>
                                         <Text style={{ fontWeight: 500, fontSize: 18 }}>{info.name}</Text>
@@ -391,6 +393,14 @@ const styles = StyleSheet.create({
         borderRadius: 100,
         borderWidth: 1,
         borderColor: '#E3EFFF'
+    },
+    pfpWrapper: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        overflow: 'hidden', // IMPORTANT
+        borderWidth: 1,
+        borderColor: '#E3EFFF',
     },
     postImgContent: {
         // flex: 1,

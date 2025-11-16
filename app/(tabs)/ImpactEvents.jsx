@@ -6,7 +6,6 @@ import { useCallback, useState } from "react";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import img from '../../assets/images/pfp2.jpg';
 import { BASE_URL } from "../../utils/constants/api";
 import useLocation from '../../utils/hooks/useLocation';
 //Hangouts & Events
@@ -17,7 +16,7 @@ const ImpactEvents = () => {
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
-    const [hasLoaded, setHasLoaded] = useState(false);
+
     const convertUTCtoIST = (utcDate) => {
         const date = new Date(utcDate);
 
@@ -33,7 +32,6 @@ const ImpactEvents = () => {
         return formatter.format(date);
     };
 
-    
     useFocusEffect(
     useCallback(() => {
         let isCurrent = true;
@@ -41,50 +39,47 @@ const ImpactEvents = () => {
         // Reset UI when location changes
         setData([]);
         setError(null);
-        setLoadingPost(false);
-        setHasLoaded(false);
+        setLoadingPost(true);
+        
+        if (loading || latitude == null || longitude == null) {
+        return;
+        }
         
         const fetchEvents = async () => {
-        if (loadingPost || loading || latitude == null || longitude == null) return;
-
-        setLoadingPost(true);
-
-        try {
-            const url = `${BASE_URL}/request/retrieve/impactevents?latitude=${latitude}&longitude=${longitude}`;
-            const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                "X-App-Secret": "smartboyakriti"
-            }
-            });
-
-            if (!response.ok) {
-            const text = await response.text();
-            throw new Error(`Server ${response.status}: ${text || 'Unknown'}`);
-            }
-
-            const json = await response.json();
-
-            if (isCurrent) {
-            setData(Array.isArray(json) ? json : (json.data || []));
-            setHasLoaded(true);
-            }
-        } catch (err) {
-            let msg = 'Failed to load events';
             try {
-            const jsonPart = err.message.split(": ")[1];
-            const parsed = JSON.parse(jsonPart);
-            msg = parsed.message || msg;
-            } catch {
-            msg = err.message;
+                const url = `${BASE_URL}/request/retrieve/impactevents?latitude=${latitude}&longitude=${longitude}`;
+                const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    "X-App-Secret": "smartboyakriti"
+                }
+                });
+
+                if (!response.ok) {
+                const text = await response.text();
+                throw new Error(`Server ${response.status}: ${text || 'Unknown'}`);
+                }
+
+                const json = await response.json();
+
+                if (isCurrent) {
+                setData(Array.isArray(json) ? json : (json.data || []));
+                }
+            } catch (err) {
+                let msg = 'Failed to load events';
+                try {
+                    const jsonPart = err.message.split(": ")[1];
+                    const parsed = JSON.parse(jsonPart);
+                    msg = parsed.message || msg;
+                } catch {
+                    msg = err.message;
+                }
+            if (isCurrent) {
+                    setError(msg);
+                }
+            } finally {
+                if (isCurrent) setLoadingPost(false);
             }
-           if (isCurrent) {
-                setError(msg);
-                setHasLoaded(true); // ← Still mark as loaded (error case)
-            }
-        } finally {
-            if (isCurrent) setLoadingPost(false);
-        }
         };
 
         fetchEvents();
@@ -92,14 +87,9 @@ const ImpactEvents = () => {
         return () => {
         isCurrent = false;
         };
-    }, [latitude, longitude, loading])
+    }, [latitude, longitude, loading, errMsg])
     );
 
-    if (errMsg) {
-        return (
-            <Text style={{fontSize:24, fontWeight:'bold', textAlign:'center', marginTop:'50%'}}>{errMsg}</Text>
-        )
-    }
     return (
         <View style={[styles.container , {paddingTop: insets.top}]}> 
             
@@ -137,9 +127,7 @@ const ImpactEvents = () => {
                     <View style={{ marginTop: '50%', alignItems: 'center' }}>
                         <Text style={{ marginTop: 10 }}>{error || errMsg}</Text>
                     </View>
-                ):!hasLoaded ? (
-                    <View /> // prevent flash
-                ) :data.length === 0? (
+                ):data.length === 0? (
                     <View style={{ marginTop: '30%', alignItems: 'center' }}>
                         <LottieView
                             source={require('../../assets/images/nothing-available.json')}
@@ -162,12 +150,14 @@ const ImpactEvents = () => {
                                 source={info.profilePhotoUrl}
                                 style={styles.pfp}
                             />) : (
-                                <LottieView
-                                    source={require('../../assets/images/profilePic1.json')}
-                                    autoPlay
-                                    loop
-                                    style={styles.animation}
-                                /> 
+                                <View style={styles.pfpWrapper}>
+                                    <LottieView
+                                        source={require('../../assets/images/profilePic1.json')}
+                                        autoPlay
+                                        loop
+                                        style={{ width: '100%', height: '100%' }}
+                                    />   
+                                </View>
                             )}
                             <View style={{ marginLeft:8}}>
                                 <Text style={{ fontWeight: 500, fontSize: 18 }}>{info.name}</Text>
@@ -392,5 +382,13 @@ const styles = StyleSheet.create({
         animation: {
         width: 300,
         height: 300,
+    },
+    pfpWrapper: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        overflow: 'hidden', // IMPORTANT
+        borderWidth: 1,
+        borderColor: '#E3EFFF',
     },
 })

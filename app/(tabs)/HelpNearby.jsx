@@ -7,7 +7,6 @@ import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import img from '../../assets/images/pfp2.jpg';
 import { BASE_URL } from "../../utils/constants/api";
 import useLocation from '../../utils/hooks/useLocation';
 
@@ -17,23 +16,26 @@ const HelpNearby = () => {
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
     const [helpers, setHelpers] = useState([]);
-
     useFocusEffect(
         useCallback(() => {
             let cancelled = true;
             setHelpers([]);
             setError(null);
-            setLoadingPost(false);
+            setLoadingPost(true);
 
             const fetchHelpNearby = async () => {
-                if (loadingPost) return;
+                if (!cancelled) return;
                 if (loading) return;
                 if (errMsg) {
                     setError('Location error: ' + errMsg)
+                    if (cancelled) setLoadingPost(false);
+                    return;
                 }
-                if (latitude == null || longitude == null) return;
+                if (latitude == null || longitude == null) {
+                    if (cancelled) setLoadingPost(false);
+                    return;
+                } 
 
-                if (cancelled) setLoadingPost(true);
                 try {
                     const url = `${BASE_URL}/request/retrieve/helpnearby?latitude=${latitude}&longitude=${longitude}`;
 
@@ -68,7 +70,7 @@ const HelpNearby = () => {
             return () => {
                 cancelled = false
             }
-        }, [latitude, longitude,loading])
+        }, [latitude, longitude,loading, errMsg])
     );
 
     return (
@@ -137,12 +139,14 @@ const HelpNearby = () => {
                                 source={info.profilePhotoUrl}
                                 style={styles.pfp}
                             />) : (
-                                <LottieView
-                                    source={require('../../assets/images/profilePic1.json')}
-                                    autoPlay
-                                    loop
-                                    style={styles.animation}
-                                /> 
+                                <View style={styles.pfpWrapper}>
+                                    <LottieView
+                                        source={require('../../assets/images/profilePic1.json')}
+                                        autoPlay
+                                        loop
+                                        style={{ width: '100%', height: '100%' }}
+                                    />   
+                                </View>
                             )}
                             <View style={{ marginLeft:8}}>
                                 <Text style={{ fontWeight: 500, fontSize: 18 }}>{ info.name }</Text>
@@ -280,5 +284,20 @@ const styles = StyleSheet.create({
     animation: {
         width: 300,
         height: 300,
+    },
+    pfp: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        borderWidth: 1,
+        borderColor: '#E3EFFF'
+    },
+        pfpWrapper: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        overflow: 'hidden', // IMPORTANT
+        borderWidth: 1,
+        borderColor: '#E3EFFF',
     },
 })

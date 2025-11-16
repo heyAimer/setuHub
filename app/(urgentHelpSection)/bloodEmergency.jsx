@@ -7,7 +7,6 @@ import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import img from '../../assets/images/pfp2.jpg';
 import { BASE_URL } from "../../utils/constants/api";
 import useLocation from '../../utils/hooks/useLocation';
 
@@ -22,19 +21,17 @@ const BloodEmergency = () => {
 
     useFocusEffect(
         useCallback(() => {
-            let cancelled = false;
+            let cancelled = true;
+
+            setHelpers([]);
+            setError(null);
+            setLoadingPost(true);
+            
+            if (loading || latitude == null || longitude == null) {
+                return;
+            }
+            
             const fetchHelpNearby = async () => {
-                if (loadingPost) return;
-                if (loading) return;
-                if (errMsg) {
-                    setError('Location error: ' + errMsg)
-                }
-                if (latitude == null || longitude == null) return;
-
-                setLoadingPost(true);
-                setError(null);
-
-             
                 try {
                     const url = `${BASE_URL}/request/retrieve/bloodemergency?latitude=${latitude}&longitude=${longitude}`;
 
@@ -51,21 +48,30 @@ const BloodEmergency = () => {
 
                     const json = await response.json();
 
-                    if (!cancelled) {
+                    if (cancelled) {
                         setHelpers(Array.isArray(json) ? json : (json.data ?? json.results ?? []));
                     }
                 } catch (err) {
-                    if (!cancelled) setError(err.message)
+                    let msg = 'Failed to load events';
+                    try {
+                        const jsonPart = err.message.split(": ")[1];
+                        const parsed = JSON.parse(jsonPart);
+                        msg = parsed.message || msg;
+                    } catch {
+                        msg = err.message;
+                    }
+                    if (cancelled) setError(msg);
+                    
                 } finally {
-                    if (!cancelled) setLoadingPost(false)
+                    if (cancelled) setLoadingPost(false)
                 }
             }
             fetchHelpNearby();
 
             return () => {
-                cancelled = true
+                cancelled = false
             }
-        }, [latitude, longitude, loading])
+        }, [latitude, longitude, loading, errMsg])
     );
 
     return (
@@ -136,12 +142,14 @@ const BloodEmergency = () => {
                                 source={info.profilePhotoUrl}
                                 style={styles.pfp}
                             />) : (
-                                <LottieView
-                                    source={require('../../assets/images/profilePic1.json')}
-                                    autoPlay
-                                    loop
-                                    style={styles.animation}
-                                /> 
+                                <View style={styles.pfpWrapper}>
+                                    <LottieView
+                                        source={require('../../assets/images/profilePic1.json')}
+                                        autoPlay
+                                        loop
+                                        style={{ width: '100%', height: '100%' }}
+                                    />   
+                                </View>
                             )}
                             <View style={{ marginLeft:8}}>
                                 <Text style={{ fontWeight: 500, fontSize: 18 }}>{ info.name }</Text>
@@ -296,5 +304,20 @@ const styles = StyleSheet.create({
     animation: {
         width: 300,
         height: 300,
+    },
+    pfp: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        borderWidth: 1,
+        borderColor: '#E3EFFF'
+    },
+    pfpWrapper: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        overflow: 'hidden', // IMPORTANT
+        borderWidth: 1,
+        borderColor: '#E3EFFF',
     },
 })
