@@ -133,10 +133,17 @@ const HelpNearby = () => {
                     <View key={info.postUuid} style={styles.postContainer}>
 
                         <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
-                            <Image
-                                source={img}
-                                style={styles.image}
-                            />
+                            {info?.profilePhotoUrl ? (<Image
+                                source={info.profilePhotoUrl}
+                                style={styles.pfp}
+                            />) : (
+                                <LottieView
+                                    source={require('../../assets/images/profilePic1.json')}
+                                    autoPlay
+                                    loop
+                                    style={styles.animation}
+                                /> 
+                            )}
                             <View style={{ marginLeft:8}}>
                                 <Text style={{ fontWeight: 500, fontSize: 18 }}>{ info.name }</Text>
                                 <Text style={{ fontSize:14, color:'#5F6368'}}>2min ago</Text>

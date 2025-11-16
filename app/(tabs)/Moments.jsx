@@ -5,7 +5,6 @@ import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import img from '../../assets/images/pfp2.jpg';
 import { BASE_URL } from "../../utils/constants/api";
 import useLocation from "../../utils/hooks/useLocation";
 
@@ -193,12 +192,18 @@ const Moments = () => {
                         return (
                             <View style={styles.postContainer} key={info.postUuid}>
                             
-
                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-                                    <Image
-                                        source={img}
+                                    {info?.profilePhotoUrl ? (<Image
+                                        source={info.profilePhotoUrl}
                                         style={styles.pfp}
-                                    />
+                                    />) : (
+                                        <LottieView
+                                            source={require('../../assets/images/profilePic1.json')}
+                                            autoPlay
+                                            loop
+                                            style={styles.animation}
+                                        /> 
+                                    )}
                                     <View style={{ marginLeft: 8 }}>
                                         <Text style={{ fontWeight: 500, fontSize: 18 }}>{info.name}</Text>
                                         <Text style={{ fontSize: 14, color: '#5F6368' }}> {convertUTCtoIST(info.createdAt)}</Text>

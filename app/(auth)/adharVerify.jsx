@@ -244,7 +244,8 @@ const styles = StyleSheet.create({
         gap:100
     },
     inputField: {
-        color:'black'
+        color: 'black',
+        width: '95%',
     },
     inputFieldContainer: {
         flexDirection: 'row',

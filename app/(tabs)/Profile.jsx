@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
 import { router, useFocusEffect } from 'expo-router';
 import LottieView from 'lottie-react-native';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
@@ -141,11 +141,9 @@ const Profile = () => {
 
     }
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchProfile();
-        },[])
-    )
+    useEffect(() => {
+        fetchProfile();
+    }, []);
 
     return (
         <View style={[styles.container , {paddingTop: insets.top}]}> 

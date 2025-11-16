@@ -217,6 +217,10 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center",
     },
+    inputField: {
+        color: 'black',
+        width: '95%',
+    },
     inputFieldContainer: {
         flexDirection: 'row',
         alignItems: 'center',

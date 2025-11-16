@@ -205,6 +205,10 @@ const styles = StyleSheet.create({
         marginBottom:8
 
     },
+    inputField: {
+        color: 'black',
+        width: '95%',
+    },
     fieldsContainer: {
         width:'100%'
     },
