@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import useLocation from '../../utils/hooks/useLocation';
+import Toast from 'react-native-toast-message';
 
 const CreateBloodEmergencyPost = () => {
     const insets = useSafeAreaInsets();
@@ -56,6 +57,10 @@ const CreateBloodEmergencyPost = () => {
             return data;
         } catch (error) {
             console.log("Error in creating  request:", err);
+            Toast.error({
+                type: 'error',
+                text1: '⚠️Something went wrong!'
+            })
         }
     }
 

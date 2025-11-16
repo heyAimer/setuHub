@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import img from '../../assets/images/pfp2.jpg';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
@@ -45,7 +46,20 @@ const CreateHangoutAndEventsPost = () => {
 
     const pickImage = async () => {
         if (image.length >= 4) {
-            Alert.alert("Limit Reached", "You can only upload up to 4 images.");
+            Toast.show({
+                type:'error',
+                text1: "Limit Reached", 
+                text2: "You can only upload up to 4 images.",
+                // text1Style: {
+                //     fontSize: 18,
+                //     fontWeight: 'bold',
+                //     color: 'red',
+                // },
+                // text2Style: {
+                //     fontSize: 14,
+                //     color: '#555',
+                // },
+            });
             return;
         }
         
@@ -59,8 +73,9 @@ const CreateHangoutAndEventsPost = () => {
 
     const takePhoto = async () => {
         const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-        if (!cameraPermission.granted) return alert("Camera permission needed!");
-
+        if (!cameraPermission.granted) return Toast.show({
+            type:'error',
+            text1:"⚠️Camera permission needed!"});
         const result = await ImagePicker.launchCameraAsync({
             quality: 0.8,
         });
@@ -86,7 +101,10 @@ const CreateHangoutAndEventsPost = () => {
 
             setImage(prev => [...prev, res.data.secure_url]);
         } catch (err) {
-            alert("Upload failed!");
+            Toast.show({
+                type: 'error',
+                text1: "Upload failed!"
+            });
         } finally {
             setUploading(false);
         }
@@ -98,7 +116,10 @@ const CreateHangoutAndEventsPost = () => {
             setLoading(true);
             const { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== "granted") {
-                alert("Permission to access location was denied!");
+                Toast.show({
+                    type:'error',
+                    text1: "⚠️ Permission to access location was denied!"
+                });
                 return;
             }
 
@@ -133,6 +154,10 @@ const CreateHangoutAndEventsPost = () => {
             setLocationDetails([address]);
         } catch (err) {
             console.error("Error fetching address: ", err);
+            Toast.show({
+                type: 'error',
+                text1:'⚠️Error fetching location.'
+            })
         }
 
     }
@@ -140,7 +165,10 @@ const CreateHangoutAndEventsPost = () => {
     const handleConfirm = async() => { 
         
         if (!marker) {
-            alert("Please tap on the map to select the location of the event!");
+            Toast.show({
+                type: 'error',
+                text1: "Please tap on the map to select the location of the event!"
+            });
             return;
         }
         //api run send data to backend!

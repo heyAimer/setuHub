@@ -6,6 +6,7 @@ import { MD3LightTheme as DefaultTheme, Provider as PaperProvider } from "react-
 import * as Notifications from 'expo-notifications';
 import { StatusBar } from "react-native";
 import { requestUserPermission, setupBackgroundNotificationListener, setupForegroundNotificationListener, useNotificationTapHandler, } from '../utils/notifications';
+import Toast from "react-native-toast-message";
 
 // 🚀 Define deep links here (EXPO ROUTER WAY)
 export const linking  = {
@@ -64,6 +65,8 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="(tabs)" />
       </Stack>
+
+      <Toast />
     </PaperProvider>
   );
 }

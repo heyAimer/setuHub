@@ -5,6 +5,8 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { signUpValidationSchema } from "../../utils/authSchema";
 import { BASE_URL } from '../../utils/constants/api';
+import { getFcmToken } from "../../utils/notifications";
+import Toast from "react-native-toast-message";
 
 const SignUp = () => {
     const insets = useSafeAreaInsets();
@@ -17,41 +19,45 @@ const SignUp = () => {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "X-App-Secret": "smartboyakriti"
+                        "X-App-Secret": "smartboyakriti",
+                        "X-App-Environment":"dev"
                     },
                     body: JSON.stringify({
                         uuid: values.username,
                         email: values.email,
                         password: values.password,
-                        confirm_password: values.confirmPassword
+                        confirmPassword: values.confirmPassword
                     }),
                 }
             );
 
-            const text = await response.text();
-            console.log("Raw backend response text:", text);
-            
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch {
-                data = { message: text };
-            }
-
-            console.log("Parsed response:", data);
-
             if (response.ok) {
-                alert(`Otp Sent To Email.`);
-                resetForm();
+                const data = await response.json();
+                Toast.show({
+                    type: 'success',
+                    text1: "Otp Sent To Email.",
+                    text2: 'Check in spam folder!'
+                });
 
-                router.push("/adharVerify");
+                router.push("/otpVerify");
+
+                resetForm();
                 
             } else {
-                alert(`Invalid details.`)
+                Toast.show({
+                    type: 'error',
+                    text1: '⚠️ Something went wrong.',
+                    text2:'Please try again!'
+                })
+                return;
             }
         } catch (error) {
             console.error("Error during email verification: ", error);
-            alert("⚠️ Something went wrong. Please try again.")
+            Toast.show({
+                type:"error",
+                text1: "⚠️ Something went wrong",
+                text2: 'Please try again!'
+            })
         }
        
     }
@@ -64,7 +70,6 @@ const SignUp = () => {
                     <MaterialIcons
                     name="arrow-back-ios"
                     size={22} color="black"
-                    onPress={() => navigation.goBack()}
                 />
             </TouchableOpacity>
             <ScrollView contentContainerStyle={{ height: "100%" }}>

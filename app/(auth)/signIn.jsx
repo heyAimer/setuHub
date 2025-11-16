@@ -2,15 +2,15 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import { Formik } from 'formik';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import { signInValidationSchema } from "../../utils/authSchema";
 import { BASE_URL } from "../../utils/constants/api";
 import { getFcmToken } from "../../utils/notifications";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SignIn = () => {
     const insets = useSafeAreaInsets();
     const HandleSignIn = async(values, { resetForm }) => {
-         console.log("signin clicked")
         try {
             const response = await fetch(`${BASE_URL}/login`,
                 {
@@ -30,7 +30,11 @@ const SignIn = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log(data);
-                alert(`Login Successful`);
+                Toast.show({
+                    type: 'success',
+                    text1: 'Success',
+                    text2: 'Logged in successfully!'
+                })
                 resetForm();
 
                 const fcmToken = await getFcmToken();
@@ -52,18 +56,25 @@ const SignIn = () => {
                     );
                     if (tokenResponse.ok) {
                         const data = await tokenResponse.json();
-                        alert('Fcm token sent to backend', data);
                     }
                 }
 
                 router.push("/Moments");
                 
             } else {
-                alert(`Invalid credentials.`)
+                Toast.show({
+                    type: 'error',
+                    text1: 'Failed to login.',
+                    text2: 'Invalid credentials!'
+                })
             }
         } catch (error) {
             console.error("Invalid login credentials ", error);
-            alert("⚠️ Something went wrong. Please try again.")
+            Toast.show({
+                type: 'error',
+                text1: '⚠️Something went wrong',
+                text2: 'Please try again.!'
+            })
         }
     }
 
@@ -75,7 +86,6 @@ const SignIn = () => {
                     <MaterialIcons
                     name="arrow-back-ios"
                     size={22} color="black"
-                    onPress={() => navigation.goBack()}
                 />
             </TouchableOpacity>
             <ScrollView contentContainerStyle={{ height: "100%" }}>

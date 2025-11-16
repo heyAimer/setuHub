@@ -10,7 +10,6 @@ import { router } from 'expo-router';
 export async function requestUserPermission() {
   const { status } = await Notifications.requestPermissionsAsync();
   if (status === 'granted') {
-    console.log('Notification permission granted!');
     await getFcmToken();
   } else {
     Alert.alert('Enable Notifications', 'Go to Settings', [
@@ -23,7 +22,6 @@ export async function requestUserPermission() {
 export async function getFcmToken() {
   try {
     const token = await messaging().getToken();
-    console.log('FCM token:', token);
     return token;
   } catch (err) {
     console.error('FCM token error:', err);

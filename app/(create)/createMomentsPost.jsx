@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import img from '../../assets/images/pfp2.jpg';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
+import Toast from 'react-native-toast-message';
 
 const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/create/moments'
 const CreateMomentsPost = () => {
@@ -27,7 +28,20 @@ const CreateMomentsPost = () => {
 
     const pickImage = async () => {
         if (image.length >= 4) {
-            Alert.alert("Limit Reached", "You can only upload up to 4 images.");
+            Toast.show({
+                type:'error',
+                text1: "Limit Reached", 
+                text2: "You can only upload up to 4 images.",
+                // text1Style: {
+                //     fontSize: 18,
+                //     fontWeight: 'bold',
+                //     color: 'red',
+                // },
+                // text2Style: {
+                //     fontSize: 14,
+                //     color: '#555',
+                // },
+            });
             return;
         }
         
@@ -41,7 +55,10 @@ const CreateMomentsPost = () => {
 
     const takePhoto = async () => {
         const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-        if (!cameraPermission.granted) return alert("Camera permission needed!");
+        if (!cameraPermission.granted) return Toast.show({
+            type: 'error',
+            text1: "Camera permission needed!"
+        });
 
         const result = await ImagePicker.launchCameraAsync({
             quality: 0.8,
@@ -68,7 +85,9 @@ const CreateMomentsPost = () => {
 
             setImage(prev => [...prev, res.data.secure_url]);
         } catch (err) {
-            alert("Upload failed!");
+            Toast.show({
+                type: 'error',
+                text1:"Upload failed!"});
         } finally {
             setUploading(false);
         }

@@ -27,7 +27,7 @@ const CreateHelpNearbyPost = () => {
             return;
         }
         
-          const payload = {
+        const payload = {
             title: title,
             description: description,
             latitude: Number(latitude),

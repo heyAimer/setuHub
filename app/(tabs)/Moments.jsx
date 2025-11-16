@@ -104,9 +104,34 @@ const Moments = () => {
 
     }
 
+    const fetchCoordinates = async () => {
+        if (!latitude || !longitude) {
+            return;
+        }
+        const payload = {
+            latitude: Number(latitude),
+            longitude: Number(longitude)
+        };
+        try {
+            await fetch(`${BASE_URL}/coordinates`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-App-Secret": "smartboyakriti",
+                    "X-App-Environment":"dev"
+                },
+                body: JSON.stringify(payload),
+            });
+        } catch (err) {
+            console.error("API POST Error:", error?.message);
+            throw error;
+        }
+        
+    }
     useFocusEffect(
         useCallback(() => {
             fetchMoments();
+            fetchCoordinates();
         },[])
     )
     

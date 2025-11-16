@@ -7,6 +7,7 @@ import LottieView from 'lottie-react-native';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 
 const ENDPOINT = `https://hackathon-connect-app-backend.onrender.com/profile`;
@@ -59,7 +60,10 @@ const Profile = () => {
             }));
             await postToBackend(imageUrl)
         } catch (err) {
-            alert("Upload failed!");
+            Toast.error({
+                type:'error',
+                text1:"⚠️Upload failed!"
+            });
         } finally {
             setUploading(false);
         }
@@ -99,6 +103,11 @@ const Profile = () => {
             });
 
             await response.text();
+            Toast.show({
+                type: 'success',
+                text1: 'You have been',
+                text2: 'Logged out Successfully!'
+            })
             router.push("/");
             
         } catch (err) {

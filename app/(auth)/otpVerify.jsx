@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+import { BASE_URL } from '../../utils/constants/api';
 
 const OtpVerify = () => {
 
@@ -9,7 +11,43 @@ const OtpVerify = () => {
 
     const handleVerify = async () => {
         if (otp.length !== 6) {
-            Alert.alert("Invalid OTP", "Please enter a 6-digit OTP.")
+            Toast.show({
+                type: 'failed',
+                text1: 'Invalid OTP',
+                text2: 'Please enter a 6-digit OTP!'
+            })
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await fetch(`${BASE_URL}/signup/otp`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-App-Secret": "smartboyakriti",
+                        "X-App-Environment": "dev"
+                    },
+                    body: JSON.stringify({
+                        otp: otp
+                    })
+                }
+            );
+            const data = await response.json();
+            Toast.show({
+                type: 'success',
+                text1: 'Email Verified!'
+            });
+            
+            router.push("/adharVerify");
+        } catch (error) {
+            Toast.show({
+                type: 'failed',
+                text1: 'Invalid OTP'
+            });
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -22,11 +60,12 @@ const OtpVerify = () => {
                 placeholder="Enter 6-digit OTP"
                 keyboardType="number-pad"
                 style={styles.input}
-               
                 maxLength={6}
+                onChangeText={setOtp}
+                value={otp}
             />
 
-            <TouchableOpacity style={styles.button} >
+            <TouchableOpacity style={styles.button} onPress={handleVerify}>
                <Text style={styles.buttonText}>Verify</Text>
             </TouchableOpacity>
         </View>
