@@ -31,8 +31,6 @@ export const linking  = {
 
 export default function RootLayout() {
 
-  useNotificationTapHandler();
-
   useEffect(() => {
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
@@ -43,9 +41,22 @@ export default function RootLayout() {
     });
 
     requestUserPermission();
-    setupForegroundNotificationListener();
-    setupBackgroundNotificationListener();
+    const foregroundUnsub = setupForegroundNotificationListener();
+    const backgroundUnsub = setupBackgroundNotificationListener();
 
+    const tapSub = Notifications.addNotificationResponseReceivedListener((response) => {
+      const tab = response.notification.request.content.data?.tab || 'help';
+      const screen = mapTabName(tab);
+      router.push(`/(tabs)/${screen}`);
+    });
+    
+    return () => {
+      console.log("cleaning notificaiton listeners.");
+      foregroundUnsub && foregroundUnsub();
+      backgroundUnsub && backgroundUnsub();
+      tapSub.remove();
+    }
+    
   }, []);
 
 
