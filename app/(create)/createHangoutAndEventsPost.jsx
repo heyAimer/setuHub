@@ -10,8 +10,8 @@ import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, Touc
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
-import img from '../../assets/images/pfp2.jpg';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
+import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 
 const CreateHangoutAndEventsPost = () => {
@@ -25,6 +25,7 @@ const CreateHangoutAndEventsPost = () => {
     const [titleHeight, setTitleHeight] = useState(40);
     const [descriptionHeight, setDescriptionHeight] = useState(40);
 
+    const { user } = useCreateInfo();
     //date time picker 
     const [eventAt, setEventAt] = useState(null);
     const [showDate, setShowDate] = useState(false);
@@ -206,16 +207,16 @@ const CreateHangoutAndEventsPost = () => {
            </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
-                <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
+                {user && <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
                     <Image
-                        source={img}
+                        source={user.profilePhotoUrl}
                         style={styles.pfp}
                     />
                     <View style={{ marginLeft:8}}>
-                        <Text style={{fontWeight:500, fontSize:20}}>Hi Rudra</Text>
-                        <Text style={{ fontSize: 16, color: '#5F6368' }}>@rudra_funboy</Text>
+                        <Text style={{ fontWeight: 500, fontSize: 20 }}>{user.name}</Text>
+                        <Text style={{ fontSize: 16, color: '#5F6368' }}>{user.uuid }</Text>
                     </View>
-                </View>
+                </View>}
                 
                 <View style={styles.postInputBox}>
                     <Text style={styles.inputsHeading}>Title</Text>

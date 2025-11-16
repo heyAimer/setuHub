@@ -6,11 +6,11 @@ import { router, useNavigation } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import img from '../../assets/images/pfp2.jpg';
+import Toast from 'react-native-toast-message';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
+import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import useLocation from '../../utils/hooks/useLocation';
-import Toast from 'react-native-toast-message';
 
 const CreateBloodEmergencyPost = () => {
     const insets = useSafeAreaInsets();
@@ -24,6 +24,8 @@ const CreateBloodEmergencyPost = () => {
     const [descriptionHeight, setDescriptionHeight] = useState(40);
     const { latitude, longitude, location } = useLocation();
 
+    const { user } = useCreateInfo();
+    
     const [image, setImage] = useState([]); // img url is here
     const [uploading, setUploading] = useState(false);
 
@@ -164,16 +166,16 @@ const CreateBloodEmergencyPost = () => {
            </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
-                <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
+                {<View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
                     <Image
-                        source={img}
+                        source={user.profilePhotoUrl}
                         style={styles.image}
                     />
                     <View style={{ marginLeft:8}}>
-                        <Text style={{fontWeight:500, fontSize:20}}>Hi Rudra</Text>
-                        <Text style={{ fontSize: 16, color: '#5F6368' }}>@rudra_funboy</Text>
+                        <Text style={{ fontWeight: 500, fontSize: 20 }}>{user.name}</Text>
+                        <Text style={{ fontSize: 16, color: '#5F6368' }}>{user.uuid}</Text>
                     </View>
-                </View>
+                </View>}
                 
                 <View style={styles.postInputBox}>
                     <Text style={styles.inputsHeading}>Title</Text>

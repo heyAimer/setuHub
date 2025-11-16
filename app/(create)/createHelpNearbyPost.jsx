@@ -4,7 +4,7 @@ import { router, useNavigation } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import img from '../../assets/images/pfp2.jpg';
+import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import useLocation from '../../utils/hooks/useLocation';
 
@@ -16,6 +16,8 @@ const CreateHelpNearbyPost = () => {
     const [descriptionHeight, setDescriptionHeight] = useState(40);
     const { latitude, longitude } = useLocation();
     
+    const { user } = useCreateInfo();
+
     const maxCharsInDesc = 280;
     const maxCharsInTitle = 50;
 
@@ -57,16 +59,16 @@ const CreateHelpNearbyPost = () => {
            </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
-                <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
+                {user && <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
                     <Image
-                        source={img}
+                        source={user.profilePhotoUrl}
                         style={styles.image}
                     />
                     <View style={{ marginLeft:8}}>
-                        <Text style={{fontWeight:500, fontSize:20}}>Hi Rudra</Text>
-                        <Text style={{ fontSize: 16, color: '#5F6368' }}>@rudra_funboy</Text>
+                        <Text style={{fontWeight:500, fontSize:20}}>{user.name}</Text>
+                        <Text style={{ fontSize: 16, color: '#5F6368' }}>{user.uuid}</Text>
                     </View>
-                </View>
+                </View>}
                 
                 <View style={styles.postInputBox}>
                     <Text style={styles.inputsHeading}>Title</Text>

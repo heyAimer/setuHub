@@ -1,13 +1,15 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router, useNavigation } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 import img from '../../assets/images/pfp2.jpg';
+import { BASE_URL } from '../../utils/constants/api.js';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import useLocation from '../../utils/hooks/useLocation';
-import Toast from 'react-native-toast-message';
+import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 
 const CreateBloodEmergencyPost = () => {
     const insets = useSafeAreaInsets();
@@ -23,6 +25,8 @@ const CreateBloodEmergencyPost = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedValue, setSelectedValue] = useState(null);
 
+    const { user } = useCreateInfo();
+    
     const toggleDropdown = () => {
         setIsOpen((prev) => !prev);
     };
@@ -35,7 +39,8 @@ const CreateBloodEmergencyPost = () => {
     const maxCharsInTitle = 50;
 
     const navigation = useNavigation();
-    
+
+
     const sendHelpRequest = async () => {
 
         if (!latitude || !longitude) {
@@ -78,16 +83,19 @@ const CreateBloodEmergencyPost = () => {
            </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
-                <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
-                    <Image
-                        source={img}
-                        style={styles.image}
-                    />
-                    <View style={{ marginLeft:8}}>
-                        <Text style={{fontWeight:500, fontSize:20}}>Hi Rudra</Text>
-                        <Text style={{ fontSize: 16, color: '#5F6368' }}>@rudra_funboy</Text>
+                {user && (
+                        <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
+                        <Image
+                            source={user.profilePhotoUrl}
+                            style={styles.image}
+                        />
+                        <View style={{ marginLeft:8}}>
+                            <Text style={{ fontWeight: 500, fontSize: 20 }}>{ user.name}</Text>
+                            <Text style={{ fontSize: 16, color: '#5F6368' }}>{ user.uuid}</Text>
+                        </View>
                     </View>
-                </View>
+
+                )}
                 
                 <View style={styles.postInputBox}>
                     <Text style={styles.inputsHeading}>Title</Text>
