@@ -229,7 +229,7 @@ const Profile = () => {
                         </View>
 
                         <View style={{alignItems:'center', marginTop:14}}>
-                            <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{data.name}</Text>
+                            <Text style={{ fontWeight: 500, fontSize: 18 }}>{data.name}</Text>
                             <Text style={{fontSize: 16, color: '#5F6368'}}>{data.uuid}</Text>
                         </View>
                     </View>

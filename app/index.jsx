@@ -78,7 +78,7 @@ export default function index() {
                 <Text
                   style={{
                     fontSize: 20,
-                    fontWeight: "700",
+                    fontWeight: "500",
                     textAlign: "center",
                     color: "black", // Mask color, doesn’t appear
                   }}
@@ -95,7 +95,7 @@ export default function index() {
                 <Text
                   style={{
                     fontSize: 20,
-                    fontWeight: "700",
+                    fontWeight: "500",
                     textAlign: "center",
                     opacity: 0, // hide actual text (mask only)
                   }}
@@ -113,7 +113,7 @@ export default function index() {
               <Text style={styles.signUpText}>Sign Up</Text>
             </TouchableOpacity>
 
-            <Text style={{textAlign:'center', marginTop:14,marginBottom:4, fontWeight:600, fontSize:16}}>Already a User?</Text>
+            <Text style={{textAlign:'center', marginTop:14,marginBottom:4, fontWeight:500, fontSize:16}}>Already a User?</Text>
 
             <TouchableOpacity
               onPress={() => router.push("/signIn")}>
@@ -144,13 +144,13 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 38,
-    fontWeight: "bold",
+    fontWeight: 500,
     textAlign: "center",
   },
   signUpText: {
     backgroundColor: "#1976D2", // blue
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 500,
     color: "#FFFFFF",           // white text
     paddingVertical: 12,
     borderRadius: 8,
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   guestUserText: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 500,
     paddingVertical: 12,
     borderRadius: 8,
     textAlign: "center",
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   signInText: {
     color: "#1976D2",
     textDecorationLine: "underline",
-    fontWeight: "bold",
+    fontWeight: 500,
     
   }
 

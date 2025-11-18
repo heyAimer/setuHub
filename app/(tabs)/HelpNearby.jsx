@@ -81,7 +81,7 @@ const HelpNearby = () => {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
                 <View style={styles.createPostHeading}>
-                    <Text style={{ fontSize: 16, fontWeight: 500 }}>Help is closer than you think!
+                    <Text style={{ fontSize: 16, fontWeight: 500 }}>Help is right here!
                     </Text>
                     <TouchableOpacity
                         style={styles.createPostbtn}
@@ -179,7 +179,7 @@ const HelpNearby = () => {
                                     <Marker
                                         coordinate={{ latitude: info.latitude, longitude: info.longitude}}
                                         title="You are here"
-                                        pinColor="red" // default red GPS marker
+                                        pinColor="blue" // default red GPS marker
                                     />
                                     
                                 </MapView>
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     },
     heading: {
         fontSize: 24,
-        fontWeight: 700,
+        fontWeight: 500,
         borderBottomColor: '#E0E0E0',
         borderBottomWidth: 1,
         width: '100%',
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
         color: "#FFFFFF",
-        fontWeight:600
+        fontWeight:500
     },
     image: {
         width: 50,

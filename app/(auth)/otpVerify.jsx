@@ -34,16 +34,23 @@ const OtpVerify = () => {
                 }
             );
             const data = await response.json();
-            Toast.show({
-                type: 'success',
-                text1: 'Email Verified!'
-            });
+            if (response.ok) {
+                Toast.show({
+                    type: 'success',
+                    text1: data.message
+                });
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1:data.message
+                })
+            }
             
             router.push("/adharVerify");
         } catch (error) {
             Toast.show({
                 type: 'failed',
-                text1: 'Invalid OTP'
+                text1: '⚠️Something went wrong. Please try again!'
             });
         } finally {
             setLoading(false);
@@ -54,6 +61,7 @@ const OtpVerify = () => {
         <View style={styles.view}>
             <Text style={styles.title}>Verify Email</Text>
             <Text style={styles.subtitle}>OTP sent to your email</Text>
+            <Text style={styles.note}>(Please check your inbox or spam folder.)</Text>
 
             <TextInput
                 placeholder="123456"
@@ -82,10 +90,13 @@ const styles = StyleSheet.create({
         alignItems:"center"
     },
     title: {
-        fontSize: 32, fontWeight: 'bold', textAlign: 'center', marginBottom: 10
+        fontSize: 32, fontWeight: 500, textAlign: 'center', marginBottom: 10
     },
     subtitle: {
-        fontSize: 14, color: '#5F6368', textAlign: 'center', marginBottom: 20
+        fontSize: 14, color: '#5F6368', textAlign: 'center', marginBottom: 10
+    },
+    note: {
+        fontSize: 12, color: '#B60002', textAlign: 'center', marginBottom: 20
     },
     input: {
         backgroundColor: '#E8F0FE', paddingHorizontal: 20, borderRadius: 10, textAlign: 'center', fontSize: 18, letterSpacing: 4
@@ -94,7 +105,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#1976D2', paddingHorizontal: 16,paddingVertical:10, borderRadius: 8, alignItems: 'center', marginTop: 15
     },
     buttonText: {
-        color: '#fff', fontSize: 16, fontWeight: '600'
+        color: '#fff', fontSize: 16, fontWeight: '500'
     },
 
 });

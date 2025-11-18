@@ -49,12 +49,14 @@ const AdharVerify = () => {
                 }
             );
             
+            const data = await response.json();
+
             if (response.ok) {
-                const data = await response.json();
+
                 console.log(data);
                 Toast.show({
                     type: "success",
-                    text1: "Adharcard verified successfully."
+                    text1: data.message
                 });
                 router.push("/Moments");
                 resetForm();
@@ -78,6 +80,11 @@ const AdharVerify = () => {
                         const data = await tokenResponse.json();
                     }
                 }
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1:data.message
+                })
             }
         } catch (error) {
             console.error("Error during adhar verification: ", error);
@@ -106,7 +113,7 @@ const AdharVerify = () => {
                 
                 <View style={styles.container2}>
 
-                    <Text style={{alignSelf:'center', fontSize:30, fontWeight:800}}>Let’s Verify Your Aadhaar</Text>
+                    <Text style={{alignSelf:'center', fontSize:30, fontWeight:500}}>Let’s Verify Your Aadhaar</Text>
                     <View style = {styles.fieldsContainer}>
                         <Formik
                         initialValues={{adhar:"", name: "", phone: "", gender: "", address:"", age:"" }}
@@ -115,7 +122,7 @@ const AdharVerify = () => {
                             {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue  }) => (
 
                                 <View>
-                                    <Text style={{ marginBottom: 4, fontWeight: 'bold' }}>Adharcard Number</Text>
+                                    <Text style={{ marginBottom: 4, fontWeight: 500 }}>Adharcard Number</Text>
                                     
                                     <View style={styles.inputFieldContainer}>
                                         <MaterialIcons name="fingerprint" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
@@ -134,7 +141,7 @@ const AdharVerify = () => {
 
                                     {touched.adhar && errors.adhar && <Text style={styles.error}>{errors.adhar}</Text>} 
 
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>Your Name</Text>
+                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>Your Name</Text>
                                 
                                     <View style={styles.inputFieldContainer}>
                                         <MaterialIcons name="person" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
@@ -153,7 +160,7 @@ const AdharVerify = () => {
 
                                     {touched.name && errors.name && <Text style={styles.error}>{errors.name}</Text>}
 
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>Phone Number</Text>
+                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>Phone Number</Text>
                                     
                                 
                                     <View style={styles.inputFieldContainer}>
@@ -174,7 +181,7 @@ const AdharVerify = () => {
 
                                     {touched.phone && errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
 
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>Gender</Text>
+                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>Gender</Text>
                                 
                                     <View style={{
                                         backgroundColor: "#FEFEFE"
@@ -216,7 +223,7 @@ const AdharVerify = () => {
 
                                     {touched.gender && errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
 
-                                    <Text style={{ marginTop: 10, marginBottom: 4, marginTop:20, fontWeight: 'bold' }}>Your Address</Text>
+                                    <Text style={{ marginTop: 10, marginBottom: 4, marginTop:20, fontWeight: 500 }}>Your Address</Text>
                                 
                                     <View style={styles.inputFieldContainer}>
                                         <MaterialIcons name="location-on" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
@@ -235,7 +242,7 @@ const AdharVerify = () => {
 
                                     {touched.address && errors.address && <Text style={styles.error}>{errors.address}</Text>}
                                     
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>D.O.B</Text>
+                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>D.O.B</Text>
                                     
                                     <View style={styles.inputFieldContainer}>
                                         <MaterialIcons name="event" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
@@ -325,7 +332,7 @@ const styles = StyleSheet.create({
     signUpText: {
         backgroundColor: "#1976D2", // blue
         fontSize: 18,
-        fontWeight: "bold",
+        fontWeight: 500,
         color: "#FFFFFF",           // white text
         paddingVertical: 12,
         borderRadius: 8,
@@ -335,7 +342,7 @@ const styles = StyleSheet.create({
     signInText: {
         color: "#1976D2",
         textDecorationLine: "underline",
-        fontWeight: "bold",
+        fontWeight: 500,
     
     },
     dropdownHeader: {

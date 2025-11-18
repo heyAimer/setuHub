@@ -30,12 +30,12 @@ const SignUp = () => {
                 }
             );
 
+            const data = await response.json();
             if (response.ok) {
-                const data = await response.json();
                 Toast.show({
                     type: 'success',
-                    text1: "Otp Sent To Email.",
-                    text2: 'Check in spam folder!'
+                    text1: data.message,
+                    text2: 'Check your spam folder.'
                 });
 
                 router.push("/otpVerify");
@@ -45,8 +45,7 @@ const SignUp = () => {
             } else {
                 Toast.show({
                     type: 'error',
-                    text1: '⚠️ Something went wrong.',
-                    text2:'Please try again!'
+                    text1: data.message
                 })
                 return;
             }
@@ -68,7 +67,7 @@ const SignUp = () => {
             style={styles.container}
             behavior={Platform.OS === "ios" ? "padding" : "height"}> 
             <TouchableOpacity
-                style={{paddingHorizontal:16, paddingTop:14}}
+                style={{paddingHorizontal:16, paddingTop:14, marginTop:40}}
                 onPress={() => router.push("/")}>
                     <MaterialIcons
                     name="arrow-back-ios"
@@ -97,7 +96,7 @@ const SignUp = () => {
                                 Object.keys(errors).length === 0;
                                 return (
                                 <View>
-                                    <Text style={{ marginBottom: 4, fontWeight: 'bold' }}>Username</Text>
+                                    <Text style={{ marginBottom: 4, fontWeight: 500 }}>Username</Text>
                                     
                                     <View style={styles.inputFieldContainer}>
                                         <MaterialIcons name="person" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
@@ -119,7 +118,7 @@ const SignUp = () => {
                                     {touched.username && errors.username && <Text style={styles.error}>{errors.username}</Text>}
                                     
                                     
-                                    <Text style={{ marginBottom: 4, fontWeight: 'bold' }}>Email</Text>
+                                    <Text style={{ marginBottom: 4, fontWeight: 500 }}>Email</Text>
                                     
                                     <View style={styles.inputFieldContainer}>
                                         <MaterialIcons name="email" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
@@ -144,7 +143,7 @@ const SignUp = () => {
                                     {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
                                     
 
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>Password</Text>
+                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>Password</Text>
                                     
                                 
                                     <View style={styles.inputFieldContainer}>
@@ -166,7 +165,7 @@ const SignUp = () => {
 
                                     {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
                                     
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>Confirm Password</Text>
+                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>Confirm Password</Text>
                                 
                                     <View style={styles.inputFieldContainer}>
                                         <MaterialIcons name="lock" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
@@ -197,7 +196,7 @@ const SignUp = () => {
                                             { opacity: isFormValid ? 1 : 0.4 }
                                             ]}
                                     >
-                                        {loading? <ActivityIndicator size="small"/>:<Text style={{ fontWeight:600, color:'white', fontSize: 18,fontWeight: "bold",}}>Verify email</Text>}
+                                        {loading? <ActivityIndicator size="small"/>:<Text style={{ fontWeight:500, color:'white', fontSize: 18,}}>Verify email</Text>}
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
@@ -237,7 +236,7 @@ const styles = StyleSheet.create({
         gap:100
     },
     heading: {
-        fontWeight: "bold",
+        fontWeight: 500,
         textAlign: "center",
     },
     inputField: {
@@ -273,7 +272,7 @@ const styles = StyleSheet.create({
     signInText: {
         color: "#1976D2",
         textDecorationLine: "underline",
-        fontWeight: "bold",
+        fontWeight:500,
     
   }
 })

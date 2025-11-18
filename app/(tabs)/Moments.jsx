@@ -213,7 +213,7 @@ const Moments = () => {
                                 </View>
                             
                                 <View>
-                                    <Text style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>
+                                    <Text style={{ fontSize: 16, fontWeight: 500, marginBottom: 4 }}>
                                         {info.title}
                                     </Text>
                                     <Text style={{ fontSize: 16, color: "#323232" }}>
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     },
     heading: {
         fontSize: 24,
-        fontWeight: 700,
+        fontWeight: 500,
         borderBottomColor: '#E0E0E0',
         borderBottomWidth: 1,
         width: '100%',
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
         color: "#FFFFFF",
-        fontWeight:600
+        fontWeight:500
     },
     pfp: {
         width: 50,

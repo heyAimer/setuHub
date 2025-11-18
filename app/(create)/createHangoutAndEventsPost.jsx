@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
     },
     heading: {
         fontSize: 24,
-        fontWeight: 600,
+        fontWeight: 500,
     },
     scrollContainer: {
         marginBottom: 60,
@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
     },
     inputsHeading: {
         fontSize: 18,
-        fontWeight: 600,
+        fontWeight: 500,
         marginBottom:4
     },
     input: {
@@ -575,7 +575,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
         color: "#FFFFFF",
-        fontWeight:600
+        fontWeight:500
     },
     pfpWrapper: {
         width: 50,

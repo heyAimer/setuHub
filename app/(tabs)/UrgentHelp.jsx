@@ -48,7 +48,7 @@ const UrgentHelp = () => {
                             </LinearGradient>
                         </View>
                         <View style={{flexDirection:'column', gap:4}}>
-                            <Text style={{ fontSize: 22, fontWeight: 800 }}>{info.title}</Text>
+                            <Text style={{ fontSize: 22, fontWeight: 500 }}>{info.title}</Text>
                             <Text style={{ fontSize: 18, marginBottom: 20, marginTop: 4, color: '#5F6368' }}>{ info.subheading }</Text>
                         </View>
 
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     },
     heading: {
         fontSize: 24,
-        fontWeight: 700,
+        fontWeight: 500,
         borderBottomColor: '#E0E0E0',
         borderBottomWidth: 1,
         width: '100%',

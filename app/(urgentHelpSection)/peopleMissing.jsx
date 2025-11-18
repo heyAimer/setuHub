@@ -156,7 +156,7 @@ const PeopleMissing = () => {
                                 </View>
                             </View>
                             <View>
-                                <Text style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>
+                                <Text style={{ fontSize: 16, fontWeight: 500, marginBottom: 4 }}>
                                     {info.title}
                                 </Text>
 
@@ -166,14 +166,14 @@ const PeopleMissing = () => {
 
                                 <View style={{flexDirection:'row', gap:10}}>
                                     <View style={{ flexDirection: 'row' }}>
-                                        <Text style={{ fontWeight: 800, fontSize: 15 }}>Age : </Text>
+                                        <Text style={{ fontWeight: 500, fontSize: 15 }}>Age : </Text>
                                         <Text style={{ fontSize: 15}}>
                                             {info.age} years old,
                                         </Text>
                                     </View>
 
                                     <View style={{ flexDirection: 'row' }}>
-                                        <Text style={{ fontWeight: 800, fontSize: 15 }}>Gender : </Text>
+                                        <Text style={{ fontWeight: 500, fontSize: 15 }}>Gender : </Text>
                                         <Text style={{ fontSize: 15}}>
                                             {info.gender}
                                         </Text>
@@ -261,9 +261,8 @@ const PeopleMissing = () => {
                                         followsUserLocation={true} // ✅ Camera follows user
                                         
                                     >
-
                                         <Marker
-                                            coordinate={{ latitude, longitude }}
+                                            coordinate={{ latitude: info.latitude, longitude: info.longitude }}
                                             title="Location"
                                             pinColor="blue" // default red GPS marker
                                         />
@@ -298,12 +297,12 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 85,
+        gap: 10,
         paddingHorizontal: 20,
     },
     heading: {
         fontSize: 24,
-        fontWeight: 600,
+        fontWeight: 500,
     },
     scrollContainer: {
         paddingBottom: 60,
@@ -355,7 +354,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
         color: "#FFFFFF",
-        fontWeight:600
+        fontWeight:500
     },
     image: {
         width: 50,

@@ -157,7 +157,7 @@ const BloodEmergency = () => {
                             </View>
                         </View>
                         <View>
-                            <Text style={{ fontSize: 16, fontWeight: 700, marginBottom:4 }}>
+                            <Text style={{ fontSize: 16, fontWeight: 500, marginBottom:4 }}>
                                 {info.title}
                             </Text>
 
@@ -166,7 +166,7 @@ const BloodEmergency = () => {
                             </Text>
 
                             <View style={{flexDirection:'row'}}>
-                                <Text style={{fontWeight: 800,fontSize:15}}>Blood group needed : </Text>
+                                <Text style={{fontWeight: 500,fontSize:15}}>Blood group needed : </Text>
                                 <Text style={{fontSize:15, color: '#CA0002'}}>
                                     {info.bloodGroup}
                                 </Text>
@@ -193,7 +193,7 @@ const BloodEmergency = () => {
                                     <Marker
                                         coordinate={{ latitude, longitude }}
                                         title="Help needed here"
-                                        pinColor="red" // default red GPS marker
+                                        pinColor="blue" // default red GPS marker
                                     />
                                     
                                 </MapView>
@@ -227,12 +227,12 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 85,
+        gap: 10,
         paddingHorizontal: 20,
     },
     heading: {
         fontSize: 24,
-        fontWeight: 600,
+        fontWeight: 500,
     },
     scrollContainer: {
         paddingBottom: 60,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         borderRadius: 4,
         color: "#FFFFFF",
-        fontWeight:600
+        fontWeight:500
     },
     image: {
         width: 50,

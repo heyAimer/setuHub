@@ -27,43 +27,45 @@ const SignIn = () => {
                 }
             );
 
+            const data = await response.json();
+
             if (response.ok) {
-                const data = await response.json();
-                console.log(data);
-                Toast.show({
-                    type: 'success',
-                    text1: 'Success',
-                    text2: 'Logged in successfully!'
-                })
-                const fcmToken = await getFcmToken();
+                if (data.authStatus === 'verified') {
+                    Toast.show({
+                        type: 'success',
+                        text1: data.message
+                    })
+                    const fcmToken = await getFcmToken();
 
-                if (fcmToken) {
-                    const tokenResponse = await fetch(
-                        "https://hackathon-connect-app-backend.onrender.com/set/token",
-                        {
-                            method: 'POST',
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-App-Secret": "smartboyakriti",
-                            },
-                            body: JSON.stringify({
-                                firebaseToken: fcmToken
-                            })
+                    if (fcmToken) {
+                        const tokenResponse = await fetch(
+                            "https://hackathon-connect-app-backend.onrender.com/set/token",
+                            {
+                                method: 'POST',
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-App-Secret": "smartboyakriti",
+                                },
+                                body: JSON.stringify({
+                                    firebaseToken: fcmToken
+                                })
+                            }
+                        );
+                        if (tokenResponse.ok) {
+                            const data = await tokenResponse.json();
                         }
-                    );
-                    if (tokenResponse.ok) {
-                        const data = await tokenResponse.json();
                     }
-                }
 
-                router.push("/Moments");
-                resetForm();
-                
+                    router.push("/Moments");
+                    resetForm();
+                } else if (data.authStatus === 'mail_verified') {
+                    router.push("/adharVerify");
+                    resetForm();
+                }
             } else {
                 Toast.show({
                     type: 'error',
-                    text1: 'Failed to login.',
-                    text2: 'Invalid credentials!'
+                    text1:data.message
                 })
             }
         } catch (error) {
@@ -83,7 +85,7 @@ const SignIn = () => {
             style={styles.container}
             behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <TouchableOpacity
-                style={{paddingHorizontal:16, paddingTop:14}}
+                style={{paddingHorizontal:16, paddingTop:14,marginTop:40}}
                 onPress={() => router.push("/")}>
                     <MaterialIcons
                     name="arrow-back-ios"
@@ -108,7 +110,7 @@ const SignIn = () => {
 
                                 <View>
                                   
-                                    <Text style={{ marginBottom: 4, fontWeight: 'bold' }}>Email</Text>
+                                    <Text style={{ marginBottom: 4, fontWeight: 500 }}>Email</Text>
                                     
                                     <View style={styles.inputFieldContainer}>
                                         <MaterialIcons name="email" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
@@ -133,7 +135,7 @@ const SignIn = () => {
                                     {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
                                     
 
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>Password</Text>
+                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>Password</Text>
                                     
                                 
                                     <View style={styles.inputFieldContainer}>
@@ -156,7 +158,7 @@ const SignIn = () => {
                                     {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
                                     
                                     <TouchableOpacity style={styles.signInBtn} onPress={handleSubmit}>
-                                        {loading ? <ActivityIndicator style={ {fontSize:20}} />:<Text style={{ fontWeight:600, color:'white', fontSize: 18,fontWeight: "bold",}}>Sign In</Text>}
+                                        {loading ? <ActivityIndicator style={ {fontSize:20}} />:<Text style={{ color:'white', fontSize: 18,fontWeight: 500}}>Sign In</Text>}
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
@@ -196,8 +198,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         gap:100
     },
-        heading: {
-        fontWeight: "bold",
+    heading: {
+        fontWeight: 500,
         textAlign: "center",
     },
     inputFieldContainer: {
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
     signInText: {
         color: "#1976D2",
         textDecorationLine: "underline",
-        fontWeight: "bold",
+        fontWeight: 500,
     
     }
 })
