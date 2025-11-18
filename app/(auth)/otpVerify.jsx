@@ -56,7 +56,7 @@ const OtpVerify = () => {
             <Text style={styles.subtitle}>OTP sent to your email</Text>
 
             <TextInput
-                placeholder="Enter 6-digit OTP"
+                placeholder="123456"
                 keyboardType="number-pad"
                 style={styles.input}
                 maxLength={6}
@@ -65,7 +65,7 @@ const OtpVerify = () => {
             />
 
             <TouchableOpacity style={styles.button} onPress={handleVerify}>
-               <Text style={styles.buttonText}>Verify</Text>
+               <Text style={styles.buttonText}>{loading? "Verifying..." : "Verify"}</Text>
             </TouchableOpacity>
         </View>
     )

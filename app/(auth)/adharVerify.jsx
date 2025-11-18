@@ -1,7 +1,9 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import { Formik } from 'formik';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useState } from "react";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { validationSchema } from "../../utils/authSchema";
@@ -9,12 +11,26 @@ import { BASE_URL } from "../../utils/constants/api";
 import { getFcmToken } from "../../utils/notifications";
 
 const AdharVerify = () => {
-    const insets = useSafeAreaInsets();
-    const APP_ENV = __DEV__ ? "dev" : "prod";
+    const options = ['Male', 'Female', 'Others'];
 
-    const HandleSignIn = async(values, { resetForm }) => {
-        console.log(values.age);
+    const [loading, setLoading] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedValue, setSelectedValue] = useState(null);
+    
+    const toggleDropdown = () => {
+        setIsOpen((prev) => !prev);
+    };
+
+    const selectOption = (value) => {
+        setSelectedValue(value);
+        setIsOpen(false); // Close after selection
+    };
+
+    const HandleSignIn = async (values, { resetForm }) => {
+        const dobFormatted = values.age.replace(/\s*-\s*/g, "-");
+        console.log(dobFormatted);
         try {
+            setLoading("true");
             const response = await fetch(`${BASE_URL}/authenticate`,
                 {
                     method: "POST",
@@ -26,9 +42,9 @@ const AdharVerify = () => {
                         aadhar: values.adhar,
                         name: values.name,
                         phone: values.phone,
-                        gender: values.gender,
+                        gender: selectedValue,
                         address: values.address,
-                        dateOfBirth:values.age
+                        dateOfBirth:dobFormatted
                     }),
                 }
             );
@@ -69,30 +85,34 @@ const AdharVerify = () => {
                 type: "error",
                 text1:"⚠️Something went wrong!"
             })
+        } finally {
+            setLoading(false);
         }
 
     }
     
     return (
-        <View style={[styles.container, { paddingTop: insets.top }]}>
+        <KeyboardAvoidingView
+            style={styles.container} behavior={Platform.OS=== "ios"?"padding":"height"}>
             <TouchableOpacity
-                style={{paddingHorizontal:16, paddingTop:14}}
+                style={{paddingHorizontal:16,paddingVertical:6, marginTop:50, backgroundColor:'#F8FAFC'}}
                 onPress={() => router.push("/signUp")}>
                     <MaterialIcons
                     name="arrow-back-ios"
                     size={22} color="black"
                 />
             </TouchableOpacity>
-            <ScrollView contentContainerStyle={{ height: "100%" }}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 
                 <View style={styles.container2}>
 
+                    <Text style={{alignSelf:'center', fontSize:30, fontWeight:800}}>Let’s Verify Your Aadhaar</Text>
                     <View style = {styles.fieldsContainer}>
                         <Formik
                         initialValues={{adhar:"", name: "", phone: "", gender: "", address:"", age:"" }}
                         validationSchema={validationSchema}
                         onSubmit={HandleSignIn}>
-                            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                            {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue  }) => (
 
                                 <View>
                                     <Text style={{ marginBottom: 4, fontWeight: 'bold' }}>Adharcard Number</Text>
@@ -147,6 +167,7 @@ const AdharVerify = () => {
                                             onChangeText={handleChange("phone")}
                                             value={values.phone}
                                             onBlur={handleBlur("phone")}
+                                            keyboardType="numeric"
                                         />
                                     
                                     </View>
@@ -155,24 +176,47 @@ const AdharVerify = () => {
 
                                     <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>Gender</Text>
                                 
-                                    <View style={styles.inputFieldContainer}>
-                                        <MaterialIcons name="wc" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
-
-                                        <TextInput
-                                            style={styles.inputField}
-                                            placeholder="Select"
-                                            onChangeText={handleChange("gender")}
-                                            value={values.gender}
-                                            placeholderTextColor="#828181"
-                                            onBlur={handleBlur("gender")}
-                                        />
+                                    <View style={{
+                                        backgroundColor: "#FEFEFE"
+                                    }}>
                                     
+                                        <TouchableOpacity style={styles.dropdownHeader} onPress={toggleDropdown}>
+                                            
+                                            <View style={{flexDirection:'row'}}>
+                                                <MaterialIcons name="wc" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
+                                                <Text style={{color: selectedValue ? '#000' : '#828181'}}>
+                                                    {selectedValue ? ` ${selectedValue}` : 'Select gender'}
+                                                </Text>
+                                            </View>
 
+                                            <MaterialIcons
+                                                name={isOpen ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                                                size={24}
+                                                color="#555"
+                                            />
+                
+                                        </TouchableOpacity>
+                                        
+                                        {isOpen && (
+                                        <View style={styles.dropdownList}>
+                                        {options.map((option, index) => (
+                                            <TouchableOpacity
+                                            key={option}
+                                            style={[styles.dropdownItem,
+                                            index === options.length - 1 && styles.dropdownItemNoBorder,]}
+                                            onPress={() => selectOption(option)}
+                                            >
+                                            <Text style={styles.dropdownItemText}>{option}</Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                        </View>
+                                        )}
+                                                            
                                     </View>
 
                                     {touched.gender && errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
 
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>Your Address</Text>
+                                    <Text style={{ marginTop: 10, marginBottom: 4, marginTop:20, fontWeight: 'bold' }}>Your Address</Text>
                                 
                                     <View style={styles.inputFieldContainer}>
                                         <MaterialIcons name="location-on" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
@@ -193,25 +237,38 @@ const AdharVerify = () => {
                                     
                                     <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 'bold' }}>D.O.B</Text>
                                     
-                                
                                     <View style={styles.inputFieldContainer}>
                                         <MaterialIcons name="event" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
 
-                                    <TextInput
-                                        style={styles.inputField}
-                                        placeholder="Enter your date of birth"
-                                        onChangeText={handleChange("age")}
-                                        value={values.age}
-                                        onBlur={handleBlur("age")}
-                                        placeholderTextColor= "#828181"
-                                    />
+                                        <TextInput
+                                            style={styles.inputField}
+                                            placeholder="DD - MM - YYYY"
+                                            keyboardType="numeric"
+                                            maxLength={16}
+                                            value={values.age}
+                                            placeholderTextColor="#828181"
+                                            onChangeText={(text) => {
+                                                // remove everything except numbers
+                                                let cleaned = text.replace(/[^0-9]/g, "");
+
+                                                // auto insert " - "
+                                                if (cleaned.length > 2 && cleaned.length <= 4) {
+                                                    cleaned = cleaned.slice(0, 2) + " - " + cleaned.slice(2);
+                                                } else if (cleaned.length > 4) {
+                                                    cleaned = cleaned.slice(0, 2) + " - " + cleaned.slice(2, 4) + " - " + cleaned.slice(4, 8);
+                                                }
+
+                                                setFieldValue("age", cleaned);
+                                            }}
+                                        />
                                     
+                                        
                                     </View>
 
                                     {touched.age && errors.age && <Text style={styles.error}>{errors.age}</Text>}
 
                                     <TouchableOpacity onPress={handleSubmit}>
-                                    <Text style={styles.signUpText}>Verify</Text>
+                                    <Text style={styles.signUpText}>{loading? "Verifying...":"Verify"}</Text>
                                     </TouchableOpacity>
                                 
                                 </View>
@@ -224,7 +281,7 @@ const AdharVerify = () => {
                 </View>
             </ScrollView>
             
-        </View>
+        </KeyboardAvoidingView>
         
   )
 }
@@ -280,5 +337,33 @@ const styles = StyleSheet.create({
         textDecorationLine: "underline",
         fontWeight: "bold",
     
-    }
+    },
+    dropdownHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical:10,
+        borderWidth: 1,
+        borderColor: "#D1D5DB",
+        borderRadius: 4,
+    },
+    dropdownList: {
+        marginTop: 8,
+        borderWidth: 1,
+        borderColor: "#D1D5DB",  
+        borderRadius: 8,
+    },
+    dropdownItem: {
+        paddingHorizontal: 14,
+        paddingVertical:12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#DCDCDD',
+    },
+    dropdownItemNoBorder: {
+        borderBottomWidth: 0,
+    },
+    dropdownItemText: {
+        fontSize: 14,
+    },
 })

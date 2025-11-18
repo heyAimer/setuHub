@@ -1,18 +1,19 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import { Formik } from 'formik';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useState } from "react";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Toast from "react-native-toast-message";
 import { signUpValidationSchema } from "../../utils/authSchema";
 import { BASE_URL } from '../../utils/constants/api';
 
 const SignUp = () => {
-    const insets = useSafeAreaInsets();
+    const [loading, setLoading] = useState(false);
 
     const HandleSignUp = async (values, { resetForm }) => {
 
         try {
+            setLoading(true);
             const response = await fetch(`${BASE_URL}/signup`,
                 {
                     method: "POST",
@@ -56,12 +57,16 @@ const SignUp = () => {
                 text1: "⚠️ Something went wrong",
                 text2: 'Please try again!'
             })
+        } finally {
+            setLoading(false);
         }
        
     }
     
     return (
-        <View style={[styles.container, { paddingTop: insets.top }]}> 
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}> 
             <TouchableOpacity
                 style={{paddingHorizontal:16, paddingTop:14}}
                 onPress={() => router.push("/")}>
@@ -83,8 +88,14 @@ const SignUp = () => {
                         initialValues={{username:"", email: "", password: "",confirmPassword: "" }}
                         validationSchema={signUpValidationSchema}
                         onSubmit={HandleSignUp}>
-                            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-
+                            {({ handleChange, handleBlur, handleSubmit, values, errors, touched, }) => {
+                                const isFormValid =
+                                values.username &&
+                                values.email &&
+                                values.password &&
+                                values.confirmPassword &&
+                                Object.keys(errors).length === 0;
+                                return (
                                 <View>
                                     <Text style={{ marginBottom: 4, fontWeight: 'bold' }}>Username</Text>
                                     
@@ -173,11 +184,22 @@ const SignUp = () => {
                                         />
                                     </View>
 
-                                    {touched.confirmPassword && errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>}
+                                        {/* {touched.confirmPassword && errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>} */}
+                                        {values.confirmPassword.length > 0 && values.password !== values.confirmPassword && (
+                                            <Text style={styles.error}>Password do not match</Text>
+                                        )}
                                     
-                                    <TouchableOpacity onPress={handleSubmit}>
-                                    <Text style={styles.signUpText}>Verify email</Text>
+                                    <TouchableOpacity
+                                        onPress={isFormValid ? handleSubmit : null}
+                                        disabled={!isFormValid}
+                                        style={[
+                                            styles.signUpBtn,
+                                            { opacity: isFormValid ? 1 : 0.4 }
+                                            ]}
+                                    >
+                                        {loading? <ActivityIndicator size="small"/>:<Text style={{ fontWeight:600, color:'white', fontSize: 18,fontWeight: "bold",}}>Verify email</Text>}
                                     </TouchableOpacity>
+
                                     <TouchableOpacity
                                     style={{"flexDirection": "row", gap: 6, "marginTop": 20, "justifyContent": "center"}}
                                     onPress={() => router.push("/signIn")}>
@@ -187,14 +209,15 @@ const SignUp = () => {
 
                                 </View>
                                 
-                            )}
+                                
+                            )}}
 
                         </Formik>
                     </View>  
                     
                 </View>
             </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
         
   )
 }
@@ -238,14 +261,13 @@ const styles = StyleSheet.create({
     error: {
         color: "#E61522",
     },
-    signUpText: {
+    signUpBtn: {
         backgroundColor: "#1976D2", // blue
-        fontSize: 18,
-        fontWeight: "bold",
         color: "#FFFFFF",           // white text
         paddingVertical: 12,
         borderRadius: 8,
-        textAlign: "center",
+        justifyContent: 'center',
+        alignItems:'center',
         marginTop: 16,
     },
     signInText: {

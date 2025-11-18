@@ -177,7 +177,7 @@ const HelpNearby = () => {
                                 >
 
                                     <Marker
-                                        coordinate={{ latitude: 30.3182105, longitude: 78.411416 }}
+                                        coordinate={{ latitude: info.latitude, longitude: info.longitude}}
                                         title="You are here"
                                         pinColor="red" // default red GPS marker
                                     />

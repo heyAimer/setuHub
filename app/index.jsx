@@ -109,7 +109,7 @@ export default function index() {
 
           <View style={{ width: "75%", marginTop:60 }}>
             <TouchableOpacity
-              onPress={() => router.push("/adharVerify")}>
+              onPress={() => router.push("/signUp")}>
               <Text style={styles.signUpText}>Sign Up</Text>
             </TouchableOpacity>
 

@@ -7,6 +7,7 @@ import * as Notifications from 'expo-notifications';
 import { StatusBar } from "react-native";
 import { requestUserPermission, setupBackgroundNotificationListener, setupForegroundNotificationListener, useNotificationTapHandler, } from '../utils/notifications';
 import Toast from "react-native-toast-message";
+import { View } from "react-native";
 
 // 🚀 Define deep links here (EXPO ROUTER WAY)
 export const linking  = {
@@ -71,13 +72,18 @@ export default function RootLayout() {
 
   return (
     <PaperProvider theme={theme}>
-      <StatusBar barStyle={"dark-content"} backgroundColor={"#F8FAFC"}/>
-      <Stack screenOptions={{headerShown: false}}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(tabs)" />
-      </Stack>
+      <View style={{ flex: 1, backgroundColor: "#F8FAFC" }}>
+        <StatusBar barStyle={"dark-content"} backgroundColor={"#F8FAFC"}/>
+        <Stack screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "#F8FAFC" }
+        }} >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(tabs)" />
+        </Stack>
 
-      <Toast />
+        <Toast />
+      </View>
     </PaperProvider>
   );
 }

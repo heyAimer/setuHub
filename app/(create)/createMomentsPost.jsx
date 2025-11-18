@@ -6,11 +6,11 @@ import { router, useNavigation } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import img from '../../assets/images/pfp2.jpg';
-import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
-import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import Toast from 'react-native-toast-message';
+import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
+import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
+import LottieView from 'lottie-react-native';
 
 const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/create/moments'
 const CreateMomentsPost = () => {
@@ -21,7 +21,7 @@ const CreateMomentsPost = () => {
     const [titleHeight, setTitleHeight] = useState(40);
     const [descriptionHeight, setDescriptionHeight] = useState(40);
 
-    const { user } = useCreateInfo();
+    const { user, loading } = useCreateInfo();
     
     const maxCharsInDesc = 280;
     const maxCharsInTitle = 50;
@@ -126,11 +126,24 @@ const CreateMomentsPost = () => {
            </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
-                {user && <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
-                    <Image
+                {loading && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginLeft:20}}>
+                    <ActivityIndicator size="small"/>
+                </View>}
+
+                {!loading && user && <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
+                    {user?.profilePhotoUrl ? (<Image
                         source={user.profilePhotoUrl}
                         style={styles.image}
-                    />
+                    />) : (
+                            <View style={styles.pfpWrapper}>
+                                <LottieView source={require('../../assets/images/profilePic1.json')}
+                                    autoPlay
+                                    loop
+                                    style={{ width: '100%', height: '100%' }}
+                                />   
+                            </View>
+                        )
+                    }
                     <View style={{ marginLeft:8}}>
                         <Text style={{ fontWeight: 500, fontSize: 20 }}>{user.name}</Text>
                         <Text style={{ fontSize: 16, color: '#5F6368' }}>{user.uuid}</Text>
@@ -349,5 +362,13 @@ const styles = StyleSheet.create({
         fontWeight: 600
         
     },
+    pfpWrapper: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        overflow: 'hidden', // IMPORTANT
+        borderWidth: 1,
+        borderColor: '#E3EFFF',
+    }
 
 })

@@ -1,15 +1,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router, useNavigation } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import LottieView from 'lottie-react-native';
+import { useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
-import img from '../../assets/images/pfp2.jpg';
-import { BASE_URL } from '../../utils/constants/api.js';
+import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import useLocation from '../../utils/hooks/useLocation';
-import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 
 const CreateBloodEmergencyPost = () => {
     const insets = useSafeAreaInsets();
@@ -25,7 +24,7 @@ const CreateBloodEmergencyPost = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedValue, setSelectedValue] = useState(null);
 
-    const { user } = useCreateInfo();
+    const { user,loading } = useCreateInfo();
     
     const toggleDropdown = () => {
         setIsOpen((prev) => !prev);
@@ -83,12 +82,25 @@ const CreateBloodEmergencyPost = () => {
            </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
-                {user && (
-                        <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
-                        <Image
+                {loading && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginLeft:20}}>
+                    <ActivityIndicator size="small"/>
+                </View>}
+                
+                {!loading && user && (
+                    <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
+                        {user?.profilePhotoUrl ? (<Image
                             source={user.profilePhotoUrl}
                             style={styles.image}
-                        />
+                        />) : (
+                                <View style={styles.pfpWrapper}>
+                                    <LottieView source={require('../../assets/images/profilePic1.json')}
+                                        autoPlay
+                                        loop
+                                        style={{ width: '100%', height: '100%' }}
+                                    />   
+                                </View>
+                            )
+                        }
                         <View style={{ marginLeft:8}}>
                             <Text style={{ fontWeight: 500, fontSize: 20 }}>{ user.name}</Text>
                             <Text style={{ fontSize: 16, color: '#5F6368' }}>{ user.uuid}</Text>
@@ -297,5 +309,12 @@ const styles = StyleSheet.create({
     dropdownItemText: {
         fontSize: 14,
     },
-
+    pfpWrapper: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        overflow: 'hidden', // IMPORTANT
+        borderWidth: 1,
+        borderColor: '#E3EFFF',
+    }
 })

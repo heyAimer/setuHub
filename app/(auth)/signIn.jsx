@@ -1,17 +1,18 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import { Formik } from 'formik';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useState } from "react";
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Toast from "react-native-toast-message";
 import { signInValidationSchema } from "../../utils/authSchema";
 import { BASE_URL } from "../../utils/constants/api";
 import { getFcmToken } from "../../utils/notifications";
 
 const SignIn = () => {
-    const insets = useSafeAreaInsets();
+    const [loading, setLoading] = useState(false);
     const HandleSignIn = async(values, { resetForm }) => {
         try {
+            setLoading(true);
             const response = await fetch(`${BASE_URL}/login`,
                 {
                     method: "POST",
@@ -34,8 +35,6 @@ const SignIn = () => {
                     text1: 'Success',
                     text2: 'Logged in successfully!'
                 })
-                resetForm();
-
                 const fcmToken = await getFcmToken();
 
                 if (fcmToken) {
@@ -58,6 +57,7 @@ const SignIn = () => {
                 }
 
                 router.push("/Moments");
+                resetForm();
                 
             } else {
                 Toast.show({
@@ -73,11 +73,15 @@ const SignIn = () => {
                 text1: '⚠️Something went wrong',
                 text2: 'Please try again.!'
             })
+        } finally {
+            setLoading(false);
         }
     }
 
     return (
-        <View style={[styles.container, { paddingTop: insets.top }]}> 
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <TouchableOpacity
                 style={{paddingHorizontal:16, paddingTop:14}}
                 onPress={() => router.push("/")}>
@@ -136,7 +140,9 @@ const SignIn = () => {
                                         <MaterialIcons name="lock" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
 
                                     <TextInput
-                                        style={[styles.inputField, { fontFamily: undefined, color: '#000'  }]}
+                                        style={[styles.inputField, { fontFamily: undefined, color: '#000' }]}
+                                            placeholderTextColor=
+                                        "#828181"
                                         secureTextEntry
                                         placeholder="Enter your password"
                                         onChangeText={handleChange("password")}
@@ -149,9 +155,10 @@ const SignIn = () => {
 
                                     {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
                                     
-                                    <TouchableOpacity onPress={handleSubmit}>
-                                        <Text style={styles.signUpText}>Sign In</Text>
+                                    <TouchableOpacity style={styles.signInBtn} onPress={handleSubmit}>
+                                        {loading ? <ActivityIndicator style={ {fontSize:20}} />:<Text style={{ fontWeight:600, color:'white', fontSize: 18,fontWeight: "bold",}}>Sign In</Text>}
                                     </TouchableOpacity>
+
                                     <TouchableOpacity
                                         style={{"flexDirection": "row", gap: 6, "marginTop": 14, "justifyContent": "center"}}
                                         onPress={() => router.push("/signUp")}>
@@ -170,7 +177,7 @@ const SignIn = () => {
                 </View>
             </ScrollView>
             
-        </View>
+        </KeyboardAvoidingView>
         
   )
 }
@@ -215,14 +222,13 @@ const styles = StyleSheet.create({
     error: {
         color: "#E61522",
     },
-    signUpText: {
+    signInBtn: {
         backgroundColor: "#1976D2", // blue
-        fontSize: 18,
-        fontWeight: "bold",
         color: "#FFFFFF",           // white text
         paddingVertical: 12,
         borderRadius: 8,
-        textAlign: "center",
+        justifyContent: 'center',
+        alignItems:'center',
         marginTop: 16,
     },
     signInText: {

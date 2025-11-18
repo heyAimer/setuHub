@@ -11,6 +11,7 @@ import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import useLocation from '../../utils/hooks/useLocation';
+import LottieView from 'lottie-react-native';
 
 const CreateBloodEmergencyPost = () => {
     const insets = useSafeAreaInsets();
@@ -24,7 +25,7 @@ const CreateBloodEmergencyPost = () => {
     const [descriptionHeight, setDescriptionHeight] = useState(40);
     const { latitude, longitude, location } = useLocation();
 
-    const { user } = useCreateInfo();
+    const { user,loading } = useCreateInfo();
     
     const [image, setImage] = useState([]); // img url is here
     const [uploading, setUploading] = useState(false);
@@ -166,11 +167,23 @@ const CreateBloodEmergencyPost = () => {
            </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
-                {<View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
-                    <Image
+                {loading && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginLeft:20}}>
+                    <ActivityIndicator size="small"/>
+                </View>}
+                {!loading && user && <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
+                    {user?.profilePhotoUrl ? (<Image
                         source={user.profilePhotoUrl}
                         style={styles.image}
-                    />
+                    />) : (
+                            <View style={styles.pfpWrapper}>
+                                <LottieView source={require('../../assets/images/profilePic1.json')}
+                                    autoPlay
+                                    loop
+                                    style={{ width: '100%', height: '100%' }}
+                                />   
+                            </View>
+                        )
+                    }
                     <View style={{ marginLeft:8}}>
                         <Text style={{ fontWeight: 500, fontSize: 20 }}>{user.name}</Text>
                         <Text style={{ fontSize: 16, color: '#5F6368' }}>{user.uuid}</Text>
@@ -504,5 +517,13 @@ const styles = StyleSheet.create({
     dropdownItemText: {
         fontSize: 14,
     },
+    pfpWrapper: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        overflow: 'hidden', // IMPORTANT
+        borderWidth: 1,
+        borderColor: '#E3EFFF',
+    }
 
 })

@@ -13,6 +13,7 @@ import Toast from 'react-native-toast-message';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
+import LottieView from 'lottie-react-native';
 
 const CreateHangoutAndEventsPost = () => {
     const insets = useSafeAreaInsets();
@@ -25,7 +26,7 @@ const CreateHangoutAndEventsPost = () => {
     const [titleHeight, setTitleHeight] = useState(40);
     const [descriptionHeight, setDescriptionHeight] = useState(40);
 
-    const { user } = useCreateInfo();
+    const { user, loading:loadingPfp } = useCreateInfo();
     //date time picker 
     const [eventAt, setEventAt] = useState(null);
     const [showDate, setShowDate] = useState(false);
@@ -207,11 +208,24 @@ const CreateHangoutAndEventsPost = () => {
            </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
-                {user && <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
-                    <Image
+                {loadingPfp && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginLeft:20}}>
+                    <ActivityIndicator size="small"/>
+                </View>}
+
+                {!loadingPfp && user && <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>
+                    {user?.profilePhotoUrl ? (<Image
                         source={user.profilePhotoUrl}
-                        style={styles.pfp}
-                    />
+                        style={styles.image}
+                    />) : (
+                            <View style={styles.pfpWrapper}>
+                                <LottieView source={require('../../assets/images/profilePic1.json')}
+                                    autoPlay
+                                    loop
+                                    style={{ width: '100%', height: '100%' }}
+                                />   
+                            </View>
+                        )
+                    }
                     <View style={{ marginLeft:8}}>
                         <Text style={{ fontWeight: 500, fontSize: 20 }}>{user.name}</Text>
                         <Text style={{ fontSize: 16, color: '#5F6368' }}>{user.uuid }</Text>
@@ -563,5 +577,19 @@ const styles = StyleSheet.create({
         color: "#FFFFFF",
         fontWeight:600
     },
-
+    pfpWrapper: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        overflow: 'hidden', // IMPORTANT
+        borderWidth: 1,
+        borderColor: '#E3EFFF',
+    },
+        image: {
+        width: 60,
+        height: 60,
+        borderRadius: 100,
+        borderWidth: 1,
+        borderColor: '#E3EFFF',
+    },
 })
