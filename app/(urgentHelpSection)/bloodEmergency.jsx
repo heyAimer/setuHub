@@ -19,6 +19,21 @@ const BloodEmergency = () => {
     const [error, setError] = useState(null);
     const [helpers, setHelpers] = useState([]);
 
+    const convertUTCtoIST = (utcDate) => {
+        const date = new Date(utcDate);
+
+        const formatter = new Intl.DateTimeFormat("en-IN", {
+            timeZone: "Asia/Kolkata",
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+        })
+        return formatter.format(date);
+    };
+
     useFocusEffect(
         useCallback(() => {
             let cancelled = true;
@@ -153,7 +168,7 @@ const BloodEmergency = () => {
                             )}
                             <View style={{ marginLeft:8}}>
                                 <Text style={{ fontWeight: 500, fontSize: 18 }}>{ info.name }</Text>
-                                <Text style={{ fontSize:14, color:'#5F6368'}}>2min ago</Text>
+                                <Text style={{ fontSize:14, color:'#5F6368'}}>{convertUTCtoIST(info.createdAt)}</Text>
                             </View>
                         </View>
                         <View>
@@ -169,6 +184,13 @@ const BloodEmergency = () => {
                                 <Text style={{fontWeight: 500,fontSize:15}}>Blood group needed : </Text>
                                 <Text style={{fontSize:15, color: '#CA0002'}}>
                                     {info.bloodGroup}
+                                </Text>
+                            </View>
+
+                            <View style={{flexDirection:'row'}}>
+                                <Text style={{fontWeight: 500,fontSize:15}}>Phone number : </Text>
+                                <Text style={{fontSize:15, color: '#000'}}>
+                                    {info.phone}
                                 </Text>
                             </View>
 

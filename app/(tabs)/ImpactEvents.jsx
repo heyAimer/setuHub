@@ -172,6 +172,13 @@ const ImpactEvents = () => {
                                 {info.description}
                             </Text>
 
+                            <View style={{flexDirection:'row'}}>
+                                <Text style={{fontWeight: 500,fontSize:15}}>Phone number : </Text>
+                                <Text style={{fontSize:15, color: '#000'}}>
+                                    {info.phone}
+                                </Text>
+                            </View>
+                            
                             <Text style={{fontSize:16, color:"#323232"}}>
                                 <Text style={{fontWeight:500}}>Happening on:</Text> {convertUTCtoIST(info.eventAt)}
                             </Text>
