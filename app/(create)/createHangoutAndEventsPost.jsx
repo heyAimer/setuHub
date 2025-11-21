@@ -5,6 +5,7 @@ import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { router, useNavigation } from 'expo-router';
+import LottieView from 'lottie-react-native';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -13,7 +14,6 @@ import Toast from 'react-native-toast-message';
 import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
-import LottieView from 'lottie-react-native';
 
 const CreateHangoutAndEventsPost = () => {
     const insets = useSafeAreaInsets();
@@ -208,8 +208,8 @@ const CreateHangoutAndEventsPost = () => {
            </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
-                {loadingPfp && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginLeft:20}}>
-                    <ActivityIndicator size="small"/>
+                {loadingPfp && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginLeft:10,paddingVertical:7}}>
+                    <ActivityIndicator size="large"/>
                 </View>}
 
                 {!loadingPfp && user && <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>

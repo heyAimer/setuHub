@@ -28,7 +28,6 @@ const AdharVerify = () => {
 
     const HandleSignIn = async (values, { resetForm }) => {
         const dobFormatted = values.age.replace(/\s*-\s*/g, "-");
-        console.log(dobFormatted);
         try {
             setLoading("true");
             const response = await fetch(`${BASE_URL}/authenticate`,
@@ -53,7 +52,6 @@ const AdharVerify = () => {
 
             if (response.ok) {
 
-                console.log(data);
                 Toast.show({
                     type: "success",
                     text1: data.message

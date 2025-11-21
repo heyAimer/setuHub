@@ -19,7 +19,6 @@ const useCreateInfo = () => {
 
                 const json = await res.json();
                 setUser(json.data || json);
-                console.log(json);
             } catch (error) {
                 Toast.show({
                     type:'error',

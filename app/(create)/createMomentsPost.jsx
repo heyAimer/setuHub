@@ -126,8 +126,8 @@ const CreateMomentsPost = () => {
            </View>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
 
-                {loading && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginLeft:20}}>
-                    <ActivityIndicator size="small"/>
+                {loading && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginLeft:10,paddingVertical:7}}>
+                    <ActivityIndicator size="large"/>
                 </View>}
 
                 {!loading && user && <View style={{flexDirection:'row',alignItems:'center', marginBottom:10}}>

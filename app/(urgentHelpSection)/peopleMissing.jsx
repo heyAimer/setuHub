@@ -201,7 +201,6 @@ const PeopleMissing = () => {
                                         </Text>
                                     </View>
                                  </View>
-
                                 
                                 <View style={{marginTop:10}}>
                                 

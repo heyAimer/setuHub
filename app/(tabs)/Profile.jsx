@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -13,12 +13,12 @@ import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 const ENDPOINT = `https://hackathon-connect-app-backend.onrender.com/profile`;
 const ENDPOINTPATCH = `https://hackathon-connect-app-backend.onrender.com/update/photo`
 const bars = [
-  { id: "name", label: "Name", icon: "person", editable: false },
-  { id: "uuid", label: "Username", icon: "alternate-email", editable: false },
-  { id: "phone", label: "Phone Number", icon: "call", editable: true },
-  { id: "gender", label: "Gender", icon: "wc", editable: false },
-  { id: "address", label: "Address", icon: "location-on", editable: false },
-  { id: "dateOfBirth", label: "Date of Birth", icon: "cake", editable: false },
+    { id: "name", label: "Name", icon: "person", editable: false },
+    { id: "uuid", label: "Username", icon: "alternate-email", editable: false },
+    { id: "phone", label: "Phone Number", icon: "call", editable: true },
+    { id: "gender", label: "Gender", icon: "wc", editable: false },
+    { id: "address", label: "Address", icon: "location-on", editable: false },
+    { id: "dateOfBirth", label: "Date of Birth", icon: "cake", editable: false }
 ];
 const Profile = () => {
     const insets = useSafeAreaInsets();
@@ -28,6 +28,8 @@ const Profile = () => {
     const [uploading, setUploading] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const navigation = useNavigation();
+    
     const pickImage = async () => {
         
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -186,77 +188,94 @@ const Profile = () => {
                 <View style={{justifyContent:'center', alignItems:'center', flex:1}}>
                     <ActivityIndicator size="large" />
                     <Text style={{fontSize:24, fontWeight:700}}>Loading...</Text>
-                </View>) : (
-                    data && (<View  style={{ flex: 1 }}>
-                    <View style={{alignItems:'center',borderBottomColor: '#E0E0E0',borderBottomWidth: 1,paddingVertical:40}}>
-                        <View style={styles.imageWrapper}>
-                            {uploading ? (
-                                <View style={[styles.profileImage, { 
-                                    justifyContent: 'center', 
-                                    alignItems: 'center', 
-                                    backgroundColor: '#f5f5f5' 
-                                    }]}>
-                                    <ActivityIndicator size="large" color="#999" />
-                                </View>
-                            ):
-                                data?.profilePhotoUrl ? (<Image
-                                source={{uri: data?.profilePhotoUrl} }
-                                style={styles.profileImage}
-                            />) : (
-                                <LottieView
-                                    source={require('../../assets/images/profilePic1.json')}
-                                    autoPlay
-                                    loop
-                                    style={styles.animation}
-                                />
-                            )}
-                            <TouchableOpacity
-                                style={styles.editImg}
-                                onPress={() => {
-                                    Alert.alert(
-                                        "Your Profile",
-                                        "Choose an option",
-                                        [
-                                            { text: "Gallery", onPress: pickImage },
-                                            { text: "Cancel", style: "cancel" },
-                                            // {text:"Remove Photo", onPress: removeImage}
-                                        ]
-                                    )
-                                }}
-                            >
-                                <MaterialIcons name='edit' size={18} color='#868686'/>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={{alignItems:'center', marginTop:14}}>
-                            <Text style={{ fontWeight: 500, fontSize: 18 }}>{data.name}</Text>
-                            <Text style={{fontSize: 16, color: '#5F6368'}}>{data.uuid}</Text>
-                        </View>
-                    </View>
-                    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
-
-                        <View style={{gap:22}}>
-                            {bars.map((bar) => (
-                                <View style={styles.bars} key={bar.id}>
-                                    <MaterialIcons name={bar.icon} size={20} color="#B9B9BA" style={{ marginRight: 20 }} />
-                                    <View style={{flexDirection:'row',width:'85%'}}>
-                                        <Text style={styles.barTitle}>{bar.label} : </Text>
-                                        <Text style={styles.barInfo}>{data[bar.id]}</Text>
+                    </View>) : (
+                        data && (<View  style={{ flex: 1 }}>
+                        <View style={{alignItems:'center',borderBottomColor: '#E0E0E0',borderBottomWidth: 1,paddingVertical:40}}>
+                            <View style={styles.imageWrapper}>
+                                {uploading ? (
+                                    <View style={[styles.profileImage, { 
+                                        justifyContent: 'center', 
+                                        alignItems: 'center', 
+                                        backgroundColor: '#f5f5f5' 
+                                        }]}>
+                                        <ActivityIndicator size="large" color="#999" />
                                     </View>
-                                    {bar.editable && <TouchableOpacity style={styles.editInfo}>
-                                        <MaterialIcons name='edit' size={18} color='#B9B9BA'/>
-                                    </TouchableOpacity>}
-                                </View>
-                            ))}
+                                ):
+                                    data?.profilePhotoUrl ? (<Image
+                                    source={{uri: data?.profilePhotoUrl} }
+                                    style={styles.profileImage}
+                                />) : (
+                                    <LottieView
+                                        source={require('../../assets/images/profilePic1.json')}
+                                        autoPlay
+                                        loop
+                                        style={styles.animation}
+                                    />
+                                )}
+                                <TouchableOpacity
+                                    style={styles.editImg}
+                                    onPress={() => {
+                                        Alert.alert(
+                                            "Your Profile",
+                                            "Choose an option",
+                                            [
+                                                { text: "Gallery", onPress: pickImage },
+                                                { text: "Cancel", style: "cancel" },
+                                                // {text:"Remove Photo", onPress: removeImage}
+                                            ]
+                                        )
+                                    }}
+                                >
+                                    <MaterialIcons name='edit' size={18} color='#868686'/>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={{alignItems:'center', marginTop:14}}>
+                                <Text style={{ fontWeight: 500, fontSize: 18 }}>{data.name}</Text>
+                                <Text style={{fontSize: 16, color: '#5F6368'}}>{data.uuid}</Text>
+                            </View>
                         </View>
-                        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-                            <MaterialIcons name="logout" size={22} color="white" />
-                            <Text style={{ fontWeight:600, fontSize:14, color:'white'}}>LOGOUT</Text>
-                        </TouchableOpacity>
-                        
-                    </ScrollView>
-                </View>)
-            )}
+                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
+
+                            <View style={{gap:22}}>
+                                {bars.map((bar) => (
+                                    <View style={styles.bars} key={bar.id}>
+                                        <MaterialIcons name={bar.icon} size={20} color="#B9B9BA" style={{ marginRight: 20 }} />
+                                        <View style={{flexDirection:'row',width:'85%'}}>
+                                            <Text style={styles.barTitle}>{bar.label} : </Text>
+                                            <Text style={styles.barInfo}>{data[bar.id]}</Text>
+                                        </View>
+                                        {bar.editable && <TouchableOpacity style={styles.editInfo}>
+                                            <MaterialIcons name='edit' size={18} color='#B9B9BA'/>
+                                        </TouchableOpacity>}
+                                    </View>
+                                ))}
+                            </View>
+                            
+                            <View  style={{marginTop:22}}>
+
+                                <TouchableOpacity style={styles.bars} onPress={() => router.push("/historyPage")}>
+                                    <MaterialIcons name='history' size={20} color="#B9B9BA" style={{ marginRight: 20 }} />
+                                    <View style={{flexDirection:'row',width:'85%', alignItems:'center', justifyContent:'space-between'}}>
+                                        <Text style={styles.barTitle}> Your History </Text>
+                                        <MaterialIcons
+                                            name="arrow-forward-ios"
+                                            size={18} color="black"
+                                            onPress={() => navigation.goBack()}
+                                        />
+                                    </View>
+                                </TouchableOpacity>
+                                
+                            </View>
+                            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+                                <MaterialIcons name="logout" size={22} color="white" />
+                                <Text style={{ fontWeight:600, fontSize:14, color:'white'}}>LOGOUT</Text>
+                            </TouchableOpacity>
+                            
+                        </ScrollView>
+                    </View>)
+                )
+            }
            
         </View>
     )
