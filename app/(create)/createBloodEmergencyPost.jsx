@@ -42,11 +42,15 @@ const CreateBloodEmergencyPost = () => {
 
     const sendHelpRequest = async () => {
 
-        if (!latitude || !longitude) {
+        if (!selectedValue) {
+            Toast.show({
+                type: "error",
+                text1: "Please select a blood group"
+            });
             return;
         }
         
-          const payload = {
+        const payload = {
             title: title,
             description: description,
             bloodGroup:selectedValue,
@@ -58,9 +62,8 @@ const CreateBloodEmergencyPost = () => {
         try {
             const data = await apiPost("/request/create/bloodemergency", payload);
             router.push('/bloodEmergency');
-            return data;
         } catch (error) {
-            console.log("Error in creating  request:", err);
+            console.log("Error in creating  request:", error);
             Toast.error({
                 type: 'error',
                 text1: '⚠️Something went wrong!'

@@ -2,6 +2,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router, useNavigation } from "expo-router";
 import LottieView from "lottie-react-native";
 import { useEffect } from "react";
+import { Image } from 'expo-image';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from "react-native-safe-area-context";

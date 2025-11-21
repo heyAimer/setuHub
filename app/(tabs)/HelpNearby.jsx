@@ -43,7 +43,6 @@ const HelpNearby = () => {
                 if (!cancelled) return;
                 if (loading) return;
                 if (errMsg) {
-                    setError('Location error: ' + errMsg)
                     if (cancelled) setLoadingPost(false);
                     return;
                 }

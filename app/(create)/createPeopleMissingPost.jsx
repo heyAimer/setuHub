@@ -3,6 +3,7 @@ import axios from "axios";
 import { Image } from 'expo-image';
 import * as ImagePicker from "expo-image-picker";
 import { router, useNavigation } from 'expo-router';
+import LottieView from 'lottie-react-native';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,11 +12,11 @@ import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import useLocation from '../../utils/hooks/useLocation';
-import LottieView from 'lottie-react-native';
 
 const CreateBloodEmergencyPost = () => {
     const insets = useSafeAreaInsets();
     const age = Array.from({ length: 120 }, (_, i) => (i + 1).toString());
+    const [posting, setposting] = useState(false);
     
     const gender = ['Male', 'Female', 'Others'];
 

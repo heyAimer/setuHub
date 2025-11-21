@@ -9,6 +9,7 @@ import { BASE_URL } from "../../utils/constants/api.js";
 import { deletePost } from "../../utils/hooks/useDeletePost.jsx";
 import useFetchHistory from "../../utils/hooks/useFetchHistory.jsx";
 import useLocation from "../../utils/hooks/useLocation.jsx";
+import { Image } from 'expo-image';
 
 const PeopleMissingHistory = () => {
     const insets = useSafeAreaInsets();

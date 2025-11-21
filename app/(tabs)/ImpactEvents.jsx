@@ -249,8 +249,8 @@ const ImpactEvents = () => {
                                     style={styles.map}
                                     provider={Platform.OS === 'android' ? 'google':null }
                                     initialRegion={{
-                                        latitude:latitude,
-                                        longitude: longitude,
+                                        latitude:info.latitude,
+                                        longitude: info.longitude,
                                         latitudeDelta: 0.01,
                                         longitudeDelta: 0.01,
                                     }}     
@@ -258,15 +258,6 @@ const ImpactEvents = () => {
                                     followsUserLocation={true} // ✅ Camera follows user
                                     
                                 >
-
-                                    <Marker
-                                        coordinate={{
-                                            latitude: latitude,
-                                            longitude: longitude
-                                        }}
-                                        title="You are here"
-                                        pinColor="blue" // default red GPS marker
-                                    />
 
                                     {info?.latitude && info.longitude && (
                                         <Marker

@@ -25,11 +25,6 @@ const CreateHelpNearbyPost = () => {
     const navigation = useNavigation();
     
     const sendHelpRequest = async () => {
-
-        if (!latitude || !longitude) {
-            return;
-        }
-        
         const payload = {
             title: title,
             description: description,
