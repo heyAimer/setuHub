@@ -4,7 +4,7 @@
     "slug": "setuHub",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.jpg",
+    "icon": "./assets/images/icon.png",
     "scheme": "setuhub",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -36,12 +36,6 @@
         "googleMaps": {
           "apiKey": "AIzaSyACvwZZiIbyY5l1726JRs-VVzNnXl7QZeo"
         }
-      },
-      "adaptiveIcon": {
-        "backgroundColor": "#F8FAFC",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
