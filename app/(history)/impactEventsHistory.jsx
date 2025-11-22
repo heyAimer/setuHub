@@ -188,13 +188,6 @@ const ImpactEvents = () => {
                                         />
                                         <Text style={styles.text}>Delete</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={[styles.modifybtn, styles.done]}>
-                                        <MaterialIcons
-                                            name="done-outline"
-                                            size={14} color="#E3EFFF"
-                                        />
-                                        <Text style={styles.text}>Done</Text>
-                                    </TouchableOpacity>
                                 </View>
                             </View>
                         )

@@ -1,11 +1,11 @@
 import Toast from "react-native-toast-message";
 import { BASE_URL } from "../constants/api";
 
-export const deletePost =async (id) => {
+export const donePost =async (id) => {
     try {
         
-        const response = await fetch(`${BASE_URL}/request/delete/${id}`, {
-            method: "DELETE",
+        const response = await fetch(`${BASE_URL}/request/done/${id}`, {
+            method: "PATCH",
             headers: {
                 "X-App-Secret": "smartboyakriti"
             }
@@ -14,7 +14,7 @@ export const deletePost =async (id) => {
         if (!response.ok) {
             Toast.show({
                 type: 'error',
-                text1: "Error deleting the post."
+                text1: "Error in updating the post."
             })
             return;
         }
@@ -22,7 +22,7 @@ export const deletePost =async (id) => {
         const json = await response.json();
         Toast.show({
             type: 'success',
-            text1: "Post deleted successfully."
+            text1: "Request accomplised successfully."
         });
     } catch (err) {
         Toast.show({

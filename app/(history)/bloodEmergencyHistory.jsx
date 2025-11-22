@@ -7,8 +7,10 @@ import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BASE_URL } from "../../utils/constants/api.js";
 import { deletePost } from "../../utils/hooks/useDeletePost.jsx";
+import { donePost } from "../../utils/hooks/useDonePost.jsx";
 import useFetchHistory from "../../utils/hooks/useFetchHistory.jsx";
 import useLocation from "../../utils/hooks/useLocation.jsx";
+import Toast from "react-native-toast-message";
 
 const BloodEmergency = () => {
     const insets = useSafeAreaInsets();
@@ -43,6 +45,16 @@ const BloodEmergency = () => {
     const handleDelete = async(id) => {
         await deletePost(id);
         refetch();
+    }
+    const handleDone = async(id) => {
+        await donePost(id);
+        refetch();
+    }
+    const handleCompleted = (id) => {
+        Toast.show({
+            type: 'success',
+            text1:'Task already completed.'
+        })
     }
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -187,13 +199,24 @@ const BloodEmergency = () => {
                                         />
                                         <Text style={styles.text}>Delete</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={[styles.modifybtn, styles.done]}>
-                                        <MaterialIcons
-                                            name="done-outline"
-                                            size={14} color="#E3EFFF"
-                                        />
-                                        <Text style={styles.text}>Done</Text>
-                                    </TouchableOpacity>
+                                    {info.done ?
+                                        <TouchableOpacity style={[styles.modifybtn,styles.completed ]} onPress={() => handleCompleted(info.postUuid)}>
+                                            
+                                            <MaterialIcons
+                                                name="check-circle-outline"
+                                                size={14} color="#E3EFFF"
+                                            />
+                                            <Text style={styles.text}>Completed</Text>
+                                        </TouchableOpacity>
+                                        :
+                                        <TouchableOpacity style={[styles.modifybtn,styles.done]} onPress={() => handleDone(info.postUuid)}>
+                                            <MaterialIcons
+                                                name="done-outline"
+                                                size={14} color="#E3EFFF"
+                                            />
+                                            <Text style={styles.text}>Done</Text>
+                                        </TouchableOpacity>
+                                    }
                                 </View>
                             </View>
                         )
@@ -333,5 +356,8 @@ const styles = StyleSheet.create({
     },
     done: {
         backgroundColor: "#1976D2",
+    },
+    completed: {
+        backgroundColor:'#008000'
     }
 })

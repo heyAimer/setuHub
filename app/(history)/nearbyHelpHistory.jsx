@@ -10,6 +10,8 @@ import { BASE_URL } from "../../utils/constants/api.js";
 import { deletePost } from "../../utils/hooks/useDeletePost.jsx";
 import useFetchHistory from "../../utils/hooks/useFetchHistory.jsx";
 import useLocation from "../../utils/hooks/useLocation.jsx";
+import Toast from "react-native-toast-message";
+import { donePost } from "../../utils/hooks/useDonePost.jsx";
 
 const NearbyHelpHistory = () => {
     const insets = useSafeAreaInsets();
@@ -45,6 +47,18 @@ const NearbyHelpHistory = () => {
         await deletePost(id);
         refetch();
     }
+
+    const handleDone = async(id) => {
+        await donePost(id);
+        refetch();
+    }
+    const handleCompleted = (id) => {
+        Toast.show({
+            type: 'success',
+            text1:'Task already completed.'
+        })
+    }
+    
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>
             <View style={styles.topBar}>
@@ -177,13 +191,24 @@ const NearbyHelpHistory = () => {
                                         />
                                         <Text style={styles.text}>Delete</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={[styles.modifybtn, styles.done]}>
-                                        <MaterialIcons
-                                            name="done-outline"
-                                            size={14} color="#E3EFFF"
-                                        />
-                                        <Text style={styles.text}>Done</Text>
-                                    </TouchableOpacity>
+                                    {info.done ?
+                                        <TouchableOpacity style={[styles.modifybtn,styles.completed ]} onPress={() => handleCompleted(info.postUuid)}>
+                                            
+                                            <MaterialIcons
+                                                name="check-circle-outline"
+                                                size={14} color="#E3EFFF"
+                                            />
+                                            <Text style={styles.text}>Completed</Text>
+                                        </TouchableOpacity>
+                                        :
+                                        <TouchableOpacity style={[styles.modifybtn,styles.done]} onPress={() => handleDone(info.postUuid)}>
+                                            <MaterialIcons
+                                                name="done-outline"
+                                                size={14} color="#E3EFFF"
+                                            />
+                                            <Text style={styles.text}>Done</Text>
+                                        </TouchableOpacity>
+                                    }
                                 </View>
                             </View>
                         )
