@@ -164,18 +164,15 @@ const ImpactEvents = () => {
                                             followsUserLocation={true} // ✅ Camera follows user
                                             
                                         >
-
-                                            {latitude !== "" && longitude !== "" && (
-                                                <Marker
-                                                    coordinate={{
-                                                        latitude: Number(latitude),
-                                                        longitude: Number(longitude)
-                                                    }}
-                                                    title="Help needed here"
-                                                    pinColor="blue" 
-                                                
-                                                />
-                                            )}
+                                            <Marker
+                                                coordinate={{
+                                                    latitude: Number(latitude),
+                                                    longitude: Number(longitude)
+                                                }}
+                                                title="Event location"
+                                                pinColor="blue" 
+                                            
+                                            />
                                         </MapView>
                                     </View>
                                 </View>

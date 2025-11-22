@@ -255,17 +255,15 @@ const PeopleMissingHistory = () => {
                                             
                                         >
 
-                                            {latitude !== "" && longitude !== "" && (
-                                                <Marker
-                                                    coordinate={{
-                                                        latitude: Number(latitude),
-                                                        longitude: Number(longitude)
-                                                    }}
-                                                    title="Help needed here"
-                                                    pinColor="blue" 
-                                                
-                                                />
-                                            )}
+                                            <Marker
+                                                coordinate={{
+                                                    latitude: Number(latitude),
+                                                    longitude: Number(longitude)
+                                                }}
+                                                title="Missing alert"
+                                                pinColor="blue" 
+                                            
+                                            />
                                         </MapView>
                                     </View>
                                 </View>

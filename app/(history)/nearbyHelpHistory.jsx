@@ -6,12 +6,12 @@ import { useEffect } from "react";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import { BASE_URL } from "../../utils/constants/api.js";
 import { deletePost } from "../../utils/hooks/useDeletePost.jsx";
+import { donePost } from "../../utils/hooks/useDonePost.jsx";
 import useFetchHistory from "../../utils/hooks/useFetchHistory.jsx";
 import useLocation from "../../utils/hooks/useLocation.jsx";
-import Toast from "react-native-toast-message";
-import { donePost } from "../../utils/hooks/useDonePost.jsx";
 
 const NearbyHelpHistory = () => {
     const insets = useSafeAreaInsets();
@@ -167,18 +167,15 @@ const NearbyHelpHistory = () => {
                                             followsUserLocation={true} // ✅ Camera follows user
                                             
                                         >
-
-                                            {latitude !== "" && longitude !== "" && (
-                                                <Marker
-                                                    coordinate={{
-                                                        latitude: Number(latitude),
-                                                        longitude: Number(longitude)
-                                                    }}
-                                                    title="Help needed here"
-                                                    pinColor="blue" 
-                                                
-                                                />
-                                            )}
+                                            <Marker
+                                                coordinate={{
+                                                    latitude: Number(latitude),
+                                                    longitude: Number(longitude)
+                                                }}
+                                                title="Help needed here"
+                                                pinColor="blue" 
+                                            
+                                            />
                                         </MapView>
                                     </View>
                                 </View>

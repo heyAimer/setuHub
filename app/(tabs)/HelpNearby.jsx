@@ -66,6 +66,7 @@ const HelpNearby = () => {
                     }
 
                     const json = await response.json();
+
                     if (cancelled) {
                         setHelpers(Array.isArray(json) ? json : (json.data ?? json.results ?? []));
                         setError(null)

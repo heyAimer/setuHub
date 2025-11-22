@@ -285,7 +285,7 @@ const PeopleMissing = () => {
                                     >
                                         <Marker
                                             coordinate={{ latitude: info.latitude, longitude: info.longitude }}
-                                            title="Location"
+                                            title="Missing alert"
                                             pinColor="blue" // default red GPS marker
                                         />
                                         
