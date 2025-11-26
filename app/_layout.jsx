@@ -8,6 +8,7 @@ import { StatusBar } from "react-native";
 import { requestUserPermission, setupBackgroundNotificationListener, setupForegroundNotificationListener, useNotificationTapHandler, } from '../utils/notifications';
 import Toast from "react-native-toast-message";
 import { View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // 🚀 Define deep links here (EXPO ROUTER WAY)
 export const linking  = {
@@ -71,20 +72,22 @@ export default function RootLayout() {
 
 
   return (
-    <PaperProvider theme={theme}>
-      <View style={{ flex: 1, backgroundColor: "#F8FAFC" }}>
-        <StatusBar barStyle={"dark-content"} backgroundColor={"#F8FAFC"}/>
-        <Stack screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: "#F8FAFC" }
-        }} >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="(tabs)" />
-        </Stack>
+    <GestureHandlerRootView  style={{ flex: 1 }} >
+      <PaperProvider theme={theme}>
+        <View style={{ flex: 1, backgroundColor: "#F8FAFC" }}>
+          <StatusBar barStyle={"dark-content"} backgroundColor={"#F8FAFC"}/>
+          <Stack screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: "#F8FAFC" }
+          }} >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(tabs)" />
+          </Stack>
 
-        <Toast />
-      </View>
-    </PaperProvider>
+          <Toast />
+        </View>
+      </PaperProvider>
+    </GestureHandlerRootView>
   );
 }
 

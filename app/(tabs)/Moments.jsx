@@ -2,18 +2,24 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import LottieView from "lottie-react-native";
-import { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useCallback, useRef, useState } from "react";
+import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BASE_URL } from "../../utils/constants/api";
 import useLocation from "../../utils/hooks/useLocation";
+import { CommentSheet } from "../../utils/components/CommentSheet";
 
 const Moments = () => {
     const insets = useSafeAreaInsets();
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
+    const [showComments, setShowComments] = useState(false);
+    const [selectedPost, setSelectedPost] = useState(null);
+    
     const { latitude, longitude, errMsg, location, loading } = useLocation();
+    const [activePost, setActivePost] = useState(null);
+    const scaleAnim = useRef(new Animated.Value(1)).current;
 
     const convertUTCtoIST = (utcDate) => {
         const date = new Date(utcDate);
@@ -32,7 +38,9 @@ const Moments = () => {
 
     const handleLike = async(postUuid, status) => {
         try {
-           
+           setActivePost(postUuid);       // <<— Only this post should animate
+            triggerLikeAnimation();
+            
             setData(prev =>
                 prev.map(p => p.postUuid === postUuid ?
                     {
@@ -87,6 +95,7 @@ const Moments = () => {
             }
 
             const data = await response.json();
+            console.log("moments data is : ", data.data);
             setData(data.data || []);
             setError(null);
             
@@ -126,13 +135,34 @@ const Moments = () => {
         }
         
     }
+
     useFocusEffect(
         useCallback(() => {
             fetchMoments();
             fetchCoordinates();
         },[])
     )
-    
+
+    const triggerLikeAnimation = () => {
+        Animated.sequence([
+            Animated.timing(scaleAnim, {
+            toValue: 1.4,
+            duration: 120,
+            useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
+    const handleOpenComments = (postInfo) => {
+        setSelectedPost(postInfo);
+        setShowComments(true);
+    }
+    console.log("the selected post is: ", selectedPost); 
     return (
         <View style={[styles.container , {paddingTop: insets.top}]}> 
             
@@ -194,7 +224,7 @@ const Moments = () => {
                             
                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
                                     {info?.profilePhotoUrl ? (<Image
-                                        source={info.profilePhotoUrl}
+                                        source={{ uri: item.profilePhotoUrl }}
                                         style={styles.pfp}
                                     />) : (
                                         <View style={styles.pfpWrapper}>
@@ -296,14 +326,36 @@ const Moments = () => {
                                     gap: 40,
                                     marginTop: 20,
                                     paddingHorizontal: 4,
-                                    justifyContent: 'flex-end'
+                                    gap:20
                                 }}>
+
+                                    <TouchableOpacity
+                                        style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
+                                        onPress={() => handleOpenComments(info)}
+                                    >
+                                        <Ionicons name="chatbubble-outline" size={24} color= "#757575" />
+                                        
+                                        <View style={{marginLeft:8, marginRight:4, flexDirection:'row', gap:4}}>
+                                            {info.commentCount > 0 && <Text style={{ color: "#757575" }}>{info.commentCount}</Text>}
+                                            <Text style={{ color: "#757575" }}>{info.commentCount > 1 ? "Comments" : "Comment"}</Text>
+                                        </View>
+                                    </TouchableOpacity>
                                
                                     <TouchableOpacity
                                         onPress={() => handleLike(info.postUuid, info.interested)}
-                                        style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                                        <Ionicons name="heart-outline" size={24} color="#ccc" />
-                                        {info.interestedCount > 0 && <Text style={{ color: "#B0B0B0" }}>{info.interestedCount}</Text>}
+                                        style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+                                        
+                                        <Animated.View
+                                                style={{ transform: [{ scale:  activePost === info.postUuid ? scaleAnim : 1 }] }}>
+                                                <Ionicons name={info.interested ? "heart" : "heart-outline"} size={24} color={info.interested ? "#E30103" : "#757575" } />
+                                        </Animated.View>
+                                        
+                                        <View style={{ marginLeft: 8, marginRight: 4, flexDirection: 'row', gap: 4 }}>
+
+                                            {info.interestedCount > 0 && <Text style={{ color: "#757575" }}>{info.interestedCount}</Text>}
+                                            <Text style={{ color: "#757575" }}>{info.interestedCount > 1? "Likes": "Like"}</Text>
+                                            
+                                        </View>
                                     </TouchableOpacity>
                             
                                 </View>
@@ -313,6 +365,12 @@ const Moments = () => {
                 }
             </ScrollView>
             
+            <CommentSheet
+                visible={showComments}
+                post={selectedPost}
+                onClose={() => setShowComments(false)}
+                userAvatar={data?.profilePhotoUrl}
+            />
         </View>
     )
 }
