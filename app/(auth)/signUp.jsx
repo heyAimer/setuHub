@@ -6,6 +6,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput
 import Toast from "react-native-toast-message";
 import { signUpValidationSchema } from "../../utils/authSchema";
 import { BASE_URL } from '../../utils/constants/api';
+import { ActivityIndicator } from "react-native";
 
 const SignUp = () => {
     const [loading, setLoading] = useState(false);
@@ -38,7 +39,8 @@ const SignUp = () => {
                     text2: 'Check your spam folder.'
                 });
 
-                router.push("/otpVerify");
+                router.dismissAll();
+                router.replace("/otpVerify");
 
                 resetForm();
                 

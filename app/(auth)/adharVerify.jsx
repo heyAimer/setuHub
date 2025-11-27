@@ -56,7 +56,8 @@ const AdharVerify = () => {
                     type: "success",
                     text1: data.message
                 });
-                router.push("/Moments");
+                router.dismissAll();
+                router.replace("/Moments");
                 resetForm();
                 const fcmToken = await getFcmToken();
                 

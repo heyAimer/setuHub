@@ -19,6 +19,7 @@ import {
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import Toast from "react-native-toast-message";
 import { useComments } from "../hooks/useComments";
+import useCreateInfo from "../hooks/useCreateInfo";
 
 const convertUTCtoIST = (utcDate) => {
     const date = new Date(utcDate);
@@ -34,11 +35,10 @@ const convertUTCtoIST = (utcDate) => {
     })
     return formatter.format(date);
 };
-const CommentItem = ({ item, onDelete }) => {
+const CommentItem = ({ item, onDelete, isOwner }) => {
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [commentToDelete, setCommentToDelete] = useState(null);
-    
-    // item shape assumed to include: commentuuid, userName, content, createdAt
+    const owner = item.uuid === isOwner;
     return (
         <View style={styles.commentRow}>
           
@@ -71,7 +71,7 @@ const CommentItem = ({ item, onDelete }) => {
                         <Text style={styles.commentText}>{item.content}</Text>
                     </View>
                    
-                    <View style={{ alignItems:'flex-end'}}>
+                    {owner && <View style={{ alignItems:'flex-end'}}>
                         <TouchableOpacity onPress={() => {
                             setCommentToDelete(item.commentUuid);
                             setDeleteModalVisible(true);
@@ -81,7 +81,7 @@ const CommentItem = ({ item, onDelete }) => {
                             size={20} color="#DA0506"
                         />
                         </TouchableOpacity>
-                    </View>
+                    </View>}
 
                     <Modal
                         visible={deleteModalVisible}
@@ -134,8 +134,7 @@ const CommentItem = ({ item, onDelete }) => {
   );
 };
 
-export const CommentSheet = ({ visible, post, onClose,updateCommentCount,refetchPosts }) => {
-    
+export const CommentSheet = ({ visible, post, onClose,refetchPosts }) => {
     const [input, setInput] = useState("");
     const [sending, setSending] = useState(false);
     const translateY = useSharedValue(400); // start off screen (bottom)
@@ -150,6 +149,9 @@ export const CommentSheet = ({ visible, post, onClose,updateCommentCount,refetch
     } = useComments();
 
     const inputRef = useRef(null);
+    
+    const { user } = useCreateInfo();
+    const isOwner = user.uuid;
     
     useEffect(() => {
         const hideSub = Keyboard.addListener("keyboardDidHide", () => {
@@ -204,6 +206,7 @@ export const CommentSheet = ({ visible, post, onClose,updateCommentCount,refetch
 
         if (newComment) {
             refetchPosts?.();
+            fetchComments(post.postUuid);
         }
         setSending(false);
         setInput("");
@@ -212,9 +215,8 @@ export const CommentSheet = ({ visible, post, onClose,updateCommentCount,refetch
     const handleDelete = async (commentUuid) => {
         try {
             await deleteComments(commentUuid);
-            if (ok) {
-                refetchPosts?.();
-            }
+            refetchPosts?.();
+            
         } catch (err) {
             Toast.show({ type: "error", text1: "Could not delete comment" });
         }
@@ -257,8 +259,8 @@ export const CommentSheet = ({ visible, post, onClose,updateCommentCount,refetch
                     </View>
                     
                     <View style={styles.inputRow}>
-                        {post.profilePhotoUrl ? (<Image
-                            source={post.profilePhotoUrl}
+                        {user.profilePhotoUrl ? (<Image
+                            source={user.profilePhotoUrl}
                             style={styles.pfp}
                         />) : (
                                 <View style={styles.pfpWrapper}>
@@ -311,6 +313,7 @@ export const CommentSheet = ({ visible, post, onClose,updateCommentCount,refetch
                                                 key={item.commentUuid || Math.random().toString()}
                                                 item={item}
                                                 onDelete={handleDelete}
+                                                isOwner={isOwner}
                                             />
                                         ))}
                                     </ScrollView>
@@ -428,7 +431,7 @@ const styles = StyleSheet.create({
         fontSize: 12, color: "#999"
     },
     commentText: {
-        marginTop: 4, lineHeight: 18
+        marginTop: 4, lineHeight: 18,  width:280
     },
     commentActions: {
         marginTop: 6, flexDirection: "row"

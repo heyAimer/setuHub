@@ -55,11 +55,12 @@ const SignIn = () => {
                             const data = await tokenResponse.json();
                         }
                     }
-
-                    router.push("/Moments");
+                    router.dismissAll();
+                    router.replace("/Moments");
                     resetForm();
                 } else if (data.authStatus === 'mail_verified') {
-                    router.push("/adharVerify");
+                    router.dismissAll();
+                    router.replace("/adharVerify");
                     resetForm();
                 }
             } else {

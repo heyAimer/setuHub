@@ -382,7 +382,6 @@ const Moments = () => {
                 post={selectedPost}
                 onClose={() => setShowComments(false)}
                 userAvatar={data?.profilePhotoUrl}
-                updateCommentCount={updateCommentCount}
                 refetchPosts={refetchPosts}
             />
         </View>

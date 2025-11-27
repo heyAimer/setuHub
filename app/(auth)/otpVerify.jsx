@@ -45,8 +45,8 @@ const OtpVerify = () => {
                     text1:data.message
                 })
             }
-            
-            router.push("/adharVerify");
+            router.dismissAll();
+            router.replace("/adharVerify");
         } catch (error) {
             Toast.show({
                 type: 'failed',
