@@ -5,10 +5,8 @@ import { BASE_URL } from "../constants/api";
 export const useComments = () => {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(false);
-    console.log("fetching comments hey you1")
     
     const fetchComments = async (postuuid) => {
-        console.log("fetching comments hey you", postuuid);
         try {
             setLoading(true);
             const response = await fetch(`${BASE_URL}/request/comments/${postuuid}`,
@@ -23,7 +21,6 @@ export const useComments = () => {
             if (!response.ok) throw new Error("Failed to load comments11111.");
 
             const data = await response.json();
-            console.log("fetching comments : ", data);
             setComments(data.comments);
             
         } catch (error) {
@@ -34,35 +31,52 @@ export const useComments = () => {
     }
 
     const createComments = async (postuuid, content) => {
+        const payload = {
+            postUuid: postuuid,
+            content:content
+        }
         try {
             const response = await fetch(`${BASE_URL}/request/comment/create`,
                 {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json",
-                        "X-App-Secret": "smartboyakriti",
+                        "X-App-Secret": "smartboyakriti"
                     },
-                    body: JSON.stringify({ postuuid, content }),
+                    body: JSON.stringify(payload),
                 }
             );
-            if (!response.ok) throw new Error("Failed to create comment.");
+            if (!response.ok) {
+                 const errorData = await response.json().catch(() => ({}));
+                Toast.show({
+                    type: 'error',
+                    text1: 'Server error'
+                });
+                throw new Error(`Server error ${JSON.stringify(errorData)}`);
+            }
 
             const newComment = await response.json();
 
             setComments((prev) => [newComment, ...prev]);
+            Toast.show({
+                type: 'success',
+                text1:'Comment created successfully'
+            })
+            return newComment;
+            
         } catch (error) {
             console.error("creating comment error : ", error);
-            Toast.error({
+            Toast.show({
                 type: 'error',
-                Text1: "Something went wrong!"
+                text1: "Something went wrong!"
             })
             
         }
     }
 
-    const deleteComments = async (commentuuid) => {
+    const deleteComments = async (commentUuid) => {
         try {
-            const response = await fetch(`${BASE_URL}/request/comment/delete/${commentuuid}`,
+            const response = await fetch(`${BASE_URL}/request/comment/delete/${commentUuid}`,
                 {
                     method: "DELETE",
                     headers: {
@@ -72,9 +86,17 @@ export const useComments = () => {
             );
             if (!response.ok) throw new Error("Failed to delete comment.");
 
-            setComments((prev) => prev.filter((c) => c.commentuuid !== commentuuid));
+            setComments((prev) => prev.filter((c) => c.commentUuid !== commentUuid));
+            Toast.show({
+                type: 'success',
+                text1:'Comment deleted successfully.'
+            })
         } catch (error) {
             console.error("Error deleting the comment: ", error);
+            Toast.show({
+                type: 'error',
+                text1:'Error deleting the comment'
+            })
         }
     }
     return {
@@ -82,6 +104,6 @@ export const useComments = () => {
         loading,
         fetchComments,
         createComments,
-        deleteComments
+        deleteComments,
     }
 }

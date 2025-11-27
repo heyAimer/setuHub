@@ -1,20 +1,22 @@
-import { Ionicons } from "@expo/vector-icons";
-import BottomSheet from "@gorhom/bottom-sheet";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import LottieView from "lottie-react-native";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     ActivityIndicator,
-    FlatList,
     Keyboard,
     KeyboardAvoidingView,
+    Modal,
     Platform,
+    Pressable,
+    ScrollView,
     StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
-    View,
+    View
 } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import Toast from "react-native-toast-message";
 import { useComments } from "../hooks/useComments";
 
@@ -32,52 +34,113 @@ const convertUTCtoIST = (utcDate) => {
     })
     return formatter.format(date);
 };
-  
 const CommentItem = ({ item, onDelete }) => {
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [commentToDelete, setCommentToDelete] = useState(null);
+    
     // item shape assumed to include: commentuuid, userName, content, createdAt
-    console.log("comment item hai: ", item);
-  return (
-    <View style={styles.commentRow}>
-        {item.profilePhotoUrl?
-        (<Image
-            source={item.profilePhotoUrl}
-            style={styles.pfp}
-        />) : (
-            <View style={styles.pfpWrapper}>
-                <LottieView
-                    source={require('../../assets/images/profilePic1.json')}
-                    autoPlay
-                    loop
-                    style={{ width: '100%', height: '100%' }}
-                />   
+    return (
+        <View style={styles.commentRow}>
+          
+            {item.profilePhotoUrl ?
+                
+                (<Image
+                    source={item.profilePhotoUrl}
+                    style={styles.pfp}
+                />) : (
+                    <View style={styles.pfpWrapper}>
+                        <LottieView
+                            source={require('../../assets/images/profilePic1.json')}
+                            autoPlay
+                            loop
+                            style={{ width: '100%', height: '100%' }}
+                        />   
+                    </View>
+                )
+            }
+            <View style={{ flex: 1 }}>
+                
+                <View style={styles.commentHeader}>
+                    <View>
+                        <View style={{flexDirection:'row',alignItems:'center', gap:10}}>
+                            <Text style={styles.commentUser}>{item.uuid}</Text>
+                            <Text style={styles.commentTime}>
+                                {item.createdAt ? convertUTCtoIST(item.createdAt) : ""}
+                            </Text>
+                        </View>
+                        <Text style={styles.commentText}>{item.content}</Text>
+                    </View>
+                   
+                    <View style={{ alignItems:'flex-end'}}>
+                        <TouchableOpacity onPress={() => {
+                            setCommentToDelete(item.commentUuid);
+                            setDeleteModalVisible(true);
+                        }}>
+                        <MaterialIcons
+                            name="delete-outline"
+                            size={20} color="#DA0506"
+                        />
+                        </TouchableOpacity>
+                    </View>
+
+                    <Modal
+                        visible={deleteModalVisible}
+                        transparent
+                        animationType="fade"
+                        onRequestClose={() => setDeleteModalVisible(false)}
+                    >
+                        <View style={{
+                            flex: 1,
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            <View style={{
+                                width: 300,
+                                backgroundColor: 'white',
+                                borderRadius: 12,
+                                paddingHorizontal: 24,
+                                paddingVertical:18,
+                                alignItems: 'center'
+                            }}>
+                                <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 15 }}>
+                                    Are you sure you want to delete this comment?
+                                </Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                                    <TouchableOpacity
+                                        onPress={() => setDeleteModalVisible(false)}
+                                        style={{ flex: 1, marginRight: 10, padding: 10, borderColor: "#1976D2", borderWidth:2, borderRadius: 8, alignItems: 'center' }}
+                                    >
+                                        <Text style={{color: "#1976D2"}}>Cancel</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            onDelete(commentToDelete);
+                                            setDeleteModalVisible(false);
+                                        }}
+                                        style={{ flex: 1, marginLeft: 10, padding: 10, backgroundColor: '#DA0506', borderRadius: 8, alignItems: 'center' }}
+                                    >
+                                        <Text style={{ color: 'white' }}>Delete</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
+
+                </View>
             </View>
-        )}
-      <View style={{ flex: 1 }}>
-        <View style={styles.commentHeader}>
-          <Text style={styles.commentUser}>{item.uuid || "User"}</Text>
-          <Text style={styles.commentTime}>
-            {item.createdAt ? convertUTCtoIST(item.createdAt) : ""}
-          </Text>
         </View>
-
-        <Text style={styles.commentText}>{item.content}</Text>
-
-        <View style={styles.commentActions}>
-          {/* Add like/reply buttons here later */}
-          <TouchableOpacity onPress={() => onDelete(item.commentUuid)}>
-            <Text style={styles.deleteText}>Delete</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
   );
 };
 
-export const CommentSheet = ({ visible, post, onClose }) => {
-    console.log("i am in the comment sheet!");
+export const CommentSheet = ({ visible, post, onClose,updateCommentCount,refetchPosts }) => {
+    
     const [input, setInput] = useState("");
     const [sending, setSending] = useState(false);
-    
+    const translateY = useSharedValue(400); // start off screen (bottom)
+    const [mounted, setMounted] = useState(visible);
+
     const {
         comments,
         loading,
@@ -86,19 +149,45 @@ export const CommentSheet = ({ visible, post, onClose }) => {
         deleteComments
     } = useComments();
 
-    const sheetRef = useRef(null);
-    const snapPoints = useMemo(() => ["55%", "90%"], []);
     const inputRef = useRef(null);
-
-    useEffect(() => {
-        if (visible && post?.postUuid) {
-            fetchComments(post.postUuid);
-        }
-    }, [visible, post]);
     
     useEffect(() => {
-        console.log("UI RECEIVED COMMENTS: ", comments);
-    }, [comments]);
+        const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+            inputRef.current?.blur();
+        });
+
+        return () => hideSub.remove();
+    }, []);
+
+    useEffect(() => {
+        if (visible) {
+            setMounted(true)
+        }else {
+            // delay unmount until *after* animation (400ms)
+            const timer = setTimeout(() => setMounted(false), 450);
+            return () => clearTimeout(timer);
+        };
+    }, [visible]);
+    
+    useEffect(() => {
+
+        if (!visible) {
+            translateY.value = withTiming(400, { duration: 180 });
+            return;
+        }
+
+        translateY.value = withSpring(0, {
+            damping: 30,
+            stiffness: 150,
+            mass: 1,
+            overshootClamping: true,
+        });
+        
+        if (post?.postUuid) {
+            fetchComments(post.postUuid);
+        }
+    }, [visible]);
+
     
     const handleClose = () => {
         setInput("");
@@ -109,30 +198,27 @@ export const CommentSheet = ({ visible, post, onClose }) => {
     const handleSend = async () => {
         const content = input.trim();
         if (!content) return;
-        try {
-            setSending(true);
-            await createComments(post.postUuid, content);
-            setInput("");
-            // optional: scroll list to top - FlatList will show newest at top by default because we added at index 0
-        } catch (error) {
-            console.error("Send comment failed ", error);
-            Toast.show({type:'error', text1:"Cannot send comment."})
-        } finally {
-            setSending(false);
+       
+        setSending(true);
+        const newComment = await createComments(post.postUuid, content);
+
+        if (newComment) {
+            refetchPosts?.();
         }
+        setSending(false);
+        setInput("");
     };
     
-    const handleDelete = async (commentuuid) => {
+    const handleDelete = async (commentUuid) => {
         try {
-            await deleteComments(commentuuid);
+            await deleteComments(commentUuid);
+            if (ok) {
+                refetchPosts?.();
+            }
         } catch (err) {
             Toast.show({ type: "error", text1: "Could not delete comment" });
         }
     };
-    
-    const keyExtractor = (item) => item.commentUuid?.toString() ?? Math.random().toString();
-
-    const renderItem = ({ item }) => <CommentItem item={item} onDelete={handleDelete} />;
 
     const ListEmpty = () => (
         <View style={styles.emptyContainer}>
@@ -140,130 +226,183 @@ export const CommentSheet = ({ visible, post, onClose }) => {
         </View>
     );
 
-    if (!visible) return null;
-
-    console.log("COMMENTS STATE:", comments);
-
+    const sheetAnim = useAnimatedStyle(() => ({
+        transform: [{ translateY: translateY.value }]
+    }));
+    
+    if (!mounted) return null;  
 
     return (
-        <BottomSheet
-            ref={sheetRef}
-            index={1}
-            snapPoints={snapPoints}
-            enablePanDownToClose={true}
-            onClose={handleClose}
-            handleIndicatorStyle={styles.handleIndicator}
-            backgroundStyle={styles.sheetBackground}
-        >
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={styles.container}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 24 : 0}
+        <Animated.View
+            pointerEvents="box-none"
+            style={[styles.sheetContainer, sheetAnim]}
             >
-                <View style={styles.header}>
-                    <View style={styles.handle} />
-                    <Text style={styles.title}>Comments ({comments?.length || 0})</Text>
-                </View>
+            <View style={styles.sheetBackground} pointerEvents="auto">
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    style={styles.container}
+                >
+                    <View style={styles.header}>
+                        <View style={styles.handle} />
+                        <View style={{width: '100%', justifyContent: 'center', alignItems: 'center', marginTop: 8}}>
+                            <Text style={styles.title}>Comments ({comments?.length})</Text>
 
-                 {/* Input Row */}
-                    <View style={styles.inputRow}>
-                    <Image
-                        source={post.profilePhotoUrl}
-                        style={styles.pfp}
-                    />
-                    <TextInput
-                        ref={inputRef}
-                        value={input}
-                        onChangeText={setInput}
-                        placeholder="Add a comment..."
-                        returnKeyType="send"
-                        onSubmitEditing={handleSend}
-                        style={styles.input}
-                        editable={!sending}
-                        multiline={false}
-                    />
-                    <TouchableOpacity onPress={handleSend} style={styles.sendBtn} disabled={sending}>
-                        {sending ? (
-                        <ActivityIndicator size="small" />
-                        ) : (
-                        <Ionicons name="send" size={20} color="#fff" />
-                        )}
-                    </TouchableOpacity>
-                </View>
-
-                 {/* Comments List */}
-                <View style={styles.listWrap}>
-                {loading ? (
-                    <View style={styles.loadingWrap}>
-                    <ActivityIndicator size="small" />
+                            <TouchableOpacity
+                                onPress={handleClose}
+                                style={{ position: 'absolute', right: 0, top: 0, paddingHorizontal:10, paddingVertical:2, borderRadius:4 ,}}
+                            >
+                                <Text style={{ fontWeight: 'bold', color: 'red' }}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                ) : (
-                    <FlatList
-                    data={comments}
-                    keyExtractor={keyExtractor}
-                    renderItem={renderItem}
-                    ListEmptyComponent={<ListEmpty />}
-                    contentContainerStyle={{ paddingBottom: 80 }}
-                    showsVerticalScrollIndicator={false}
-                    keyboardShouldPersistTaps="handled"
-                    />
-                )}
-                </View>
-            </KeyboardAvoidingView>
-        </BottomSheet>
+                    
+                    <View style={styles.inputRow}>
+                        {post.profilePhotoUrl ? (<Image
+                            source={post.profilePhotoUrl}
+                            style={styles.pfp}
+                        />) : (
+                                <View style={styles.pfpWrapper}>
+                                    <LottieView
+                                        source={require('../../assets/images/profilePic1.json')}
+                                        autoPlay
+                                        loop
+                                        style={{ width: '100%', height: '100%' }}
+                                    />   
+                                </View>
+                            )
+                        }  
+                        <Pressable onPress={() => inputRef.current?.focus()} style={{ flex: 1 }}>
+                            <TextInput
+                                ref={inputRef}
+                                value={input}
+                                onChangeText={setInput}
+                                placeholder="Add a comment..."
+                                returnKeyType="done"
+                                style={[styles.inputField, { fontFamily: undefined, color: '#000' }]}
+                                placeholderTextColor="#828181"
+                                editable={!sending}
+                            />
+                        </Pressable>
+                        <TouchableOpacity onPress={handleSend} style={styles.sendBtn} disabled={sending}>
+                            {sending ? (
+                            <ActivityIndicator size="small" />
+                            ) : (
+                            <Ionicons name="send" size={20} color="#fff" />
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.listWrap}>
+                        {
+                            loading ? (
+                                <ActivityIndicator size="small"/>
+                            ) : comments.length === 0 ? (
+                                <ListEmpty/>
+                            ) : (
+                                    <ScrollView
+                                        showsVerticalScrollIndicator={false}
+                                        keyboardShouldPersistTaps="handled"
+                                        nestedScrollingEnabled={true} // Android fix
+                                        contentContainerStyle={{
+                                        paddingBottom: 40, // space at bottom
+                                        }}
+                                    >
+                                        {comments.map((item) => (
+                                            <CommentItem
+                                                key={item.commentUuid || Math.random().toString()}
+                                                item={item}
+                                                onDelete={handleDelete}
+                                            />
+                                        ))}
+                                    </ScrollView>
+                            )
+                    }
+                    </View>
+                </KeyboardAvoidingView>
+            </View>
+        </Animated.View>
     )
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 1, paddingHorizontal: 16
+        flex: 1
+        
     },
     handleIndicator: {
         backgroundColor: "#d0d0d0"
     },
+    backdrop: {
+        ...StyleSheet.absoluteFillObject,
+        position: "absolute",
+        backgroundColor: "rgba(0,0,0,0.45)",
+        zIndex: 10,
+    },
+    sheetContainer: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 20,
+    },
     sheetBackground: {
-        backgroundColor: "#fff"
+        backgroundColor: "#F8FAFC",
+        borderTopLeftRadius: 18,
+        borderTopRightRadius: 18,
+        borderColor: "#E9E9E9",
+        borderWidth: 1,
+        height: 400,
+        overflow: 'hidden',
+    },
+    sheetContent: {
+        backgroundColor: "#fff",
+        borderTopLeftRadius: 18,
+        borderTopRightRadius: 18,
+        paddingBottom: 20,
+        paddingHorizontal: 16,
+        paddingTop: 10,
     },
     header: {
-        alignItems: "center", paddingTop: 8, paddingBottom: 12
+        alignItems: "center", paddingTop: 10, paddingBottom: 12
     },
     handle: {
         width: 40, height: 4, backgroundColor: "#ddd", borderRadius: 8
     },
     title: {
-        marginTop: 8, fontSize: 16, fontWeight: "700"
+        fontSize: 16, fontWeight: "700"
     },
 
   inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 14,
-    marginBottom: 12,
-  },
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 8,
+        marginBottom: 12,
+        paddingHorizontal: 20
+    },
     myAvatar: {
         width: 36, height: 36, borderRadius: 18, marginRight: 10
     },
-  input: {
-    flex: 1,
-    backgroundColor: "#f2f2f2",
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    fontSize: 14,
-  },
-  sendBtn: {
-    marginLeft: 8,
-    backgroundColor: "#007AFF",
-    padding: 10,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+    inputField: {
+        color: 'black',
+        borderColor: "#D1D5DB",
+        borderWidth: 1,
+        borderRadius: 8,
+        marginLeft: 8,
+        paddingHorizontal: 12,
+    },
+    sendBtn: {
+        marginLeft: 8,
+        backgroundColor: "#1976D2",
+        paddingVertical: 10,
+        paddingHorizontal:12,
+        borderRadius: '100%',
+        alignItems: "center",
+        justifyContent: "center",
+    },
 
     listWrap: {
-        flex: 1, marginTop: 2, paddingBottom: 20
+       flex: 1, marginTop: 2, paddingHorizontal:20
     },
     loadingWrap: {
-        padding: 24, alignItems: "center"
+        flex: 1, padding: 20, alignItems: "center"
     },
 
     emptyContainer: {
@@ -274,8 +413,7 @@ const styles = StyleSheet.create({
     },
 
     commentRow: {
-        flexDirection: "row", gap: 12, marginBottom: 14, alignItems: "flex-start",
-        backgroundColor:'red'
+        flexDirection: "row", gap: 12, marginBottom: 14, alignItems: "flex-start"
     },
     commentAvatar: {
         width: 40, height: 40, borderRadius: 20
@@ -287,7 +425,7 @@ const styles = StyleSheet.create({
         fontWeight: "700"
     },
     commentTime: {
-        fontSize: 12, color: "#999", marginLeft: 8
+        fontSize: 12, color: "#999"
     },
     commentText: {
         marginTop: 4, lineHeight: 18

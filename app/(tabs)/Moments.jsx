@@ -5,9 +5,9 @@ import LottieView from "lottie-react-native";
 import { useCallback, useRef, useState } from "react";
 import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CommentSheet } from "../../utils/components/CommentSheet";
 import { BASE_URL } from "../../utils/constants/api";
 import useLocation from "../../utils/hooks/useLocation";
-import { CommentSheet } from "../../utils/components/CommentSheet";
 
 const Moments = () => {
     const insets = useSafeAreaInsets();
@@ -16,11 +16,11 @@ const Moments = () => {
     const [data, setData] = useState([]);
     const [showComments, setShowComments] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
-    
+    const [posts, setPosts] = useState([]);
+
     const { latitude, longitude, errMsg, location, loading } = useLocation();
     const [activePost, setActivePost] = useState(null);
     const scaleAnim = useRef(new Animated.Value(1)).current;
-
     const convertUTCtoIST = (utcDate) => {
         const date = new Date(utcDate);
 
@@ -95,7 +95,6 @@ const Moments = () => {
             }
 
             const data = await response.json();
-            console.log("moments data is : ", data.data);
             setData(data.data || []);
             setError(null);
             
@@ -110,6 +109,9 @@ const Moments = () => {
 
     }
 
+    const refetchPosts = () => {
+        fetchMoments();
+    }
     const fetchCoordinates = async () => {
         if (!latitude || !longitude) {
             return;
@@ -162,7 +164,18 @@ const Moments = () => {
         setSelectedPost(postInfo);
         setShowComments(true);
     }
-    console.log("the selected post is: ", selectedPost); 
+
+    
+    const updateCommentCount = (postUuid, delta) => {
+        setPosts(prev =>
+            prev.map(p =>
+                p.postUuid === postUuid
+                    ? { ...p, commentCount: p.commentCount + delta }
+                    : p
+            )
+        );
+    };
+
     return (
         <View style={[styles.container , {paddingTop: insets.top}]}> 
             
@@ -218,7 +231,6 @@ const Moments = () => {
                 ) : (
                     data.map((info) => {
                         const images = info?.media?.slice(0, 4) || [];
-
                         return (
                             <View style={styles.postContainer} key={info.postUuid}>
                             
@@ -370,6 +382,8 @@ const Moments = () => {
                 post={selectedPost}
                 onClose={() => setShowComments(false)}
                 userAvatar={data?.profilePhotoUrl}
+                updateCommentCount={updateCommentCount}
+                refetchPosts={refetchPosts}
             />
         </View>
     )
