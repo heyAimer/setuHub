@@ -4,6 +4,7 @@ import { router, useFocusEffect } from "expo-router";
 import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import ImageViewing from "react-native-image-viewing";
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BASE_URL } from "../../utils/constants/api";
@@ -16,6 +17,17 @@ const ImpactEvents = () => {
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
     const [data, setData] = useState([]);
+
+    const [viewerVisible, setViewerVisible] = useState(false);
+    const [viewerIndex, setViewerIndex] = useState(0);
+    const [viewerImages, setViewerImages] = useState([]); 
+
+    const openImageViewer = (imagesArray, index) => {
+        const formatted = imagesArray.map(uri => ({ uri }));
+        setViewerImages(formatted);
+        setViewerIndex(index);
+        setViewerVisible(true);
+    };
 
     const convertUTCtoIST = (utcDate) => {
         const date = new Date(utcDate);
@@ -188,59 +200,69 @@ const ImpactEvents = () => {
                                                             
                                 {/* 1 Image */}
                                 {images.length === 1 && (
-                                    <Image
-                                    source={{ uri: images[0] }}
-                                    style={{ width: "100%", height: 250, borderRadius: 8,borderWidth: 1, borderColor: "#ccc", }}
-                                    />
+                                    <TouchableOpacity onPress={() => openImageViewer(images, 0)}>
+                                        <Image
+                                        source={{ uri: images[0] }}
+                                        style={{ width: "100%", height: 250, borderRadius: 8,borderWidth: 1, borderColor: "#ccc", }}
+                                        />
+                                    </TouchableOpacity>
                                 )}
 
                                 {/* 2 Images */}
                                 {images.length === 2 && (
                                     <View style={{ flexDirection: "row", gap: 8 }}>
-                                    {images.map((img, i) => (
-                                        <Image
-                                        key={i}
-                                        source={{ uri: img }}
-                                        style={{ width: "48%", height: 200, borderRadius: 8,borderWidth: 1,
-                                        borderColor: "#ccc" }}
-                                        />
-                                    ))}
+                                        {images.map((img, i) => (
+                                            <Image
+                                                key={i}
+                                                source={{ uri: img }}
+                                                style={{
+                                                    width: "48%", height: 200, borderRadius: 8, borderWidth: 1,
+                                                    borderColor: "#ccc"
+                                                }}
+                                            />
+                                        ))}
                                     </View>
                                 )}
 
                                 {/* 3 Images */}
                                 {images.length === 3 && (
                                     <View style={{ flexDirection: "row", gap: 8 }}>
-                                    <Image source={{ uri: images[0] }} style={{ width: "60%", height: 250, borderRadius: 8,borderWidth: 1,
-                                    borderColor: "#ccc", }} />
+                                        <Image source={{ uri: images[0] }} style={{
+                                            width: "60%", height: 250, borderRadius: 8, borderWidth: 1,
+                                            borderColor: "#ccc",
+                                        }} />
 
-                                    <View style={{ flex: 1, gap: 8 }}>
-                                        <Image source={{ uri: images[1] }} style={{ height: 120, borderRadius: 8,borderWidth: 1,
-                                        borderColor: "#ccc", }} />
-                                        <Image source={{ uri: images[2] }} style={{ height: 120, borderRadius: 8,borderWidth: 1,
-                                        borderColor: "#ccc", }} />
-                                    </View>
+                                        <View style={{ flex: 1, gap: 8 }}>
+                                            <Image source={{ uri: images[1] }} style={{
+                                                height: 120, borderRadius: 8, borderWidth: 1,
+                                                borderColor: "#ccc",
+                                            }} />
+                                            <Image source={{ uri: images[2] }} style={{
+                                                height: 120, borderRadius: 8, borderWidth: 1,
+                                                borderColor: "#ccc",
+                                            }} />
+                                        </View>
                                     </View>
                                 )}
 
                                 {/* 4 Images */}
                                 {images.length === 4 && (
                                     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                                    {images.map((img, i) => (
-                                        <Image
-                                        key={i}
-                                        source={{ uri: img }}
-                                        style={{
-                                            width: "48%",
-                                            height: 160,
-                                            borderRadius: 8,
-                                            borderWidth: 1,
-                                            borderColor: "#ccc"}}
-                                        />
-                                    ))}
+                                        {images.map((img, i) => (
+                                            <Image
+                                                key={i}
+                                                source={{ uri: img }}
+                                                style={{
+                                                    width: "48%",
+                                                    height: 160,
+                                                    borderRadius: 8,
+                                                    borderWidth: 1,
+                                                    borderColor: "#ccc"
+                                                }}
+                                            />
+                                        ))}
                                     </View>
-                                )}
-                                                            
+                                )}                      
                                                                 
                             </View>)}
                             
@@ -276,7 +298,17 @@ const ImpactEvents = () => {
 
                     </View>
 
-                )}))}
+                    )
+                }))}
+                
+                <ImageViewing
+                    images={viewerImages}
+                    imageIndex={viewerIndex}
+                    visible={viewerVisible}
+                    onRequestClose={() => setViewerVisible(false)}
+                    onClose={() => setViewerVisible(false)}
+                    doubleTapToZoomEnabled={true}
+                />
             </ScrollView>
             
         </View>

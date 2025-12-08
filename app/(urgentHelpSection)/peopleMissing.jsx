@@ -5,6 +5,7 @@ import { router, useNavigation } from "expo-router";
 import LottieView from "lottie-react-native";
 import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import ImageViewing from "react-native-image-viewing";
 import MapView, { Marker } from 'react-native-maps';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BASE_URL } from "../../utils/constants/api";
@@ -18,6 +19,17 @@ const PeopleMissing = () => {
     const [loadingPost, setLoadingPost] = useState(false);
     const [error, setError] = useState(null);
     const [helpers, setHelpers] = useState([]);
+
+    const [viewerVisible, setViewerVisible] = useState(false);
+    const [viewerIndex, setViewerIndex] = useState(0);
+    const [viewerImages, setViewerImages] = useState([]); 
+
+    const openImageViewer = (imagesArray, index) => {
+        const formatted = imagesArray.map(uri => ({ uri }));
+        setViewerImages(formatted);
+        setViewerIndex(index);
+        setViewerVisible(true);
+    };
 
     const convertUTCtoIST = (utcDate) => {
         const date = new Date(utcDate);
@@ -206,10 +218,12 @@ const PeopleMissing = () => {
                                 
                                     {/* 1 Image */}
                                     {images.length === 1 && (
-                                        <Image
-                                            source={{ uri: images[0] }}
-                                            style={{ width: "100%", height: 250, borderRadius: 8, borderWidth: 1, borderColor: "#ccc", }}
-                                        />
+                                        <TouchableOpacity onPress={() => openImageViewer(images, 0)}>
+                                            <Image
+                                                source={{ uri: images[0] }}
+                                                style={{ width: "100%", height: 250, borderRadius: 8, borderWidth: 1, borderColor: "#ccc", }}
+                                            />
+                                        </TouchableOpacity>
                                     )}
 
                                     {/* 2 Images */}
@@ -296,6 +310,15 @@ const PeopleMissing = () => {
                         </View>
                     )}))
                 }
+                
+                <ImageViewing
+                    images={viewerImages}
+                    imageIndex={viewerIndex}
+                    visible={viewerVisible}
+                    onRequestClose={() => setViewerVisible(false)}
+                    onClose={() => setViewerVisible(false)}
+                    doubleTapToZoomEnabled={true}
+                />
                 
             </ScrollView>
             

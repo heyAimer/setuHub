@@ -4,6 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import LottieView from "lottie-react-native";
 import { useCallback, useRef, useState } from "react";
 import { Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import ImageViewing from "react-native-image-viewing";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CommentSheet } from "../../utils/components/CommentSheet";
 import { BASE_URL } from "../../utils/constants/api";
@@ -17,6 +18,11 @@ const Moments = () => {
     const [showComments, setShowComments] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
     const [posts, setPosts] = useState([]);
+
+    // FULLSCREEN IMAGE VIEWER STATE
+    const [viewerVisible, setViewerVisible] = useState(false);
+    const [viewerIndex, setViewerIndex] = useState(0);
+    const [viewerImages, setViewerImages] = useState([]);  // array of { uri }
 
     const { latitude, longitude, errMsg, location, loading } = useLocation();
     const [activePost, setActivePost] = useState(null);
@@ -34,6 +40,13 @@ const Moments = () => {
             hour12: true
         })
         return formatter.format(date);
+    };
+
+    const openImageViewer = (imagesArray, index) => {
+        const formatted = imagesArray.map(uri => ({ uri }));
+        setViewerImages(formatted);
+        setViewerIndex(index);
+        setViewerVisible(true);
     };
 
     const handleLike = async(postUuid, status) => {
@@ -236,7 +249,7 @@ const Moments = () => {
                             
                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
                                     {info?.profilePhotoUrl ? (<Image
-                                        source={{ uri: item.profilePhotoUrl }}
+                                        source={{ uri: info.profilePhotoUrl }}
                                         style={styles.pfp}
                                     />) : (
                                         <View style={styles.pfpWrapper}>
@@ -266,24 +279,31 @@ const Moments = () => {
                                 
                                         {/* 1 Image */}
                                         {images.length === 1 && (
-                                            <Image
-                                                source={{ uri: images[0] }}
-                                                style={{ width: "100%", height: 250, borderRadius: 8, borderWidth: 1, borderColor: "#ccc", }}
-                                            />
+                                            <TouchableOpacity onPress={() => openImageViewer(images, 0)}>
+                                                <Image
+                                                    source={{ uri: images[0] }}
+                                                    style={{ width: "100%", height: 250, borderRadius: 8, borderWidth: 1, borderColor: "#ccc", }}
+                                                />
+                                            </TouchableOpacity>
                                         )}
 
                                         {/* 2 Images */}
                                         {images.length === 2 && (
                                             <View style={{ flexDirection: "row", gap: 8 }}>
                                                 {images.map((img, i) => (
-                                                    <Image
+                                                     <TouchableOpacity
                                                         key={i}
-                                                        source={{ uri: img }}
-                                                        style={{
-                                                            width: "48%", height: 200, borderRadius: 8, borderWidth: 1,
-                                                            borderColor: "#ccc"
-                                                        }}
-                                                    />
+                                                        onPress={() => openImageViewer(images, i)}
+                                                        style={{width:'48%'}}
+                                                    >
+                                                        <Image
+                                                            source={{ uri: img }}
+                                                            style={{
+                                                                width: "100%", height: 200, borderRadius: 8, borderWidth: 1,
+                                                                borderColor: "#ccc"
+                                                            }}
+                                                        />
+                                                    </TouchableOpacity>
                                                 ))}
                                             </View>
                                         )}
@@ -291,20 +311,27 @@ const Moments = () => {
                                         {/* 3 Images */}
                                         {images.length === 3 && (
                                             <View style={{ flexDirection: "row", gap: 8 }}>
-                                                <Image source={{ uri: images[0] }} style={{
-                                                    width: "60%", height: 250, borderRadius: 8, borderWidth: 1,
-                                                    borderColor: "#ccc",
-                                                }} />
+                                                <TouchableOpacity onPress={() => openImageViewer(images, 0)} style={{width:'60%'}}>
+                                                    <Image source={{ uri: images[0] }} style={{
+                                                        width: "100%", height: 250, borderRadius: 8, borderWidth: 1,
+                                                        borderColor: "#ccc",
+                                                    }} />
+                                                </TouchableOpacity>
 
                                                 <View style={{ flex: 1, gap: 8 }}>
-                                                    <Image source={{ uri: images[1] }} style={{
+                                                    <TouchableOpacity onPress={() => openImageViewer(images, 1)} >
+                                                        <Image source={{ uri: images[1] }} style={{
                                                         height: 120, borderRadius: 8, borderWidth: 1,
                                                         borderColor: "#ccc",
-                                                    }} />
-                                                    <Image source={{ uri: images[2] }} style={{
-                                                        height: 120, borderRadius: 8, borderWidth: 1,
-                                                        borderColor: "#ccc",
-                                                    }} />
+                                                        }} />
+                                                    </TouchableOpacity>
+
+                                                    <TouchableOpacity onPress={() => openImageViewer(images, 2)}>
+                                                        <Image source={{ uri: images[2] }} style={{
+                                                            height: 120, borderRadius: 8, borderWidth: 1,
+                                                            borderColor: "#ccc",
+                                                        }} />
+                                                    </TouchableOpacity> 
                                                 </View>
                                             </View>
                                         )}
@@ -313,17 +340,22 @@ const Moments = () => {
                                         {images.length === 4 && (
                                             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                                                 {images.map((img, i) => (
-                                                    <Image
+                                                    <TouchableOpacity
                                                         key={i}
-                                                        source={{ uri: img }}
-                                                        style={{
-                                                            width: "48%",
-                                                            height: 160,
-                                                            borderRadius: 8,
-                                                            borderWidth: 1,
-                                                            borderColor: "#ccc"
-                                                        }}
-                                                    />
+                                                        onPress={() => openImageViewer(images, i)}
+                                                        style={{width:'48%'}}
+                                                    >
+                                                        <Image
+                                                            source={{ uri: img }}
+                                                            style={{
+                                                                width: "100%",
+                                                                height: 160,
+                                                                borderRadius: 8,
+                                                                borderWidth: 1,
+                                                                borderColor: "#ccc"
+                                                            }}
+                                                        />
+                                                    </TouchableOpacity>
                                                 ))}
                                             </View>
                                         )}
@@ -375,6 +407,15 @@ const Moments = () => {
                         )
                     }))
                 }
+                <ImageViewing
+                    images={viewerImages}
+                    imageIndex={viewerIndex}
+                    visible={viewerVisible}
+                    onRequestClose={() => setViewerVisible(false)}
+                    onClose={() => setViewerVisible(false)}
+                    doubleTapToZoomEnabled={true}
+                />
+
             </ScrollView>
             
             <CommentSheet
