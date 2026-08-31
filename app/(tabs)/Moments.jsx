@@ -63,7 +63,7 @@ const Moments = () => {
                     } : p)
             )
             
-            const url = `https://hackathon-connect-app-backend.onrender.com/request/${ status ? "uninterested" : "interested"}/${postUuid}`;
+            const url = `${BASE_URL}/request/${ status ? "uninterested" : "interested"}/${postUuid}`;
             
             const response = await fetch(url, {
                 method: 'PATCH',

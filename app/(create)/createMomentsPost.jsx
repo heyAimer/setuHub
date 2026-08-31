@@ -11,8 +11,10 @@ import { CLOUDINARY_API, CLOUDINARY_UPLOAD_PRESET } from "../../cloudinary.js";
 import useCreateInfo from '../../utils/hooks/useCreateInfo.jsx';
 import { apiPost } from '../../utils/hooks/useCreatePosts.jsx';
 import LottieView from 'lottie-react-native';
+import { BASE_URL } from '../../utils/constants/api.js';
 
-const ENDPOINT = 'https://hackathon-connect-app-backend.onrender.com/request/create/moments'
+const ENDPOINT = `${BASE_URL}/request/create/moments`;
+
 const CreateMomentsPost = () => {
     const insets = useSafeAreaInsets();
     const navigation = useNavigation();

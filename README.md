@@ -70,3 +70,6 @@ Connecting people who care.” ✅ Simple, human, mission-driven
    * gradlew assembleRelease(windows)(production)
 
    * Extra : gradlew clean(to clean old builds)
+
+#### To run using emulator
+   * npx expo run:android

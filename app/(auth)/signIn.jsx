@@ -1,17 +1,17 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { Formik } from "formik";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { signInValidationSchema } from "../../utils/authSchema";
@@ -19,6 +19,8 @@ import { BASE_URL } from "../../utils/constants/api";
 import { getFcmToken } from "../../utils/notifications";
 
 const SignIn = () => {
+  const router = useRouter();
+
   const [loading, setLoading] = useState(false);
   const HandleSignIn = async (values, { resetForm }) => {
     try {
@@ -46,19 +48,16 @@ const SignIn = () => {
           const fcmToken = await getFcmToken();
 
           if (fcmToken) {
-            const tokenResponse = await fetch(
-              "https://hackathon-connect-app-backend.onrender.com/set/token",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "X-App-Secret": "smartboyakriti",
-                },
-                body: JSON.stringify({
-                  firebaseToken: fcmToken,
-                }),
+            const tokenResponse = await fetch(`${BASE_URL}/set/token`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-App-Secret": "smartboyakriti",
               },
-            );
+              body: JSON.stringify({
+                firebaseToken: fcmToken,
+              }),
+            });
             if (tokenResponse.ok) {
               const data = await tokenResponse.json();
             }
@@ -89,163 +88,174 @@ const SignIn = () => {
     }
   };
 
-    return (
-        <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <TouchableOpacity
-                style={{ paddingHorizontal: 16, paddingTop: 14, marginTop: 40 }}
-                onPress={() => router.push("/")}
+  return (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <TouchableOpacity
+        style={{ paddingHorizontal: 16, paddingTop: 14, marginTop: 40 }}
+        onPress={() => router.push("/")}
+      >
+        <MaterialIcons name="arrow-back-ios" size={22} color="black" />
+      </TouchableOpacity>
+
+      <ScrollView contentContainerStyle={{ height: "100%" }}>
+        <View style={styles.container2}>
+          <View>
+            <Text style={[styles.heading, { fontSize: 32 }]}>Welcome Back</Text>
+            <Text
+              style={[
+                styles.heading,
+                { fontSize: 24, marginTop: 6, color: "#494949" },
+              ]}
             >
-                <MaterialIcons name="arrow-back-ios" size={22} color="black" />
-            </TouchableOpacity>
-            <ScrollView contentContainerStyle={{ height: "100%" }}>
-                <View style={styles.container2}>
-                    <View>
-                        <Text style={[styles.heading, { fontSize: 32 }]}>Welcome Back</Text>
-                        <Text
-                        style={[
-                            styles.heading,
-                            { fontSize: 24, marginTop: 6, color: "#494949" },
-                        ]}
-                        >
-                        Your Community Awaits You✨
-                        </Text>
-                    </View>
+              Your Community Awaits You✨
+            </Text>
+          </View>
 
-                    <View style={styles.fieldsContainer}>
-                        <Formik
-                        initialValues={{ email: "", password: "" }}
-                        validationSchema={signInValidationSchema}
-                        onSubmit={HandleSignIn}
-                        >
-                        {({
-                            handleChange,
-                            handleBlur,
-                            handleSubmit,
-                            values,
-                            errors,
-                            touched,
-                        }) => (
-                            <View>
-                            <Text style={{ marginBottom: 4, fontWeight: 500 }}>
-                                Email
-                            </Text>
+          <View style={styles.fieldsContainer}>
+            <Formik
+              initialValues={{ email: "", password: "" }}
+              validationSchema={signInValidationSchema}
+              onSubmit={HandleSignIn}
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                touched,
+              }) => (
+                <View>
+                  <Text style={{ marginBottom: 4, fontWeight: 500 }}>
+                    Email
+                  </Text>
 
-                            <View style={styles.inputFieldContainer}>
-                                <MaterialIcons
-                                name="email"
-                                size={20}
-                                color="#9CA3AF"
-                                style={{ marginRight: 8 }}
-                                />
+                  <View style={styles.inputFieldContainer}>
+                    <MaterialIcons
+                      name="email"
+                      size={20}
+                      color="#9CA3AF"
+                      style={{ marginRight: 8 }}
+                    />
 
-                                <TextInput
-                                style={styles.inputField}
-                                placeholder="Enter your email"
-                                placeholderTextColor="#828181"
-                                keyboardType="email-address"
-                                onChangeText={handleChange("email")}
-                                value={values.email}
-                                onBlur={handleBlur("email")}
-                                />
-                            </View>
+                    <TextInput
+                      style={styles.inputField}
+                      placeholder="Enter your email"
+                      placeholderTextColor="#828181"
+                      keyboardType="email-address"
+                      onChangeText={handleChange("email")}
+                      value={values.email}
+                      onBlur={handleBlur("email")}
+                    />
+                  </View>
 
-                            {touched.email && errors.email && (
-                                <Text style={styles.error}>{errors.email}</Text>
-                            )}
+                  {touched.email && errors.email && (
+                    <Text style={styles.error}>{errors.email}</Text>
+                  )}
 
-                            <Text
-                                style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}
-                            >
-                                Password
-                            </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        marginTop: 10,
+                        fontWeight: 500,
+                      }}
+                    >
+                      Password
+                    </Text>
 
-                            <TouchableOpacity
-                                style={{
-                                alignSelf: "flex-end",
-                                marginTop: 8,
-                                marginBottom: 10,
-                                }}
-                                onPress={() => router.push("/(auth)/forgotPassword")}
-                            >
-                                <Text
-                                style={{
-                                    color: "#2563EB",
-                                    fontSize: 14,
-                                    fontWeight: "500",
-                                }}
-                                >
-                                    Forgot Password?
-                                </Text>
-                            </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        alignSelf: "flex-end",
+                      }}
+                      onPress={() => router.push("/forgotPassword")}
+                    >
+                      <Text
+                        style={{
+                          color: "#2563EB",
+                          fontSize: 14,
+                          fontWeight: "500",
+                        }}
+                      >
+                        Forgot Password?
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
 
-                            <View style={styles.inputFieldContainer}>
-                                <MaterialIcons
-                                name="lock"
-                                size={20}
-                                color="#9CA3AF"
-                                style={{ marginRight: 8 }}
-                                />
+                  <View style={styles.inputFieldContainer}>
+                    <MaterialIcons
+                      name="lock"
+                      size={20}
+                      color="#9CA3AF"
+                      style={{ marginRight: 8 }}
+                    />
 
-                                <TextInput
-                                style={[
-                                    styles.inputField,
-                                    { fontFamily: undefined, color: "#000" },
-                                ]}
-                                placeholderTextColor="#828181"
-                                secureTextEntry
-                                placeholder="Enter your password"
-                                onChangeText={handleChange("password")}
-                                value={values.password}
-                                onBlur={handleBlur("password")}
-                                />
-                            </View>
+                    <TextInput
+                      style={[
+                        styles.inputField,
+                        { fontFamily: undefined, color: "#000" },
+                      ]}
+                      placeholderTextColor="#828181"
+                      secureTextEntry
+                      placeholder="Enter your password"
+                      onChangeText={handleChange("password")}
+                      value={values.password}
+                      onBlur={handleBlur("password")}
+                    />
+                  </View>
 
-                            {touched.password && errors.password && (
-                                <Text style={styles.error}>{errors.password}</Text>
-                            )}
+                  {touched.password && errors.password && (
+                    <Text style={styles.error}>{errors.password}</Text>
+                  )}
 
-                            <TouchableOpacity
-                                style={styles.signInBtn}
-                                onPress={handleSubmit}
-                            >
-                                {loading ? (
-                                <ActivityIndicator style={{ fontSize: 20 }} />
-                                ) : (
-                                <Text
-                                    style={{
-                                    color: "white",
-                                    fontSize: 18,
-                                    fontWeight: 500,
-                                    }}
-                                >
-                                    Sign In
-                                </Text>
-                                )}
-                            </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.signInBtn}
+                    onPress={handleSubmit}
+                  >
+                    {loading ? (
+                      <ActivityIndicator style={{ fontSize: 20 }} />
+                    ) : (
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 18,
+                          fontWeight: 500,
+                        }}
+                      >
+                        Sign In
+                      </Text>
+                    )}
+                  </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={{
-                                flexDirection: "row",
-                                gap: 6,
-                                marginTop: 14,
-                                justifyContent: "center",
-                                }}
-                                onPress={() => router.push("/signUp")}
-                            >
-                                <Text>New to SetuHub?</Text>
-                                <Text style={styles.signInText}>Sign Up</Text>
-                            </TouchableOpacity>
-                            </View>
-                        )}
-                        </Formik>
-                    </View>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: "row",
+                      gap: 6,
+                      marginTop: 14,
+                      justifyContent: "center",
+                    }}
+                    onPress={() => router.push("/signUp")}
+                  >
+                    <Text>New to SetuHub?</Text>
+                    <Text style={styles.signInText}>Sign Up</Text>
+                  </TouchableOpacity>
                 </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
-    );
+              )}
+            </Formik>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
 };
 
 export default SignIn;

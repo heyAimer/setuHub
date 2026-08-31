@@ -63,7 +63,7 @@ const AdharVerify = () => {
                 
                 if (fcmToken) {
                     const tokenResponse = await fetch(
-                        "https://hackathon-connect-app-backend.onrender.com/set/token",
+                        `${BASE_URL}/set/token`,
                         {
                             method: 'POST',
                             headers: {
