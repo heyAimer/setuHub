@@ -60,16 +60,22 @@ Connecting people who care.” ✅ Simple, human, mission-driven
 “Your safety, our network.” ✅ Strong, action-oriented
 
 ##### uninstall app
+
     adb uninstall <your.package.name>
+
 ##### npx expo run:android
-   this rebuild dev or install prod apk
+
+this rebuild dev or install prod apk
+
 ##### To install prod apk
-   * npx expo prebuild
-   * cd android
-   * gradlew assembleDebug(developement)
-   * gradlew assembleRelease(windows)(production)
 
-   * Extra : gradlew clean(to clean old builds)
+- npx expo prebuild
+- cd android
+- .\gradlew assembleDebug(developement)
+- .\gradlew assembleRelease(windows)(production)
 
-#### To run using emulator
-   * npx expo run:android
+- Extra : gradlew clean(to clean old builds)
+
+#### To clear the older apk :
+
+- npx expo prebuild --clean
