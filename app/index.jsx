@@ -3,12 +3,19 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BASE_URL } from '../utils/constants/api';
+import { BASE_URL } from "../utils/constants/api";
 import { deepLinkToRoute } from "../utils/deepLinks";
 export default function index() {
-
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [redirecting, setRedirecting] = useState(false);
@@ -18,17 +25,27 @@ export default function index() {
   useEffect(() => {
     const routeUser = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/pagerouter`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "X-App-Secret": "smartboyakriti"
-            },
-            redirect: "manual",
-          });
-        const url = res.headers.get("location");  // setuhub://moments
-        const screen = url.split("://")[1];  //"moments"
+        const res = await fetch(`${BASE_URL}/pagerouter`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-App-Secret": "smartboyakriti",
+          },
+          redirect: "manual",
+        });
+        const url = res.headers.get("location"); // setuhub://moments
+        if (!url) {
+          console.log("No Location header returned from /pagerouter");
+          return;
+        }
+
+        const screen = url.split("://")[1]; //"moments"
+
+        if (!screen) {
+          console.log("Invalid redirect URL:", url);
+          return;
+        }
+
         const finalRoute = deepLinkToRoute[screen];
 
         if (finalRoute && finalRoute !== "/") {
@@ -36,42 +53,42 @@ export default function index() {
           router.replace(finalRoute);
         }
       } catch (err) {
-        console.log("Error in catch: " ,err);
+        console.log("Error in catch: ", err);
       } finally {
         setLoading(false);
       }
-    }
+    };
     routeUser();
   }, []);
 
   if (redirecting) return null;
   if (loading) {
     return (
-      <SafeAreaView style={[styles.safeAreaView, {justifyContent:'center', alignItems:'center'}]}>
+      <SafeAreaView
+        style={[
+          styles.safeAreaView,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
         <ActivityIndicator size="large" />
         <Text style={styles.heading}>SetuHub</Text>
-
       </SafeAreaView>
-    )
+    );
   }
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <StatusBar barStyle={"dark-content"} backgroundColor={"#F5F7FA"}/>
+      <StatusBar barStyle={"dark-content"} backgroundColor={"#F5F7FA"} />
       <ScrollView contentContainerStyle={{ height: "100%" }}>
-
         <View style={styles.container}>
-
           <LottieView
-          source={require('../assets/images/animation.json')}
-          autoPlay
-          loop
-          style={styles.animation}
+            source={require("../assets/images/animation.json")}
+            autoPlay
+            loop
+            style={styles.animation}
           />
-          
+
           <View>
-            <Text style={styles.heading}> 
-              Help Within Reach.
-            </Text>
+            <Text style={styles.heading}>Help Within Reach.</Text>
 
             <MaskedView
               maskElement={
@@ -88,7 +105,7 @@ export default function index() {
               }
             >
               <LinearGradient
-                colors={["#470909", "#1976D2","#470909"]} // blue → yellow
+                colors={["#470909", "#1976D2", "#470909"]} // blue → yellow
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
               >
@@ -104,25 +121,30 @@ export default function index() {
                 </Text>
               </LinearGradient>
             </MaskedView>
-            
           </View>
 
-          <View style={{ width: "75%", marginTop:60 }}>
-            <TouchableOpacity
-              onPress={() => router.push("/signUp")}>
+          <View style={{ width: "75%", marginTop: 60 }}>
+            <TouchableOpacity onPress={() => router.push("/signUp")}>
               <Text style={styles.signUpText}>Sign Up</Text>
             </TouchableOpacity>
 
-            <Text style={{textAlign:'center', marginTop:14,marginBottom:4, fontWeight:500, fontSize:16}}>Already a User?</Text>
+            <Text
+              style={{
+                textAlign: "center",
+                marginTop: 14,
+                marginBottom: 4,
+                fontWeight: 500,
+                fontSize: 16,
+              }}
+            >
+              Already a User?
+            </Text>
 
-            <TouchableOpacity
-              onPress={() => router.push("/signIn")}>
+            <TouchableOpacity onPress={() => router.push("/signIn")}>
               <Text style={styles.guestUserText}>Sign In</Text>
             </TouchableOpacity>
-
           </View>
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -131,12 +153,12 @@ export default function index() {
 const styles = StyleSheet.create({
   safeAreaView: {
     backgroundColor: "#F5F7FA",
-    flex:1
+    flex: 1,
   },
   container: {
-    flex:1,
+    flex: 1,
     justifyContent: "center",
-    alignItems: 'center',
+    alignItems: "center",
   },
   animation: {
     width: 300,
@@ -151,7 +173,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1976D2", // blue
     fontSize: 18,
     fontWeight: 500,
-    color: "#FFFFFF",           // white text
+    color: "#FFFFFF", // white text
     paddingVertical: 12,
     borderRadius: 8,
     textAlign: "center",
@@ -172,7 +194,5 @@ const styles = StyleSheet.create({
     color: "#1976D2",
     textDecorationLine: "underline",
     fontWeight: 500,
-    
-  }
-
-})
+  },
+});

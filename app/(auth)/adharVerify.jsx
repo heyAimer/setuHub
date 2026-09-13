@@ -1,375 +1,287 @@
-import { MaterialIcons } from "@expo/vector-icons";
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { router } from 'expo-router';
-import { Formik } from 'formik';
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
-import { validationSchema } from "../../utils/authSchema";
-import { BASE_URL } from "../../utils/constants/api";
-import { getFcmToken } from "../../utils/notifications";
+import { authenticate } from "../../utils/api/Verification";
 
-const AdharVerify = () => {
-    const options = ['Male', 'Female', 'Others'];
+const adharVerify = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-    const [loading, setLoading] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedValue, setSelectedValue] = useState(null);
-    
-    const toggleDropdown = () => {
-        setIsOpen((prev) => !prev);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [gender, setGender] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [errors, setErrors] = useState({
+    name: "",
+    phone: "",
+    gender: "",
+    dateOfBirth: "",
+    submit: "",
+  });
+
+  const validateForm = () => {
+    const newErrors = {
+      name: "",
+      phone: "",
+      gender: "",
+      dateOfBirth: "",
+      submit: "",
     };
 
-    const selectOption = (value) => {
-        setSelectedValue(value);
-        setIsOpen(false); // Close after selection
-    };
+    let valid = true;
 
-    const HandleSignIn = async (values, { resetForm }) => {
-        const dobFormatted = values.age.replace(/\s*-\s*/g, "-");
-        try {
-            setLoading("true");
-            const response = await fetch(`${BASE_URL}/authenticate`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-App-Secret": "smartboyakriti",
-                    },
-                    body: JSON.stringify({
-                        aadhar: values.adhar,
-                        name: values.name,
-                        phone: values.phone,
-                        gender: selectedValue,
-                        address: values.address,
-                        dateOfBirth:dobFormatted
-                    }),
-                }
-            );
-            
-            const data = await response.json();
-
-            if (response.ok) {
-
-                Toast.show({
-                    type: "success",
-                    text1: data.message
-                });
-                router.dismissAll();
-                router.replace("/Moments");
-                resetForm();
-                const fcmToken = await getFcmToken();
-                
-                if (fcmToken) {
-                    const tokenResponse = await fetch(
-                        `${BASE_URL}/set/token`,
-                        {
-                            method: 'POST',
-                            headers: {
-                                "Content-Type": "application/json",
-                                "X-App-Secret": "smartboyakriti",
-                            },
-                            body: JSON.stringify({
-                                firebaseToken: fcmToken
-                            })
-                        }
-                    );
-                    if (tokenResponse.ok) {
-                        const data = await tokenResponse.json();
-                    }
-                }
-            } else {
-                Toast.show({
-                    type: 'error',
-                    text1:data.message
-                })
-            }
-        } catch (error) {
-            console.error("Error during adhar verification: ", error);
-            Toast.show({
-                type: "error",
-                text1:"⚠️Something went wrong!"
-            })
-        } finally {
-            setLoading(false);
-        }
-
+    if (!name.trim()) {
+      newErrors.name = "Please enter your name.";
+      valid = false;
     }
-    
-    return (
-        <KeyboardAvoidingView
-            style={styles.container} behavior={Platform.OS=== "ios"?"padding":"height"}>
-            <TouchableOpacity
-                style={{paddingHorizontal:16,paddingVertical:6, marginTop:50, backgroundColor:'#F8FAFC'}}
-                onPress={() => router.push("/signUp")}>
-                    <MaterialIcons
-                    name="arrow-back-ios"
-                    size={22} color="black"
-                />
-            </TouchableOpacity>
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                
-                <View style={styles.container2}>
+    if (!phone.trim()) {
+      newErrors.phone = "Please enter your phone number.";
+      valid = false;
+    } else if (!/^\d{10}$/.test(phone.trim())) {
+      newErrors.phone = "Please enter a valid 10-digit phone number.";
+      valid = false;
+    }
+    if (!gender.trim()) {
+      newErrors.gender = "Please select your gender.";
+      valid = false;
+    }
+    if (!dateOfBirth.trim()) {
+      newErrors.dateOfBirth = "Please enter your date of birth.";
+      valid = false;
+    } else if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth.trim())) {
+      newErrors.dateOfBirth = "Use the format YYYY-MM-DD.";
+      valid = false;
+    }
+    setErrors(newErrors);
 
-                    <Text style={{alignSelf:'center', fontSize:30, fontWeight:500}}>Let’s Verify Your Aadhaar</Text>
-                    <View style = {styles.fieldsContainer}>
-                        <Formik
-                        initialValues={{adhar:"", name: "", phone: "", gender: "", address:"", age:"" }}
-                        validationSchema={validationSchema}
-                        onSubmit={HandleSignIn}>
-                            {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue  }) => (
+    return valid;
+  };
 
-                                <View>
-                                    <Text style={{ marginBottom: 4, fontWeight: 500 }}>Adharcard Number</Text>
-                                    
-                                    <View style={styles.inputFieldContainer}>
-                                        <MaterialIcons name="fingerprint" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
 
-                                        <TextInput
-                                        
-                                            style={styles.inputField}
-                                            placeholder="Enter your adharcard number"
-                                            placeholderTextColor=
-                                            "#828181"
-                                            onChangeText={handleChange("adhar")}
-                                            value={values.adhar}
-                                            onBlur={handleBlur("adhar")}
-                                        />
-                                    </View>
+    try {
+      setLoading(true);
+      setErrors((prev) => ({ ...prev, submit: "" }));
 
-                                    {touched.adhar && errors.adhar && <Text style={styles.error}>{errors.adhar}</Text>} 
+      const data = {
+        name: name.trim(),
+        phone: phone.trim(),
+        gender: gender.trim(),
+        dateOfBirth: dateOfBirth.trim(),
+      };
 
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>Your Name</Text>
-                                
-                                    <View style={styles.inputFieldContainer}>
-                                        <MaterialIcons name="person" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
+      const response = await authenticate(data);
+      console.log(response);
+      router.replace("/Moments");
+    } catch (error) {
+      console.error(
+        "Profile setup error:",
+        error?.response?.data || error?.message,
+      );
 
-                                    <TextInput
-                                        style={styles.inputField}
-                                        placeholder="Enter your name"
-                                        onChangeText={handleChange("name")}
-                                        value={values.name}
-                                        onBlur={handleBlur("name")}
-                                        placeholderTextColor="#828181"
-                                    />
-                                    
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        "Something went wrong while setting up your profile.";
 
-                                    </View>
+      setErrors((prev) => ({ ...prev, submit: message }));
 
-                                    {touched.name && errors.name && <Text style={styles.error}>{errors.name}</Text>}
+      Toast.show({
+        type: "error",
+        text1: "Unable to create profile",
+        text2: message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>Phone Number</Text>
-                                    
-                                
-                                    <View style={styles.inputFieldContainer}>
-                                        <MaterialIcons name="call" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
-
-                                        <TextInput
-                                            style={styles.inputField}
-                                            placeholderTextColor=
-                                            "#828181"
-                                            placeholder="Enter your number"
-                                            onChangeText={handleChange("phone")}
-                                            value={values.phone}
-                                            onBlur={handleBlur("phone")}
-                                            keyboardType="numeric"
-                                        />
-                                    
-                                    </View>
-
-                                    {touched.phone && errors.phone && <Text style={styles.error}>{errors.phone}</Text>}
-
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>Gender</Text>
-                                
-                                    <View style={{
-                                        backgroundColor: "#FEFEFE"
-                                    }}>
-                                    
-                                        <TouchableOpacity style={styles.dropdownHeader} onPress={toggleDropdown}>
-                                            
-                                            <View style={{flexDirection:'row'}}>
-                                                <MaterialIcons name="wc" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
-                                                <Text style={{color: selectedValue ? '#000' : '#828181'}}>
-                                                    {selectedValue ? ` ${selectedValue}` : 'Select gender'}
-                                                </Text>
-                                            </View>
-
-                                            <MaterialIcons
-                                                name={isOpen ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
-                                                size={24}
-                                                color="#555"
-                                            />
-                
-                                        </TouchableOpacity>
-                                        
-                                        {isOpen && (
-                                        <View style={styles.dropdownList}>
-                                        {options.map((option, index) => (
-                                            <TouchableOpacity
-                                            key={option}
-                                            style={[styles.dropdownItem,
-                                            index === options.length - 1 && styles.dropdownItemNoBorder,]}
-                                            onPress={() => selectOption(option)}
-                                            >
-                                            <Text style={styles.dropdownItemText}>{option}</Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                        </View>
-                                        )}
-                                                            
-                                    </View>
-
-                                    {touched.gender && errors.gender && <Text style={styles.error}>{errors.gender}</Text>}
-
-                                    <Text style={{ marginTop: 10, marginBottom: 4, marginTop:20, fontWeight: 500 }}>Your Address</Text>
-                                
-                                    <View style={styles.inputFieldContainer}>
-                                        <MaterialIcons name="location-on" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
-
-                                        <TextInput
-                                            style={styles.inputField}
-                                            placeholder="Enter your address"
-                                            onChangeText={handleChange("address")}
-                                            value={values.address}
-                                            placeholderTextColor="#828181"
-                                            onBlur={handleBlur("address")}
-                                        />
-                                    
-
-                                    </View>
-
-                                    {touched.address && errors.address && <Text style={styles.error}>{errors.address}</Text>}
-                                    
-                                    <Text style={{ marginTop: 10, marginBottom: 4, fontWeight: 500 }}>D.O.B</Text>
-                                    
-                                    <View style={styles.inputFieldContainer}>
-                                        <MaterialIcons name="event" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
-
-                                        <TextInput
-                                            style={styles.inputField}
-                                            placeholder="DD - MM - YYYY"
-                                            keyboardType="numeric"
-                                            maxLength={16}
-                                            value={values.age}
-                                            placeholderTextColor="#828181"
-                                            onChangeText={(text) => {
-                                                // remove everything except numbers
-                                                let cleaned = text.replace(/[^0-9]/g, "");
-
-                                                // auto insert " - "
-                                                if (cleaned.length > 2 && cleaned.length <= 4) {
-                                                    cleaned = cleaned.slice(0, 2) + " - " + cleaned.slice(2);
-                                                } else if (cleaned.length > 4) {
-                                                    cleaned = cleaned.slice(0, 2) + " - " + cleaned.slice(2, 4) + " - " + cleaned.slice(4, 8);
-                                                }
-
-                                                setFieldValue("age", cleaned);
-                                            }}
-                                        />
-                                    
-                                        
-                                    </View>
-
-                                    {touched.age && errors.age && <Text style={styles.error}>{errors.age}</Text>}
-
-                                    <TouchableOpacity onPress={handleSubmit}>
-                                    <Text style={styles.signUpText}>{loading? "Verifying...":"Verify"}</Text>
-                                    </TouchableOpacity>
-                                
-                                </View>
-                                
-                            )}
-
-                        </Formik>
-                    </View>  
-                    
-                </View>
-            </ScrollView>
-            
-        </KeyboardAvoidingView>
-        
-  )
-}
-
-export default AdharVerify;
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Set up your profile</Text>{" "}
+      <Text style={styles.description}>
+        {" "}
+        Tell us a little about yourself before you continue.{" "}
+      </Text>{" "}
+      <Text style={styles.label}>Name</Text>{" "}
+      <TextInput
+        style={[styles.input, errors.name && styles.inputError]}
+        placeholder="Enter your name"
+        value={name}
+        onChangeText={(text) => {
+          setName(text);
+          if (errors.name) {
+            setErrors((prev) => ({ ...prev, name: "" }));
+          }
+        }}
+        autoCapitalize="words"
+        editable={!loading}
+      />{" "}
+      {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}{" "}
+      <Text style={styles.label}>Phone</Text>{" "}
+      <TextInput
+        style={[styles.input, errors.phone && styles.inputError]}
+        placeholder="Enter your phone number"
+        value={phone}
+        onChangeText={(text) => {
+          setPhone(text);
+          if (errors.phone) {
+            setErrors((prev) => ({ ...prev, phone: "" }));
+          }
+        }}
+        keyboardType="phone-pad"
+        maxLength={10}
+        editable={!loading}
+      />{" "}
+      {errors.phone ? (
+        <Text style={styles.errorText}>{errors.phone}</Text>
+      ) : null}{" "}
+      {/* Gender */} <Text style={styles.label}>Gender</Text>{" "}
+      <View style={styles.genderContainer}>
+        {" "}
+        {["Male", "Female", "Other"].map((option) => (
+          <TouchableOpacity
+            key={option}
+            style={[
+              styles.genderButton,
+              gender === option && styles.genderButtonSelected,
+              errors.gender && styles.genderButtonError,
+            ]}
+            onPress={() => {
+              setGender(option);
+              if (errors.gender) {
+                setErrors((prev) => ({ ...prev, gender: "" }));
+              }
+            }}
+            disabled={loading}
+          >
+            {" "}
+            <Text
+              style={[
+                styles.genderText,
+                gender === option && styles.genderTextSelected,
+              ]}
+            >
+              {" "}
+              {option}{" "}
+            </Text>{" "}
+          </TouchableOpacity>
+        ))}{" "}
+      </View>{" "}
+      {errors.gender ? (
+        <Text style={styles.errorText}>{errors.gender}</Text>
+      ) : null}{" "}
+      <Text style={styles.label}>Date of birth</Text>{" "}
+      <TextInput
+        style={[styles.input, errors.dateOfBirth && styles.inputError]}
+        placeholder="YYYY-MM-DD"
+        value={dateOfBirth}
+        onChangeText={(text) => {
+          setDateOfBirth(text);
+          if (errors.dateOfBirth) {
+            setErrors((prev) => ({ ...prev, dateOfBirth: "" }));
+          }
+        }}
+        keyboardType="numbers-and-punctuation"
+        maxLength={10}
+        editable={!loading}
+      />{" "}
+      {errors.dateOfBirth ? (
+        <Text style={styles.errorText}>{errors.dateOfBirth}</Text>
+      ) : null}{" "}
+      {/* API error */}{" "}
+      {errors.submit ? (
+        <Text style={styles.submitError}>{errors.submit}</Text>
+      ) : null}{" "}
+      {/* Continue */}{" "}
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={handleSubmit}
+        disabled={loading}
+      >
+        {" "}
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Continue</Text>
+        )}{" "}
+      </TouchableOpacity>{" "}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: "center", padding: 24 },
 
-    container: {
-        flex:1,
-        backgroundColor: "#F8FAFC",
-    },
-    container2: {
-        justifyContent: 'center',
-        flex: 1,
-        marginHorizontal: 20,
-        gap:100
-    },
-    inputField: {
-        color: 'black',
-        width: '95%',
-    },
-    inputFieldContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderColor: "#D1D5DB",
-        borderWidth: 1,
-        paddingHorizontal: 10,
-        borderRadius: 4,
-        backgroundColor: "#FEFEFE",
-        marginBottom: 10,
-        color:'black'
+  title: { fontSize: 28, fontWeight: "700", marginBottom: 12 },
 
-    },
-    fieldsContainer: {
-        width:'100%'
-    },
-    error: {
-        color: "#E61522",
-    },
-    signUpText: {
-        backgroundColor: "#1976D2", // blue
-        fontSize: 18,
-        fontWeight: 500,
-        color: "#FFFFFF",           // white text
-        paddingVertical: 12,
-        borderRadius: 8,
-        textAlign: "center",
-        marginTop: 16,
-    },
-    signInText: {
-        color: "#1976D2",
-        textDecorationLine: "underline",
-        fontWeight: 500,
-    
-    },
-    dropdownHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical:10,
-        borderWidth: 1,
-        borderColor: "#D1D5DB",
-        borderRadius: 4,
-    },
-    dropdownList: {
-        marginTop: 8,
-        borderWidth: 1,
-        borderColor: "#D1D5DB",  
-        borderRadius: 8,
-    },
-    dropdownItem: {
-        paddingHorizontal: 14,
-        paddingVertical:12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#DCDCDD',
-    },
-    dropdownItemNoBorder: {
-        borderBottomWidth: 0,
-    },
-    dropdownItemText: {
-        fontSize: 14,
-    },
-})
+  description: { fontSize: 16, color: "#666", marginBottom: 30 },
+
+  label: { fontSize: 14, fontWeight: "600", marginBottom: 8, marginTop: 14 },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    padding: 14,
+    fontSize: 16,
+    backgroundColor: "#fff",
+  },
+
+  inputError: { borderColor: "#dc2626" },
+
+  errorText: { color: "#dc2626", fontSize: 13, marginTop: 5 },
+
+  genderContainer: { flexDirection: "row", gap: 10 },
+
+  genderButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    padding: 14,
+    alignItems: "center",
+  },
+
+  genderButtonSelected: { backgroundColor: "#000", borderColor: "#000" },
+
+  genderButtonError: { borderColor: "#dc2626" },
+
+  genderText: { fontSize: 15, color: "#333" },
+
+  genderTextSelected: { color: "#fff", fontWeight: "600" },
+
+  submitError: {
+    color: "#dc2626",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 18,
+  },
+
+  button: {
+    backgroundColor: "#000",
+    padding: 16,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 20,
+  },
+
+  buttonDisabled: { opacity: 0.7 },
+
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+});
+
+export default adharVerify;

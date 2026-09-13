@@ -6,13 +6,13 @@ import { router, useNavigation } from "expo-router";
 import LottieView from "lottie-react-native";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -26,7 +26,6 @@ const bars = [
   { id: "uuid", label: "Username", icon: "alternate-email", editable: false },
   { id: "phone", label: "Phone Number", icon: "call", editable: true },
   { id: "gender", label: "Gender", icon: "wc", editable: false },
-  { id: "address", label: "Address", icon: "location-on", editable: false },
   { id: "dateOfBirth", label: "Date of Birth", icon: "cake", editable: false },
 ];
 const Profile = () => {
@@ -191,7 +190,7 @@ const Profile = () => {
         <View
           style={{ justifyContent: "center", alignItems: "center", flex: 1 }}
         >
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color="#FFFFFF" />
           <Text style={{ fontSize: 24, fontWeight: 700 }}>Loading...</Text>
         </View>
       ) : (

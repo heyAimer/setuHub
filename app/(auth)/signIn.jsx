@@ -222,7 +222,10 @@ const SignIn = () => {
                     onPress={handleSubmit}
                   >
                     {loading ? (
-                      <ActivityIndicator style={{ fontSize: 20 }} />
+                      <ActivityIndicator
+                        color="#FFFFFF"
+                        style={{ fontSize: 20 }}
+                      />
                     ) : (
                       <Text
                         style={{
